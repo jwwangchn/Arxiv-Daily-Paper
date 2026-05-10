@@ -14,6 +14,7 @@
   const activeFilters = document.getElementById("activeFilters");
   const cards = Array.from(document.querySelectorAll(".paper-card"));
   const sections = Array.from(document.querySelectorAll("[data-section]"));
+  const subSections = Array.from(document.querySelectorAll(".sub-sec"));
 
   function normalize(value) {
     return (value || "").toString().toLowerCase().trim();
@@ -41,9 +42,26 @@
   }
 
   function updateSectionVisibility() {
+    subSections.forEach((section) => {
+      const visibleCards = section.querySelectorAll(".paper-card:not(.hidden)").length;
+      section.classList.toggle("hidden", visibleCards === 0);
+    });
     sections.forEach((section) => {
       const visibleCards = section.querySelectorAll(".paper-card:not(.hidden)").length;
       section.classList.toggle("hidden", visibleCards === 0);
+    });
+    document.querySelectorAll(".nav-pri").forEach((nav) => {
+      const topic = nav.dataset.topic || "";
+      const visibleCards = cards.filter((card) => {
+        const tags = (card.dataset.tags || "").split("|");
+        return !card.classList.contains("hidden") && tags.includes(topic);
+      }).length;
+      const count = nav.querySelector(".nav-pri-head .count");
+      if (count) count.textContent = String(visibleCards);
+      nav.classList.toggle("hidden", visibleCards === 0 && (state.query || state.priority || state.tag || state.category));
+      if (state.query || state.priority || state.tag || state.category) {
+        nav.classList.toggle("expanded", visibleCards > 0);
+      }
     });
   }
 
@@ -93,9 +111,20 @@
   });
 
   document.querySelectorAll("[data-filter-category]").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", (event) => {
       state.category = state.category === button.dataset.filterCategory ? "" : button.dataset.filterCategory;
       applyFilters();
+      const targetId = button.dataset.target;
+      if (targetId) {
+        event.stopPropagation();
+        document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
+
+  document.querySelectorAll(".nav-pri-head").forEach((button) => {
+    button.addEventListener("click", () => {
+      button.closest(".nav-pri")?.classList.toggle("expanded");
     });
   });
 

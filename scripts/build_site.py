@@ -4,6 +4,7 @@ import argparse
 from collections import Counter
 import html
 import logging
+import re
 from typing import Any
 
 from utils import PROJECT_ROOT, ensure_dirs, load_config, read_json, setup_logging, write_json
@@ -41,10 +42,21 @@ def paper_topic(paper: dict[str, Any]) -> str:
     return str(paper.get("primary_category") or "未分类")
 
 
-def group_papers(papers: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
-    groups: dict[str, list[dict[str, Any]]] = {}
+def category_name(paper: dict[str, Any]) -> str:
+    return str(paper.get("primary_category") or (paper.get("categories") or ["未分类"])[0] or "未分类")
+
+
+def anchor(value: str) -> str:
+    slug = re.sub(r"[^a-zA-Z0-9\u4e00-\u9fff]+", "-", value.strip()).strip("-")
+    return slug or "section"
+
+
+def group_papers(papers: list[dict[str, Any]]) -> dict[str, dict[str, list[dict[str, Any]]]]:
+    groups: dict[str, dict[str, list[dict[str, Any]]]] = {}
     for paper in papers:
-        groups.setdefault(paper_topic(paper), []).append(paper)
+        topic = paper_topic(paper)
+        category = category_name(paper)
+        groups.setdefault(topic, {}).setdefault(category, []).append(paper)
     return groups
 
 
@@ -105,11 +117,12 @@ def paper_card(paper: dict[str, Any]) -> str:
     <a href="{h(paper.get('pdf_url'))}" target="_blank" rel="noopener">PDF</a>
     <span>{h(paper.get('primary_category'))}</span>
   </div>
+  <div class="paper-tldr"><b>TL;DR：</b>{h(analysis.get('one_sentence_summary', '暂无中文导读。'))}</div>
   {error_html}
   <div class="analysis-grid">
-    {field_row("🎯", "一句话总结", f"<p>{h(analysis.get('one_sentence_summary', '暂无中文导读。'))}</p>")}
+    {field_row("🎯", "研究动机", f"<p>{h(analysis.get('problem', '暂无'))}</p>")}
     {field_row("❓", "解决问题", f"<p>{h(analysis.get('problem', '暂无'))}</p>")}
-    {field_row("🔧", "主要方法", f"<p>{h(analysis.get('method', '暂无'))}</p>")}
+    {field_row("🛠️", "主要方法", f"<p>{h(analysis.get('method', '暂无'))}</p>")}
     {field_row("📊", "数据与实验", f"<p>{h(analysis.get('experiments', '摘要未提供具体实验结果'))}</p>")}
     {field_row("⭐", "主要贡献", list_items(analysis.get('contributions') or []))}
     {field_row("⚠️", "局限性", list_items(analysis.get('limitations') or []))}
@@ -134,30 +147,65 @@ def collect_facets(papers: list[dict[str, Any]]) -> tuple[list[str], list[str], 
     return tags + categories, categories, priorities
 
 
-def nav_rows(values: list[tuple[str, int]], attr: str) -> str:
-    return "\n".join(
-        f"<button class=\"nav-row\" {attr}=\"{h(name)}\" type=\"button\"><span><span class=\"nav-arrow\">▶</span>{h(name)}</span><b>{count}</b></button>"
-        for name, count in values
-    )
-
-
 def render_sections(papers: list[dict[str, Any]]) -> str:
     if not papers:
         return "<div class=\"empty-state\">暂无论文数据。可以先运行 mock 模式生成预览页面。</div>"
 
     sections: list[str] = []
-    for group_name, group_items in group_papers(papers).items():
-        cards = "\n".join(paper_card(paper) for paper in group_items)
+    for topic_name, category_groups in group_papers(papers).items():
+        topic_count = sum(len(items) for items in category_groups.values())
+        topic_id = "topic-" + anchor(topic_name)
+        sub_sections: list[str] = []
+        sorted_categories = sorted(category_groups.items(), key=lambda kv: (-len(kv[1]), kv[0]))
+        for cat_name, cat_items in sorted_categories:
+            cat_id = f"cat-{anchor(topic_name)}-{anchor(cat_name)}"
+            cards = "\n".join(paper_card(paper) for paper in cat_items)
+            sub_sections.append(
+                f"""
+        <section id="{cat_id}" class="sub-sec">
+          <h3 class="sub-title">{h(cat_name)} <small>{len(cat_items)} 篇</small></h3>
+          <div class="paper-list">{cards}</div>
+        </section>
+"""
+            )
         sections.append(
             f"""
-      <section class="paper-section" data-section>
-        <h2 class="group-title">{h(group_name)} <small>{len(group_items)} 篇</small></h2>
-        <h3 class="sub-title">当日论文 <small>{len(group_items)} 篇</small></h3>
-        <div class="paper-list">{cards}</div>
+      <section id="{topic_id}" class="paper-section pri-sec" data-section>
+        <h2 class="group-title">{h(topic_name)} <small>{topic_count} 篇 · {len(category_groups)} 个细分</small></h2>
+        {''.join(sub_sections)}
       </section>
 """
         )
     return "\n".join(sections)
+
+
+def render_topic_nav(papers: list[dict[str, Any]]) -> str:
+    nav: list[str] = []
+    groups = group_papers(papers)
+    sorted_topics = sorted(groups.items(), key=lambda kv: (-sum(len(v) for v in kv[1].values()), kv[0]))
+    for topic_name, category_groups in sorted_topics:
+        topic_count = sum(len(items) for items in category_groups.values())
+        topic_id = "topic-" + anchor(topic_name)
+        sub_links: list[str] = []
+        sorted_categories = sorted(category_groups.items(), key=lambda kv: (-len(kv[1]), kv[0]))
+        for cat_name, cat_items in sorted_categories:
+            cat_id = f"cat-{anchor(topic_name)}-{anchor(cat_name)}"
+            sub_links.append(
+                f"<button class=\"nav-sub-link\" data-filter-category=\"{h(cat_name)}\" data-target=\"{cat_id}\" type=\"button\"><span class=\"name\">{h(cat_name)}</span><span class=\"count\">({len(cat_items)})</span></button>"
+            )
+        nav.append(
+            f"""
+        <div id="nav-{topic_id}" class="nav-pri" data-topic="{h(topic_name)}">
+          <button class="nav-pri-head" type="button">
+            <span class="nav-arrow">▶</span>
+            <span class="name">{h(topic_name)}</span>
+            <span class="count">{topic_count}</span>
+          </button>
+          <div class="nav-sub-list">{''.join(sub_links)}</div>
+        </div>
+"""
+        )
+    return "\n".join(nav)
 
 
 def render_page(bundle: dict[str, Any], all_dates: list[str], latest: str, is_index: bool, config: dict[str, Any]) -> str:
@@ -167,8 +215,6 @@ def render_page(bundle: dict[str, Any], all_dates: list[str], latest: str, is_in
     asset_prefix = "assets" if is_index else "../assets"
     daily_prefix = "daily/" if is_index else ""
     facets, _categories, priorities = collect_facets(papers)
-    group_counts = Counter(paper_topic(paper) for paper in papers)
-    category_counts = Counter(category for paper in papers for category in paper.get("categories", []))
     total_papers = len(papers)
     active_dates = len(all_dates)
 
@@ -176,8 +222,7 @@ def render_page(bundle: dict[str, Any], all_dates: list[str], latest: str, is_in
         f"<a class=\"date-link {'active' if item == date else ''}\" href=\"{daily_prefix + item + '.html'}\"><span>{h(item)}</span></a>"
         for item in sorted(all_dates, reverse=True)
     )
-    topic_rows = nav_rows(group_counts.most_common(), "data-filter-tag")
-    category_rows = nav_rows(category_counts.most_common(), "data-filter-category")
+    topic_nav = render_topic_nav(papers)
     tag_buttons = "\n".join(
         f"<button class=\"filter-chip\" data-filter-tag=\"{h(item)}\" type=\"button\">#{h(item)}</button>"
         for item in facets[:28]
@@ -220,12 +265,8 @@ def render_page(bundle: dict[str, Any], all_dates: list[str], latest: str, is_in
         <div class="date-list">{date_links}</div>
       </section>
       <section class="nav-section">
-        <h2>📁 按论文方向浏览</h2>
-        <div class="nav-tree">{topic_rows or '<span class="muted">暂无方向</span>'}</div>
-      </section>
-      <section class="nav-section">
-        <h2>🏷️ 按 arXiv 分类浏览</h2>
-        <div class="nav-tree">{category_rows or '<span class="muted">暂无分类</span>'}</div>
+        <h2>📁 按论文方向 → arXiv 分类浏览</h2>
+        <div class="nav-tree">{topic_nav or '<span class="muted">暂无方向</span>'}</div>
       </section>
       <section class="nav-section">
         <h2>🎚 Priority</h2>

@@ -193,14 +193,18 @@ button {
 }
 
 .nav-tree {
-  display: grid;
-  gap: 5px;
+  font-size: 13px;
 }
 
-.nav-row {
+.nav-pri {
+  border-radius: 6px;
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+
+.nav-pri-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   width: 100%;
   border: 0;
   border-radius: 6px;
@@ -209,32 +213,35 @@ button {
   font-size: 13px;
   font-weight: 800;
   min-height: 38px;
-  padding: 7px 11px;
+  padding: 7px 10px;
   text-align: left;
 }
 
-.nav-row:hover,
-.nav-row.active {
+.nav-pri-head:hover {
   background: #e7f3ff;
   color: var(--blue);
-}
-
-.nav-row > span {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .nav-arrow {
   color: #8c959f;
   font-size: 10px;
   margin-right: 7px;
+  transition: transform 0.18s ease;
 }
 
-.nav-row b {
+.nav-pri.expanded > .nav-pri-head .nav-arrow {
+  transform: rotate(90deg);
+}
+
+.nav-pri-head .name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-pri-head .count {
   flex: 0 0 auto;
   border-radius: 999px;
   background: #eaeef2;
@@ -244,6 +251,46 @@ button {
   min-width: 38px;
   padding: 2px 8px;
   text-align: center;
+}
+
+.nav-sub-list {
+  display: none;
+  padding: 4px 0 6px 24px;
+}
+
+.nav-pri.expanded > .nav-sub-list {
+  display: block;
+}
+
+.nav-sub-link {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #57606a;
+  cursor: pointer;
+  font-size: 12.5px;
+  margin-bottom: 1px;
+  padding: 5px 8px;
+  text-align: left;
+}
+
+.nav-sub-link:hover,
+.nav-sub-link.active {
+  background: #f1f4f7;
+  color: var(--blue);
+}
+
+.nav-sub-link .name {
+  flex: 1;
+}
+
+.nav-sub-link .count {
+  color: #8c959f;
+  font-size: 11px;
+  margin-left: 6px;
 }
 
 .content {
@@ -487,6 +534,21 @@ button {
   color: var(--muted);
   font-size: 12px;
   margin: 4px 0 12px;
+}
+
+.paper-tldr {
+  border-left: 3px solid #f9c513;
+  border-radius: 0 4px 4px 0;
+  background: #fffbea;
+  color: #735c0f;
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 9px 0 11px;
+  padding: 9px 13px;
+}
+
+.paper-tldr b {
+  color: #5a4500;
 }
 
 .analysis-grid {
