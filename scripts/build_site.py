@@ -190,7 +190,9 @@ def build_site(use_mock: bool = False) -> None:
         bundles = [{"date": "暂无日期", "source": "empty", "papers": []}]
 
     dates = [bundle.get("date", "") for bundle in bundles if bundle.get("date")]
-    latest = dates[-1] if dates else ""
+    non_empty_bundles = [bundle for bundle in bundles if bundle.get("papers")]
+    latest_bundle = non_empty_bundles[-1] if non_empty_bundles else bundles[-1]
+    latest = latest_bundle.get("date", dates[-1] if dates else "")
     docs_dir = PROJECT_ROOT / "docs"
     daily_dir = docs_dir / "daily"
     daily_dir.mkdir(parents=True, exist_ok=True)
@@ -200,7 +202,6 @@ def build_site(use_mock: bool = False) -> None:
         html_text = render_page(bundle, dates, latest, is_index=False, config=config)
         (daily_dir / f"{date}.html").write_text(html_text, encoding="utf-8")
 
-    latest_bundle = bundles[-1]
     (docs_dir / "index.html").write_text(render_page(latest_bundle, dates, latest, is_index=True, config=config), encoding="utf-8")
     write_json(docs_dir / "data" / "dates.json", {"latest": latest, "dates": dates})
     LOGGER.info("Built site with %d date bundle(s)", len(bundles))
