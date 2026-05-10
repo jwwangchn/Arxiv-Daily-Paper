@@ -24,39 +24,17 @@
       </section>
       <section class="nav-section">
         <h2>Priority</h2>
-        <div class="chip-list"><button class="filter-chip priority-filter" data-filter-priority="high" type="button">high <span>3</span></button>
-<button class="filter-chip priority-filter" data-filter-priority="medium" type="button">medium <span>2</span></button>
-<button class="filter-chip priority-filter" data-filter-priority="low" type="button">low <span>1</span></button></div>
+        <div class="chip-list"><button class="filter-chip priority-filter" data-filter-priority="high" type="button">high <span>0</span></button>
+<button class="filter-chip priority-filter" data-filter-priority="medium" type="button">medium <span>0</span></button>
+<button class="filter-chip priority-filter" data-filter-priority="low" type="button">low <span>0</span></button></div>
       </section>
       <section class="nav-section">
         <h2>论文方向分类</h2>
-        <div class="chip-list"><button class="filter-chip" data-filter-category="cs.AI" type="button">cs.AI</button>
-<button class="filter-chip" data-filter-category="cs.CL" type="button">cs.CL</button>
-<button class="filter-chip" data-filter-category="cs.CV" type="button">cs.CV</button>
-<button class="filter-chip" data-filter-category="cs.IR" type="button">cs.IR</button>
-<button class="filter-chip" data-filter-category="cs.LG" type="button">cs.LG</button>
-<button class="filter-chip" data-filter-category="eess.IV" type="button">eess.IV</button></div>
+        <div class="chip-list"><span class="muted">暂无分类</span></div>
       </section>
       <section class="nav-section">
         <h2>Tags</h2>
-        <div class="chip-list"><button class="filter-chip" data-filter-tag="Alignment" type="button">Alignment</button>
-<button class="filter-chip" data-filter-tag="Benchmark" type="button">Benchmark</button>
-<button class="filter-chip" data-filter-tag="Calibration" type="button">Calibration</button>
-<button class="filter-chip" data-filter-tag="DiT" type="button">DiT</button>
-<button class="filter-chip" data-filter-tag="LLM Training" type="button">LLM Training</button>
-<button class="filter-chip" data-filter-tag="Long Context" type="button">Long Context</button>
-<button class="filter-chip" data-filter-tag="Medical AI" type="button">Medical AI</button>
-<button class="filter-chip" data-filter-tag="Post-training" type="button">Post-training</button>
-<button class="filter-chip" data-filter-tag="Report Generation" type="button">Report Generation</button>
-<button class="filter-chip" data-filter-tag="Retrieval" type="button">Retrieval</button>
-<button class="filter-chip" data-filter-tag="VLM" type="button">VLM</button>
-<button class="filter-chip" data-filter-tag="Video Generation" type="button">Video Generation</button>
-<button class="filter-chip" data-filter-tag="cs.AI" type="button">cs.AI</button>
-<button class="filter-chip" data-filter-tag="cs.CL" type="button">cs.CL</button>
-<button class="filter-chip" data-filter-tag="cs.CV" type="button">cs.CV</button>
-<button class="filter-chip" data-filter-tag="cs.IR" type="button">cs.IR</button>
-<button class="filter-chip" data-filter-tag="cs.LG" type="button">cs.LG</button>
-<button class="filter-chip" data-filter-tag="eess.IV" type="button">eess.IV</button></div>
+        <div class="chip-list"><span class="muted">暂无 tags</span></div>
       </section>
     </aside>
     <main class="content">
@@ -64,198 +42,13 @@
         <div>
           <div class="eyebrow">Generated guide</div>
           <h1>2026-05-10 论文导读</h1>
-          <p>6 papers · 18 tags/categories · <span id="visibleCount">6</span> visible</p>
+          <p>0 papers · 0 tags/categories · <span id="visibleCount">0</span> visible</p>
         </div>
         <a class="data-link" href="../data/dates.json">dates.json</a>
       </header>
       <div id="activeFilters" class="active-filters"></div>
       <section id="paperList" class="paper-list">
-        
-<article class="paper-card" data-priority="high" data-tags="Video Generation|DiT" data-categories="cs.CV|cs.LG" data-search="motion-consistent diffusion transformers for controllable text-to-video generation we introduce a diffusion transformer for text-to-video generation that improves temporal motion consistency through trajectory-aware attention and lightweight motion priors. experiments on public video generation benchmarks show improved text alignment and reduced temporal artifacts. 这篇论文面向文本到视频生成中的时间一致性问题，提出结合轨迹注意力和运动先验的扩散 transformer。 现有视频生成模型容易出现跨帧运动不稳定、文本控制和运动轨迹不一致等问题。 方法在扩散 transformer 中加入 trajectory-aware attention，并使用轻量运动先验约束生成过程。 video generation dit">
-  <div class="paper-topline">
-    <span class="priority priority-high">high</span>
-    <span class="paper-id">2605.01001</span>
-  </div>
-  <h2 class="paper-title">Motion-Consistent Diffusion Transformers for Controllable Text-to-Video Generation</h2>
-  <div class="paper-authors" title="A. Researcher, B. Scholar, C. Engineer">A. Researcher, B. Scholar, C. Engineer</div>
-  <div class="paper-links">
-    <a href="https://arxiv.org/abs/2605.01001" target="_blank" rel="noopener">arXiv</a>
-    <a href="https://arxiv.org/pdf/2605.01001" target="_blank" rel="noopener">PDF</a>
-    <span>cs.CV</span>
-  </div>
-  <div class="badge-row"><button class="badge category-badge" data-filter-tag="cs.CV" type="button">cs.CV</button><button class="badge category-badge" data-filter-tag="cs.LG" type="button">cs.LG</button> <button class="badge tag-badge" data-filter-tag="Video Generation" type="button">Video Generation</button><button class="badge tag-badge" data-filter-tag="DiT" type="button">DiT</button></div>
-  <div class="summary">这篇论文面向文本到视频生成中的时间一致性问题，提出结合轨迹注意力和运动先验的扩散 Transformer。</div>
-  
-  <details class="analysis-block" open>
-    <summary>导读详情</summary>
-    <div class="field"><b>研究问题</b><p>现有视频生成模型容易出现跨帧运动不稳定、文本控制和运动轨迹不一致等问题。</p></div>
-    <div class="field"><b>方法概括</b><p>方法在扩散 Transformer 中加入 trajectory-aware attention，并使用轻量运动先验约束生成过程。</p></div>
-    <div class="field"><b>贡献点</b><ul><li>提出面向运动一致性的扩散 Transformer 结构</li><li>将轨迹信息显式注入注意力模块</li><li>在公开视频生成基准上报告了文本对齐和时间一致性改进</li></ul></div>
-    <div class="field"><b>实验信息</b><p>摘要提到在公开视频生成基准上验证，并报告文本对齐提升和时间伪影减少。</p></div>
-    <div class="field"><b>局限性</b><ul><li>摘要未说明推理成本变化</li><li>没有提供长视频或复杂交互场景的细节</li></ul></div>
-    <div class="field"><b>相关性点评</b><p>与 Video Generation 方向高度相关，也涉及世界模型和 DiT 视频生成路线。</p></div>
-  </details>
-  <details class="abstract-block">
-    <summary>Abstract</summary>
-    <p>We introduce a diffusion transformer for text-to-video generation that improves temporal motion consistency through trajectory-aware attention and lightweight motion priors. Experiments on public video generation benchmarks show improved text alignment and reduced temporal artifacts.</p>
-  </details>
-</article>
-
-
-<article class="paper-card" data-priority="high" data-tags="VLM|LLM Training|Alignment" data-categories="cs.CV|cs.CL|cs.AI" data-search="preference-aligned vision-language models with compact visual instruction tuning this paper studies compact visual instruction tuning for vision-language models. the proposed preference-aligned tuning recipe combines small curated instruction sets with pairwise preference optimization. the abstract reports gains on multimodal instruction following benchmarks. 这篇论文研究如何用更小规模的视觉指令数据和偏好优化提升 vlm 的指令跟随能力。 大规模视觉指令微调成本高，且模型回答可能与人类偏好不一致。 结合精选视觉指令数据和 pairwise preference optimization，形成紧凑的偏好对齐训练流程。 vlm llm training alignment">
-  <div class="paper-topline">
-    <span class="priority priority-high">high</span>
-    <span class="paper-id">2605.01002</span>
-  </div>
-  <h2 class="paper-title">Preference-Aligned Vision-Language Models with Compact Visual Instruction Tuning</h2>
-  <div class="paper-authors" title="D. Vision, E. Language, F. Alignment">D. Vision, E. Language, F. Alignment</div>
-  <div class="paper-links">
-    <a href="https://arxiv.org/abs/2605.01002" target="_blank" rel="noopener">arXiv</a>
-    <a href="https://arxiv.org/pdf/2605.01002" target="_blank" rel="noopener">PDF</a>
-    <span>cs.CV</span>
-  </div>
-  <div class="badge-row"><button class="badge category-badge" data-filter-tag="cs.CV" type="button">cs.CV</button><button class="badge category-badge" data-filter-tag="cs.CL" type="button">cs.CL</button><button class="badge category-badge" data-filter-tag="cs.AI" type="button">cs.AI</button> <button class="badge tag-badge" data-filter-tag="VLM" type="button">VLM</button><button class="badge tag-badge" data-filter-tag="LLM Training" type="button">LLM Training</button><button class="badge tag-badge" data-filter-tag="Alignment" type="button">Alignment</button></div>
-  <div class="summary">这篇论文研究如何用更小规模的视觉指令数据和偏好优化提升 VLM 的指令跟随能力。</div>
-  
-  <details class="analysis-block" open>
-    <summary>导读详情</summary>
-    <div class="field"><b>研究问题</b><p>大规模视觉指令微调成本高，且模型回答可能与人类偏好不一致。</p></div>
-    <div class="field"><b>方法概括</b><p>结合精选视觉指令数据和 pairwise preference optimization，形成紧凑的偏好对齐训练流程。</p></div>
-    <div class="field"><b>贡献点</b><ul><li>提出紧凑视觉指令微调 recipe</li><li>将偏好优化用于 VLM 对齐</li><li>在多模态指令跟随基准上报告收益</li></ul></div>
-    <div class="field"><b>实验信息</b><p>摘要提到多模态指令跟随基准有提升，但未给出具体数值。</p></div>
-    <div class="field"><b>局限性</b><ul><li>摘要未说明数据筛选标准</li><li>未说明偏好数据是否覆盖安全和幻觉问题</li></ul></div>
-    <div class="field"><b>相关性点评</b><p>与 Vision-Language Model 和 LLM Training 的指令微调、对齐方向相关。</p></div>
-  </details>
-  <details class="abstract-block">
-    <summary>Abstract</summary>
-    <p>This paper studies compact visual instruction tuning for vision-language models. The proposed preference-aligned tuning recipe combines small curated instruction sets with pairwise preference optimization. The abstract reports gains on multimodal instruction following benchmarks.</p>
-  </details>
-</article>
-
-
-<article class="paper-card" data-priority="high" data-tags="Medical AI|Report Generation|Calibration" data-categories="cs.CV|eess.IV" data-search="severity-aware ct report generation with calibrated abstention we propose a severity-aware framework for ct report generation that calibrates abstention decisions according to clinical risk. the framework uses report-level supervision and uncertainty estimates to avoid overconfident descriptions in high-risk findings. the abstract does not provide detailed numerical results. 这篇论文把临床严重程度和校准拒答引入 ct 报告生成，以降低高风险发现中的过度自信描述。 医学影像报告生成模型在高风险发现上可能过度自信，带来临床安全问题。 使用报告级监督和不确定性估计，根据临床风险校准模型是否拒答或降级输出。 medical ai report generation calibration">
-  <div class="paper-topline">
-    <span class="priority priority-high">high</span>
-    <span class="paper-id">2605.01003</span>
-  </div>
-  <h2 class="paper-title">Severity-Aware CT Report Generation with Calibrated Abstention</h2>
-  <div class="paper-authors" title="G. Radiology, H. Clinic, I. Model">G. Radiology, H. Clinic, I. Model</div>
-  <div class="paper-links">
-    <a href="https://arxiv.org/abs/2605.01003" target="_blank" rel="noopener">arXiv</a>
-    <a href="https://arxiv.org/pdf/2605.01003" target="_blank" rel="noopener">PDF</a>
-    <span>eess.IV</span>
-  </div>
-  <div class="badge-row"><button class="badge category-badge" data-filter-tag="cs.CV" type="button">cs.CV</button><button class="badge category-badge" data-filter-tag="eess.IV" type="button">eess.IV</button> <button class="badge tag-badge" data-filter-tag="Medical AI" type="button">Medical AI</button><button class="badge tag-badge" data-filter-tag="Report Generation" type="button">Report Generation</button><button class="badge tag-badge" data-filter-tag="Calibration" type="button">Calibration</button></div>
-  <div class="summary">这篇论文把临床严重程度和校准拒答引入 CT 报告生成，以降低高风险发现中的过度自信描述。</div>
-  
-  <details class="analysis-block" open>
-    <summary>导读详情</summary>
-    <div class="field"><b>研究问题</b><p>医学影像报告生成模型在高风险发现上可能过度自信，带来临床安全问题。</p></div>
-    <div class="field"><b>方法概括</b><p>使用报告级监督和不确定性估计，根据临床风险校准模型是否拒答或降级输出。</p></div>
-    <div class="field"><b>贡献点</b><ul><li>提出 severity-aware 的 CT 报告生成框架</li><li>将 abstention 与临床风险校准结合</li><li>强调高风险发现中的可靠性控制</li></ul></div>
-    <div class="field"><b>实验信息</b><p>摘要未提供具体实验结果。</p></div>
-    <div class="field"><b>局限性</b><ul><li>摘要未说明使用的数据集和评价协议</li><li>临床严重程度标注的来源和一致性仍需确认</li></ul></div>
-    <div class="field"><b>相关性点评</b><p>与 Medical AI、医学影像报告生成和风险校准方向直接相关。</p></div>
-  </details>
-  <details class="abstract-block">
-    <summary>Abstract</summary>
-    <p>We propose a severity-aware framework for CT report generation that calibrates abstention decisions according to clinical risk. The framework uses report-level supervision and uncertainty estimates to avoid overconfident descriptions in high-risk findings. The abstract does not provide detailed numerical results.</p>
-  </details>
-</article>
-
-
-<article class="paper-card" data-priority="medium" data-tags="LLM Training|Post-training|Alignment" data-categories="cs.CL|cs.LG" data-search="data mixing schedules for stable post-training of large language models post-training large language models requires balancing instruction data, preference data, and domain-specific corpora. we analyze data mixing schedules and propose a simple curriculum that improves stability during alignment. experiments are summarized on instruction-following and safety benchmarks. 这篇论文研究 llm 后训练中的数据混合日程，并提出提升对齐稳定性的简单 curriculum。 后训练需要平衡指令、偏好和领域数据，不当混合会导致训练不稳定或能力退化。 分析不同数据混合 schedule，并提出从通用指令到偏好和领域数据逐步过渡的 curriculum。 llm training post-training alignment">
-  <div class="paper-topline">
-    <span class="priority priority-medium">medium</span>
-    <span class="paper-id">2605.01004</span>
-  </div>
-  <h2 class="paper-title">Data Mixing Schedules for Stable Post-Training of Large Language Models</h2>
-  <div class="paper-authors" title="J. Trainer, K. Optimizer">J. Trainer, K. Optimizer</div>
-  <div class="paper-links">
-    <a href="https://arxiv.org/abs/2605.01004" target="_blank" rel="noopener">arXiv</a>
-    <a href="https://arxiv.org/pdf/2605.01004" target="_blank" rel="noopener">PDF</a>
-    <span>cs.CL</span>
-  </div>
-  <div class="badge-row"><button class="badge category-badge" data-filter-tag="cs.CL" type="button">cs.CL</button><button class="badge category-badge" data-filter-tag="cs.LG" type="button">cs.LG</button> <button class="badge tag-badge" data-filter-tag="LLM Training" type="button">LLM Training</button><button class="badge tag-badge" data-filter-tag="Post-training" type="button">Post-training</button><button class="badge tag-badge" data-filter-tag="Alignment" type="button">Alignment</button></div>
-  <div class="summary">这篇论文研究 LLM 后训练中的数据混合日程，并提出提升对齐稳定性的简单 curriculum。</div>
-  
-  <details class="analysis-block" open>
-    <summary>导读详情</summary>
-    <div class="field"><b>研究问题</b><p>后训练需要平衡指令、偏好和领域数据，不当混合会导致训练不稳定或能力退化。</p></div>
-    <div class="field"><b>方法概括</b><p>分析不同数据混合 schedule，并提出从通用指令到偏好和领域数据逐步过渡的 curriculum。</p></div>
-    <div class="field"><b>贡献点</b><ul><li>系统讨论后训练数据混合策略</li><li>提出简单可复用的 curriculum</li><li>在指令跟随和安全基准上摘要性报告改进</li></ul></div>
-    <div class="field"><b>实验信息</b><p>摘要提到 instruction-following 和 safety benchmarks，但未给出具体数值。</p></div>
-    <div class="field"><b>局限性</b><ul><li>摘要未说明模型规模和数据规模</li><li>不同基础模型上的泛化性需要进一步验证</li></ul></div>
-    <div class="field"><b>相关性点评</b><p>与 LLM Training 的 post-training、alignment 和 instruction tuning 高度相关。</p></div>
-  </details>
-  <details class="abstract-block">
-    <summary>Abstract</summary>
-    <p>Post-training large language models requires balancing instruction data, preference data, and domain-specific corpora. We analyze data mixing schedules and propose a simple curriculum that improves stability during alignment. Experiments are summarized on instruction-following and safety benchmarks.</p>
-  </details>
-</article>
-
-
-<article class="paper-card" data-priority="medium" data-tags="VLM|Retrieval|Benchmark" data-categories="cs.CV|cs.IR" data-search="a lightweight benchmark for multimodal retrieval under noisy metadata we present a lightweight benchmark for multimodal retrieval when image and text metadata are incomplete or noisy. the benchmark includes controlled perturbations and standard retrieval metrics. the abstract positions the benchmark as a diagnostic tool rather than a new model. 这篇论文提供一个用于诊断噪声元数据下多模态检索鲁棒性的轻量 benchmark。 多模态检索在真实场景中常遇到缺失或噪声元数据，现有评测可能不足以暴露该问题。 构建包含受控扰动和标准检索指标的轻量评测集合，用于比较不同模型的鲁棒性。 vlm retrieval benchmark">
-  <div class="paper-topline">
-    <span class="priority priority-medium">medium</span>
-    <span class="paper-id">2605.01005</span>
-  </div>
-  <h2 class="paper-title">A Lightweight Benchmark for Multimodal Retrieval under Noisy Metadata</h2>
-  <div class="paper-authors" title="L. Retrieval, M. Dataset, N. Metric">L. Retrieval, M. Dataset, N. Metric</div>
-  <div class="paper-links">
-    <a href="https://arxiv.org/abs/2605.01005" target="_blank" rel="noopener">arXiv</a>
-    <a href="https://arxiv.org/pdf/2605.01005" target="_blank" rel="noopener">PDF</a>
-    <span>cs.CV</span>
-  </div>
-  <div class="badge-row"><button class="badge category-badge" data-filter-tag="cs.CV" type="button">cs.CV</button><button class="badge category-badge" data-filter-tag="cs.IR" type="button">cs.IR</button> <button class="badge tag-badge" data-filter-tag="VLM" type="button">VLM</button><button class="badge tag-badge" data-filter-tag="Retrieval" type="button">Retrieval</button><button class="badge tag-badge" data-filter-tag="Benchmark" type="button">Benchmark</button></div>
-  <div class="summary">这篇论文提供一个用于诊断噪声元数据下多模态检索鲁棒性的轻量 benchmark。</div>
-  
-  <details class="analysis-block" open>
-    <summary>导读详情</summary>
-    <div class="field"><b>研究问题</b><p>多模态检索在真实场景中常遇到缺失或噪声元数据，现有评测可能不足以暴露该问题。</p></div>
-    <div class="field"><b>方法概括</b><p>构建包含受控扰动和标准检索指标的轻量评测集合，用于比较不同模型的鲁棒性。</p></div>
-    <div class="field"><b>贡献点</b><ul><li>提出噪声元数据场景的多模态检索 benchmark</li><li>设计受控扰动以分析模型脆弱性</li><li>强调诊断工具定位</li></ul></div>
-    <div class="field"><b>实验信息</b><p>摘要说明包含标准检索指标，但未提供具体实验结论。</p></div>
-    <div class="field"><b>局限性</b><ul><li>不是新模型贡献</li><li>benchmark 覆盖范围和真实数据多样性需要查看正文确认</li></ul></div>
-    <div class="field"><b>相关性点评</b><p>与 VLM 和多模态检索评测相关，对模型部署诊断有参考价值。</p></div>
-  </details>
-  <details class="abstract-block">
-    <summary>Abstract</summary>
-    <p>We present a lightweight benchmark for multimodal retrieval when image and text metadata are incomplete or noisy. The benchmark includes controlled perturbations and standard retrieval metrics. The abstract positions the benchmark as a diagnostic tool rather than a new model.</p>
-  </details>
-</article>
-
-
-<article class="paper-card" data-priority="low" data-tags="LLM Training|Long Context" data-categories="cs.AI|cs.CL" data-search="token budget heuristics for long-context scientific assistants the paper describes token budget heuristics for long-context assistants in scientific reading workflows. it prioritizes sections, citations, and user intent without changing model weights. the abstract does not report benchmark results. 这篇论文提出面向科研阅读助手的长上下文 token 预算启发式策略。 长上下文科研助手需要在有限 token 预算内选择最有用的章节、引用和用户意图相关内容。 采用启发式优先级排序，不改变模型权重，只调整上下文组装策略。 llm training long context">
-  <div class="paper-topline">
-    <span class="priority priority-low">low</span>
-    <span class="paper-id">2605.01006</span>
-  </div>
-  <h2 class="paper-title">Token Budget Heuristics for Long-Context Scientific Assistants</h2>
-  <div class="paper-authors" title="O. Context, P. Assistant">O. Context, P. Assistant</div>
-  <div class="paper-links">
-    <a href="https://arxiv.org/abs/2605.01006" target="_blank" rel="noopener">arXiv</a>
-    <a href="https://arxiv.org/pdf/2605.01006" target="_blank" rel="noopener">PDF</a>
-    <span>cs.AI</span>
-  </div>
-  <div class="badge-row"><button class="badge category-badge" data-filter-tag="cs.AI" type="button">cs.AI</button><button class="badge category-badge" data-filter-tag="cs.CL" type="button">cs.CL</button> <button class="badge tag-badge" data-filter-tag="LLM Training" type="button">LLM Training</button><button class="badge tag-badge" data-filter-tag="Long Context" type="button">Long Context</button></div>
-  <div class="summary">这篇论文提出面向科研阅读助手的长上下文 token 预算启发式策略。</div>
-  
-  <details class="analysis-block" open>
-    <summary>导读详情</summary>
-    <div class="field"><b>研究问题</b><p>长上下文科研助手需要在有限 token 预算内选择最有用的章节、引用和用户意图相关内容。</p></div>
-    <div class="field"><b>方法概括</b><p>采用启发式优先级排序，不改变模型权重，只调整上下文组装策略。</p></div>
-    <div class="field"><b>贡献点</b><ul><li>提出科研阅读场景的 token budget 策略</li><li>强调章节、引用和用户意图优先级</li><li>不需要额外训练</li></ul></div>
-    <div class="field"><b>实验信息</b><p>摘要未提供具体实验结果。</p></div>
-    <div class="field"><b>局限性</b><ul><li>启发式方法可能依赖任务和文档结构</li><li>缺少 benchmark 结果会影响说服力</li></ul></div>
-    <div class="field"><b>相关性点评</b><p>与 LLM Training 关系较弱，更偏向长上下文应用和科研助手工程。</p></div>
-  </details>
-  <details class="abstract-block">
-    <summary>Abstract</summary>
-    <p>The paper describes token budget heuristics for long-context assistants in scientific reading workflows. It prioritizes sections, citations, and user intent without changing model weights. The abstract does not report benchmark results.</p>
-  </details>
-</article>
-
+        <div class="empty-state">暂无论文数据。可以先运行 mock 模式生成预览页面。</div>
       </section>
       <div id="noResults" class="empty-state hidden">没有匹配当前筛选条件的论文。</div>
     </main>
