@@ -1,0 +1,48 @@
+site:
+  title: "arXiv Daily Paper Guide"
+  subtitle: "自动生成的每日论文中文导读"
+
+arxiv:
+  categories:
+    - cs.CV
+    - cs.CL
+    - cs.AI
+    - cs.LG
+    - eess.IV
+  max_papers: 30
+
+topics:
+  video_generation:
+    name: "Video Generation"
+    keywords:
+      - video generation
+      - text-to-video
+      - diffusion transformer
+      - DiT
+      - world model
+      - motion
+  vlm:
+    name: "Vision-Language Model"
+    keywords:
+      - vision-language
+      - multimodal
+      - visual instruction tuning
+      - VLM
+      - MLLM
+  medical_ai:
+    name: "Medical AI"
+    keywords:
+      - medical image
+      - radiology
+      - CT
+      - report generation
+      - segmentation
+  llm_training:
+    name: "LLM Training"
+    keywords:
+      - pretraining
+      - post-training
+      - alignment
+      - reinforcement learning
+      - instruction tuning
+
