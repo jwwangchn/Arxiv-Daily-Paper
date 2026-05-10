@@ -4,6 +4,15 @@ on:
   schedule:
     - cron: "0 0 * * *"
   workflow_dispatch:
+    inputs:
+      date:
+        description: "Optional target date in YYYY-MM-DD format"
+        required: false
+        type: string
+      max_papers:
+        description: "Optional max number of papers to fetch"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -26,7 +35,17 @@ jobs:
       - name: Run daily pipeline
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-        run: python scripts/run_daily.py
+          REQUESTED_DATE: ${{ github.event.inputs.date }}
+          REQUESTED_MAX_PAPERS: ${{ github.event.inputs.max_papers }}
+        run: |
+          args=()
+          if [ -n "$REQUESTED_DATE" ]; then
+            args+=(--date "$REQUESTED_DATE")
+          fi
+          if [ -n "$REQUESTED_MAX_PAPERS" ]; then
+            args+=(--max-papers "$REQUESTED_MAX_PAPERS")
+          fi
+          python scripts/run_daily.py "${args[@]}"
 
       - name: Commit generated files
         run: |
@@ -39,4 +58,3 @@ jobs:
             git commit -m "Update daily arXiv guide"
             git push
           fi
-
