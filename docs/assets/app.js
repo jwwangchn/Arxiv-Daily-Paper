@@ -8,10 +8,12 @@
 
   const searchInput = document.getElementById("searchInput");
   const clearButton = document.getElementById("clearFilters");
+  const clearButtonTop = document.getElementById("clearFiltersTop");
   const visibleCount = document.getElementById("visibleCount");
   const noResults = document.getElementById("noResults");
   const activeFilters = document.getElementById("activeFilters");
   const cards = Array.from(document.querySelectorAll(".paper-card"));
+  const sections = Array.from(document.querySelectorAll("[data-section]"));
 
   function normalize(value) {
     return (value || "").toString().toLowerCase().trim();
@@ -35,7 +37,14 @@
     if (state.priority) parts.push(`priority: ${state.priority}`);
     if (state.tag) parts.push(`tag: ${state.tag}`);
     if (state.category) parts.push(`category: ${state.category}`);
-    activeFilters.textContent = parts.length ? `Active filters · ${parts.join(" · ")}` : "";
+    activeFilters.textContent = parts.length ? `· ${parts.join(" · ")}` : "";
+  }
+
+  function updateSectionVisibility() {
+    sections.forEach((section) => {
+      const visibleCards = section.querySelectorAll(".paper-card:not(.hidden)").length;
+      section.classList.toggle("hidden", visibleCards === 0);
+    });
   }
 
   function applyFilters() {
@@ -57,6 +66,7 @@
 
     visibleCount.textContent = String(count);
     noResults.classList.toggle("hidden", count !== 0 || cards.length === 0);
+    updateSectionVisibility();
     setActiveButtons();
     updateFilterText();
   }
@@ -89,15 +99,17 @@
     });
   });
 
-  clearButton?.addEventListener("click", () => {
+  function clearFilters() {
     state.query = "";
     state.priority = "";
     state.tag = "";
     state.category = "";
     if (searchInput) searchInput.value = "";
     applyFilters();
-  });
+  }
+
+  clearButton?.addEventListener("click", clearFilters);
+  clearButtonTop?.addEventListener("click", clearFilters);
 
   applyFilters();
 })();
-

@@ -10,49 +10,58 @@
   <div class="shell">
     <aside class="sidebar">
       <div class="brand">
-        <div class="eyebrow">Daily arXiv</div>
-        <h1>arXiv Daily Paper Guide</h1>
+        <h1><span class="book-mark">📚</span>arXiv Daily Paper Guide</h1>
         <p>自动生成的每日论文中文导读</p>
       </div>
-      <label class="search-label" for="searchInput">搜索论文</label>
-      <input id="searchInput" class="search-input" type="search" placeholder="title / abstract / tag / 中文导读">
-      <button id="clearFilters" class="clear-button" type="button">Show all / Clear filters</button>
+      <input id="searchInput" class="search-input" type="search" placeholder="🔍 搜索标题 / 关键词…">
+      <div class="stat-grid">
+        <div class="stat-box"><b>0</b><span>论文总数</span></div>
+        <div class="stat-box"><b>4</b><span>历史日期</span></div>
+      </div>
+      <button id="clearFilters" class="clear-button" type="button">📚 全部 0 篇</button>
 
       <section class="nav-section">
-        <h2>历史日期</h2>
-        <div class="date-list"><a class="date-link active" href="2026-05-10.html">2026-05-10</a>
-<a class="date-link " href="2026-05-09.html">2026-05-09</a>
-<a class="date-link " href="2026-05-08.html">2026-05-08</a>
-<a class="date-link " href="2026-05-07.html">2026-05-07</a></div>
+        <h2>📅 历史日期</h2>
+        <div class="date-list"><a class="date-link active" href="2026-05-10.html"><span>2026-05-10</span></a>
+<a class="date-link " href="2026-05-09.html"><span>2026-05-09</span></a>
+<a class="date-link " href="2026-05-08.html"><span>2026-05-08</span></a>
+<a class="date-link " href="2026-05-07.html"><span>2026-05-07</span></a></div>
       </section>
       <section class="nav-section">
-        <h2>Priority</h2>
-        <div class="chip-list"><button class="filter-chip priority-filter" data-filter-priority="high" type="button">high <span>0</span></button>
-<button class="filter-chip priority-filter" data-filter-priority="medium" type="button">medium <span>0</span></button>
-<button class="filter-chip priority-filter" data-filter-priority="low" type="button">low <span>0</span></button></div>
+        <h2>📁 按论文方向浏览</h2>
+        <div class="nav-tree"><span class="muted">暂无方向</span></div>
       </section>
       <section class="nav-section">
-        <h2>论文方向分类</h2>
-        <div class="chip-list"><span class="muted">暂无分类</span></div>
+        <h2>🏷️ 按 arXiv 分类浏览</h2>
+        <div class="nav-tree"><span class="muted">暂无分类</span></div>
       </section>
       <section class="nav-section">
-        <h2>Tags</h2>
+        <h2>🎚 Priority</h2>
+        <div class="chip-list"><button class="filter-chip priority-filter" data-filter-priority="high" type="button">high <b>0</b></button>
+<button class="filter-chip priority-filter" data-filter-priority="medium" type="button">medium <b>0</b></button>
+<button class="filter-chip priority-filter" data-filter-priority="low" type="button">low <b>0</b></button></div>
+      </section>
+      <section class="nav-section">
+        <h2># Tags</h2>
         <div class="chip-list"><span class="muted">暂无 tags</span></div>
       </section>
     </aside>
     <main class="content">
       <header class="page-header">
-        <div>
-          <div class="eyebrow">Generated guide</div>
-          <h1>2026-05-10 论文导读</h1>
-          <p>0 papers · 0 tags/categories · <span id="visibleCount">0</span> visible</p>
+        <div class="hero-copy">
+          <h1>arXiv Daily Paper Guide · 中文导读</h1>
+          <p>从 arXiv 自动抓取每日论文，基于标题与摘要生成中文导读；每篇论文给出研究动机、解决问题、主要方法、实验信息、贡献、局限与相关性点评。左侧可按日期、方向、分类、优先级与关键词快速筛选。</p>
+          <div class="hero-chips">
+            <button class="hero-chip active" id="clearFiltersTop" type="button">📚 全部 <span>0</span> 篇</button>
+            <button class="hero-chip hot" data-filter-priority="high" type="button">🔥 High <span>0</span> 篇</button>
+            <span class="hero-chip soft">📅 2026-05-10</span>
+          </div>
         </div>
-        <a class="data-link" href="../data/dates.json">dates.json</a>
       </header>
-      <div id="activeFilters" class="active-filters"></div>
-      <section id="paperList" class="paper-list">
+      <div class="count-line"><span id="visibleCount">0</span> / 0 篇论文可见 <span id="activeFilters"></span></div>
+      <div id="paperList">
         <div class="empty-state">暂无论文数据。可以先运行 mock 模式生成预览页面。</div>
-      </section>
+      </div>
       <div id="noResults" class="empty-state hidden">没有匹配当前筛选条件的论文。</div>
     </main>
   </div>

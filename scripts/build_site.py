@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import html
-import json
 import logging
-from pathlib import Path
 from typing import Any
 
 from utils import PROJECT_ROOT, ensure_dirs, load_config, read_json, setup_logging, write_json
@@ -34,8 +33,28 @@ def list_items(values: list[Any]) -> str:
     return "<ul>" + "".join(f"<li>{h(value)}</li>" for value in values) + "</ul>"
 
 
-def badges(values: list[Any], class_name: str = "badge") -> str:
-    return "".join(f"<button class=\"{class_name}\" data-filter-tag=\"{h(value)}\" type=\"button\">{h(value)}</button>" for value in values)
+def paper_topic(paper: dict[str, Any]) -> str:
+    analysis = paper.get("analysis") or {}
+    tags = analysis.get("tags") or []
+    if tags:
+        return str(tags[0])
+    return str(paper.get("primary_category") or "未分类")
+
+
+def group_papers(papers: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for paper in papers:
+        groups.setdefault(paper_topic(paper), []).append(paper)
+    return groups
+
+
+def field_row(icon: str, label: str, content: str) -> str:
+    return f"""
+    <div class="analysis-row">
+      <div class="analysis-label"><span>{h(icon)}</span>{h(label)}</div>
+      <div class="analysis-content">{content}</div>
+    </div>
+"""
 
 
 def paper_card(paper: dict[str, Any]) -> str:
@@ -44,47 +63,60 @@ def paper_card(paper: dict[str, Any]) -> str:
     priority = analysis.get("reading_priority") or "unknown"
     categories = paper.get("categories") or []
     authors = paper.get("authors") or []
+    title = paper.get("title", "")
     search_blob = " ".join(
         [
-            paper.get("title", ""),
+            title,
             paper.get("abstract", ""),
             analysis.get("one_sentence_summary", ""),
             analysis.get("problem", ""),
             analysis.get("method", ""),
-            " ".join(tags),
+            " ".join(map(str, analysis.get("contributions") or [])),
+            analysis.get("experiments", ""),
+            analysis.get("relevance", ""),
+            " ".join(map(str, tags)),
         ]
     ).lower()
+    category_badges = "".join(
+        f"<button class=\"topic-badge\" data-filter-category=\"{h(category)}\" type=\"button\">{h(category)}</button>"
+        for category in categories
+    )
+    tag_hashes = "".join(
+        f"<button class=\"hash-tag\" data-filter-tag=\"{h(tag)}\" type=\"button\">#{h(tag)}</button>"
+        for tag in tags
+    )
+    priority_label = {"high": "High", "medium": "Medium", "low": "Low"}.get(str(priority), h(priority))
     error_html = ""
     if paper.get("analysis_error"):
         error_html = f"<div class=\"analysis-error\">分析失败：{h(paper.get('analysis_error'))}</div>"
 
     return f"""
 <article class="paper-card" data-priority="{h(priority)}" data-tags="{h('|'.join(tags))}" data-categories="{h('|'.join(categories))}" data-search="{h(search_blob)}">
-  <div class="paper-topline">
-    <span class="priority priority-{h(priority)}">{h(priority)}</span>
+  <h3 class="paper-title"><a href="{h(paper.get('entry_url'))}" target="_blank" rel="noopener">{h(title)}</a></h3>
+  <div class="paper-meta-line">
+    {category_badges}
+    <span class="priority-pill priority-{h(priority)}">{priority_label}</span>
     <span class="paper-id">{h(paper.get('arxiv_id'))}</span>
+    {tag_hashes}
   </div>
-  <h2 class="paper-title">{h(paper.get('title'))}</h2>
   <div class="paper-authors" title="{h(', '.join(authors))}">{h(', '.join(authors[:8]))}{' et al.' if len(authors) > 8 else ''}</div>
   <div class="paper-links">
     <a href="{h(paper.get('entry_url'))}" target="_blank" rel="noopener">arXiv</a>
     <a href="{h(paper.get('pdf_url'))}" target="_blank" rel="noopener">PDF</a>
     <span>{h(paper.get('primary_category'))}</span>
   </div>
-  <div class="badge-row">{badges(categories, "badge category-badge")} {badges(tags, "badge tag-badge")}</div>
-  <div class="summary">{h(analysis.get('one_sentence_summary', '暂无中文导读。'))}</div>
   {error_html}
-  <details class="analysis-block" open>
-    <summary>导读详情</summary>
-    <div class="field"><b>研究问题</b><p>{h(analysis.get('problem', '暂无'))}</p></div>
-    <div class="field"><b>方法概括</b><p>{h(analysis.get('method', '暂无'))}</p></div>
-    <div class="field"><b>贡献点</b>{list_items(analysis.get('contributions') or [])}</div>
-    <div class="field"><b>实验信息</b><p>{h(analysis.get('experiments', '摘要未提供具体实验结果'))}</p></div>
-    <div class="field"><b>局限性</b>{list_items(analysis.get('limitations') or [])}</div>
-    <div class="field"><b>相关性点评</b><p>{h(analysis.get('relevance', '暂无'))}</p></div>
-  </details>
+  <div class="analysis-grid">
+    {field_row("🎯", "一句话总结", f"<p>{h(analysis.get('one_sentence_summary', '暂无中文导读。'))}</p>")}
+    {field_row("❓", "解决问题", f"<p>{h(analysis.get('problem', '暂无'))}</p>")}
+    {field_row("🔧", "主要方法", f"<p>{h(analysis.get('method', '暂无'))}</p>")}
+    {field_row("📊", "数据与实验", f"<p>{h(analysis.get('experiments', '摘要未提供具体实验结果'))}</p>")}
+    {field_row("⭐", "主要贡献", list_items(analysis.get('contributions') or []))}
+    {field_row("⚠️", "局限性", list_items(analysis.get('limitations') or []))}
+    {field_row("🔗", "相关性点评", f"<p>{h(analysis.get('relevance', '暂无'))}</p>")}
+  </div>
   <details class="abstract-block">
-    <summary>Abstract</summary>
+    <summary>查看完整摘要 (Abstract)</summary>
     <p>{h(paper.get('abstract'))}</p>
   </details>
 </article>
@@ -102,25 +134,64 @@ def collect_facets(papers: list[dict[str, Any]]) -> tuple[list[str], list[str], 
     return tags + categories, categories, priorities
 
 
+def nav_rows(values: list[tuple[str, int]], attr: str) -> str:
+    return "\n".join(
+        f"<button class=\"nav-row\" {attr}=\"{h(name)}\" type=\"button\"><span><span class=\"nav-arrow\">▶</span>{h(name)}</span><b>{count}</b></button>"
+        for name, count in values
+    )
+
+
+def render_sections(papers: list[dict[str, Any]]) -> str:
+    if not papers:
+        return "<div class=\"empty-state\">暂无论文数据。可以先运行 mock 模式生成预览页面。</div>"
+
+    sections: list[str] = []
+    for group_name, group_items in group_papers(papers).items():
+        cards = "\n".join(paper_card(paper) for paper in group_items)
+        sections.append(
+            f"""
+      <section class="paper-section" data-section>
+        <h2 class="group-title">{h(group_name)} <small>{len(group_items)} 篇</small></h2>
+        <h3 class="sub-title">当日论文 <small>{len(group_items)} 篇</small></h3>
+        <div class="paper-list">{cards}</div>
+      </section>
+"""
+        )
+    return "\n".join(sections)
+
+
 def render_page(bundle: dict[str, Any], all_dates: list[str], latest: str, is_index: bool, config: dict[str, Any]) -> str:
     date = bundle.get("date", "暂无日期")
     papers = bundle.get("papers", [])
     site = config.get("site", {})
     asset_prefix = "assets" if is_index else "../assets"
     daily_prefix = "daily/" if is_index else ""
-    facets, categories, priorities = collect_facets(papers)
+    facets, _categories, priorities = collect_facets(papers)
+    group_counts = Counter(paper_topic(paper) for paper in papers)
+    category_counts = Counter(category for paper in papers for category in paper.get("categories", []))
+    total_papers = len(papers)
+    active_dates = len(all_dates)
+
     date_links = "\n".join(
-        f"<a class=\"date-link {'active' if item == date else ''}\" href=\"{daily_prefix + item + '.html'}\">{h(item)}</a>"
+        f"<a class=\"date-link {'active' if item == date else ''}\" href=\"{daily_prefix + item + '.html'}\"><span>{h(item)}</span></a>"
         for item in sorted(all_dates, reverse=True)
     )
-    tag_buttons = "\n".join(f"<button class=\"filter-chip\" data-filter-tag=\"{h(item)}\" type=\"button\">{h(item)}</button>" for item in facets)
-    category_buttons = "\n".join(f"<button class=\"filter-chip\" data-filter-category=\"{h(item)}\" type=\"button\">{h(item)}</button>" for item in categories)
+    topic_rows = nav_rows(group_counts.most_common(), "data-filter-tag")
+    category_rows = nav_rows(category_counts.most_common(), "data-filter-category")
+    tag_buttons = "\n".join(
+        f"<button class=\"filter-chip\" data-filter-tag=\"{h(item)}\" type=\"button\">#{h(item)}</button>"
+        for item in facets[:28]
+    )
     priority_buttons = "\n".join(
-        f"<button class=\"filter-chip priority-filter\" data-filter-priority=\"{name}\" type=\"button\">{name} <span>{count}</span></button>"
+        f"<button class=\"filter-chip priority-filter\" data-filter-priority=\"{name}\" type=\"button\">{name} <b>{count}</b></button>"
         for name, count in priorities.items()
     )
-    cards = "\n".join(paper_card(paper) for paper in papers) or "<div class=\"empty-state\">暂无论文数据。可以先运行 mock 模式生成预览页面。</div>"
-    stats = f"{len(papers)} papers · {len(facets)} tags/categories"
+    sections = render_sections(papers)
+    intro = (
+        "从 arXiv 自动抓取每日论文，基于标题与摘要生成中文导读；"
+        "每篇论文给出研究动机、解决问题、主要方法、实验信息、贡献、局限与相关性点评。"
+        "左侧可按日期、方向、分类、优先级与关键词快速筛选。"
+    )
 
     return f"""<!DOCTYPE html>
 <html lang="zh-CN">
@@ -134,44 +205,53 @@ def render_page(bundle: dict[str, Any], all_dates: list[str], latest: str, is_in
   <div class="shell">
     <aside class="sidebar">
       <div class="brand">
-        <div class="eyebrow">Daily arXiv</div>
-        <h1>{h(site.get('title', 'arXiv Daily Paper Guide'))}</h1>
+        <h1><span class="book-mark">📚</span>{h(site.get('title', 'arXiv Daily Paper Guide'))}</h1>
         <p>{h(site.get('subtitle', '自动生成的每日论文中文导读'))}</p>
       </div>
-      <label class="search-label" for="searchInput">搜索论文</label>
-      <input id="searchInput" class="search-input" type="search" placeholder="title / abstract / tag / 中文导读">
-      <button id="clearFilters" class="clear-button" type="button">Show all / Clear filters</button>
+      <input id="searchInput" class="search-input" type="search" placeholder="🔍 搜索标题 / 关键词…">
+      <div class="stat-grid">
+        <div class="stat-box"><b>{total_papers}</b><span>论文总数</span></div>
+        <div class="stat-box"><b>{active_dates}</b><span>历史日期</span></div>
+      </div>
+      <button id="clearFilters" class="clear-button" type="button">📚 全部 {total_papers} 篇</button>
 
       <section class="nav-section">
-        <h2>历史日期</h2>
+        <h2>📅 历史日期</h2>
         <div class="date-list">{date_links}</div>
       </section>
       <section class="nav-section">
-        <h2>Priority</h2>
+        <h2>📁 按论文方向浏览</h2>
+        <div class="nav-tree">{topic_rows or '<span class="muted">暂无方向</span>'}</div>
+      </section>
+      <section class="nav-section">
+        <h2>🏷️ 按 arXiv 分类浏览</h2>
+        <div class="nav-tree">{category_rows or '<span class="muted">暂无分类</span>'}</div>
+      </section>
+      <section class="nav-section">
+        <h2>🎚 Priority</h2>
         <div class="chip-list">{priority_buttons}</div>
       </section>
       <section class="nav-section">
-        <h2>论文方向分类</h2>
-        <div class="chip-list">{category_buttons or '<span class="muted">暂无分类</span>'}</div>
-      </section>
-      <section class="nav-section">
-        <h2>Tags</h2>
+        <h2># Tags</h2>
         <div class="chip-list">{tag_buttons or '<span class="muted">暂无 tags</span>'}</div>
       </section>
     </aside>
     <main class="content">
       <header class="page-header">
-        <div>
-          <div class="eyebrow">Generated guide</div>
-          <h1>{h(date)} 论文导读</h1>
-          <p>{h(stats)} · <span id="visibleCount">{len(papers)}</span> visible</p>
+        <div class="hero-copy">
+          <h1>{h(site.get('title', 'arXiv Daily Paper Guide'))} · 中文导读</h1>
+          <p>{h(intro)}</p>
+          <div class="hero-chips">
+            <button class="hero-chip active" id="clearFiltersTop" type="button">📚 全部 <span>{total_papers}</span> 篇</button>
+            <button class="hero-chip hot" data-filter-priority="high" type="button">🔥 High <span>{priorities.get('high', 0)}</span> 篇</button>
+            <span class="hero-chip soft">📅 {h(date)}</span>
+          </div>
         </div>
-        <a class="data-link" href="{asset_prefix.replace('assets', 'data')}/dates.json">dates.json</a>
       </header>
-      <div id="activeFilters" class="active-filters"></div>
-      <section id="paperList" class="paper-list">
-        {cards}
-      </section>
+      <div class="count-line"><span id="visibleCount">{len(papers)}</span> / {len(papers)} 篇论文可见 <span id="activeFilters"></span></div>
+      <div id="paperList">
+        {sections}
+      </div>
       <div id="noResults" class="empty-state hidden">没有匹配当前筛选条件的论文。</div>
     </main>
   </div>
