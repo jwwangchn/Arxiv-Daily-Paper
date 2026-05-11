@@ -8,19 +8,16 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlencode
-from xml.etree import ElementTree as ET
 
+import arxiv
 import requests
 
 from utils import ensure_dirs, load_config, normalize_space, parse_date, setup_logging, write_json, PROJECT_ROOT
 
 
 LOGGER = logging.getLogger("fetch_arxiv")
-ARXIV_API_URL = "https://export.arxiv.org/api/query"
 ARXIV_BASE_URL = "https://arxiv.org"
 ARXIV_USER_AGENT = "ArxivDailyPaperGuide/0.1 (https://github.com/jwwangchn/Arxiv-Daily-Paper)"
-ATOM = {"atom": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
 
 
 def build_query(categories: list[str], target_date: str) -> str:
@@ -31,34 +28,36 @@ def build_query(categories: list[str], target_date: str) -> str:
     return f"({category_query}) AND submittedDate:[{start}0000 TO {next_day}0000]"
 
 
-def atom_text(entry: ET.Element, name: str) -> str:
-    node = entry.find(f"atom:{name}", ATOM)
-    return normalize_space(node.text if node is not None else "")
+def strip_version(arxiv_id: str) -> str:
+    return re.sub(r"v\d+$", "", arxiv_id)
 
 
-def parse_entry(entry: ET.Element) -> dict[str, Any]:
-    entry_url = atom_text(entry, "id")
-    arxiv_id = entry_url.rstrip("/").split("/")[-1].split("v")[0]
-    authors = [normalize_space(author.findtext("atom:name", default="", namespaces=ATOM)) for author in entry.findall("atom:author", ATOM)]
-    categories = [category.attrib.get("term", "") for category in entry.findall("atom:category", ATOM) if category.attrib.get("term")]
-    primary = entry.find("arxiv:primary_category", ATOM)
-    primary_category = primary.attrib.get("term", "") if primary is not None else (categories[0] if categories else "")
-    pdf_url = ""
-    for link in entry.findall("atom:link", ATOM):
-        if link.attrib.get("title") == "pdf" or link.attrib.get("type") == "application/pdf":
-            pdf_url = link.attrib.get("href", "")
-            break
-    if not pdf_url:
-        pdf_url = f"https://arxiv.org/pdf/{arxiv_id}"
+def result_datetime(value: Any) -> str:
+    if not value:
+        return ""
+    if hasattr(value, "isoformat"):
+        text = value.isoformat()
+        return text.replace("+00:00", "Z")
+    return str(value)
+
+
+def parse_result(result: arxiv.Result) -> dict[str, Any]:
+    entry_url = str(getattr(result, "entry_id", "") or "")
+    raw_id = entry_url.rstrip("/").split("/")[-1] if entry_url else str(result.get_short_id())
+    arxiv_id = strip_version(raw_id)
+    authors = [normalize_space(getattr(author, "name", str(author))) for author in getattr(result, "authors", [])]
+    categories = list(getattr(result, "categories", []) or [])
+    primary_category = str(getattr(result, "primary_category", "") or (categories[0] if categories else ""))
+    pdf_url = str(getattr(result, "pdf_url", "") or f"{ARXIV_BASE_URL}/pdf/{arxiv_id}")
     return {
         "arxiv_id": arxiv_id,
-        "title": atom_text(entry, "title"),
+        "title": normalize_space(getattr(result, "title", "")),
         "authors": authors,
-        "abstract": atom_text(entry, "summary"),
+        "abstract": normalize_space(getattr(result, "summary", "")),
         "categories": categories,
         "primary_category": primary_category,
-        "published": atom_text(entry, "published"),
-        "updated": atom_text(entry, "updated"),
+        "published": result_datetime(getattr(result, "published", "")),
+        "updated": result_datetime(getattr(result, "updated", "")),
         "entry_url": entry_url or f"https://arxiv.org/abs/{arxiv_id}",
         "pdf_url": pdf_url,
     }
@@ -172,48 +171,32 @@ def fetch_browse_fallback(target_date: str, categories: list[str], max_papers: i
 def fetch_papers(target_date: str, categories: list[str], max_papers: int, retries: int = 2) -> list[dict[str, Any]]:
     query = build_query(categories, target_date)
     LOGGER.info("Fetching arXiv papers for %s from %s", target_date, ", ".join(categories))
-    params = {
-        "search_query": query,
-        "start": 0,
-        "max_results": max_papers,
-        "sortBy": "submittedDate",
-        "sortOrder": "descending",
-    }
-    url = f"{ARXIV_API_URL}?{urlencode(params)}"
+    client = arxiv.Client(page_size=min(max_papers, 100), delay_seconds=3.0, num_retries=retries)
+    search = arxiv.Search(
+        query=query,
+        max_results=max_papers,
+        sort_by=arxiv.SortCriterion.SubmittedDate,
+        sort_order=arxiv.SortOrder.Descending,
+    )
 
     last_error: Exception | None = None
-    for attempt in range(1, retries + 1):
-        try:
-            time.sleep(3)
-            response = requests.get(url, headers={"User-Agent": ARXIV_USER_AGENT}, timeout=30)
-            response.raise_for_status()
-            root = ET.fromstring(response.text)
-            seen: set[str] = set()
-            papers: list[dict[str, Any]] = []
-            for entry in root.findall("atom:entry", ATOM):
-                paper = parse_entry(entry)
-                if paper["arxiv_id"] in seen:
-                    continue
-                seen.add(paper["arxiv_id"])
-                papers.append(paper)
-                if len(papers) >= max_papers:
-                    break
-            LOGGER.info("Fetched %d unique papers", len(papers))
-            return papers
-        except Exception as exc:
-            last_error = exc
-            LOGGER.warning("arXiv fetch attempt %d/%d failed: %s", attempt, retries, exc)
-            retry_after = None
-            response = getattr(exc, "response", None)
-            if response is not None:
-                retry_after = response.headers.get("Retry-After")
-            if retry_after and str(retry_after).isdigit():
-                delay = int(retry_after)
-            elif response is not None and response.status_code == 429:
-                delay = 30 * attempt
-            else:
-                delay = 2 * attempt
-            time.sleep(delay)
+    try:
+        seen: set[str] = set()
+        papers: list[dict[str, Any]] = []
+        for result in client.results(search):
+            paper = parse_result(result)
+            if paper["arxiv_id"] in seen:
+                continue
+            seen.add(paper["arxiv_id"])
+            papers.append(paper)
+            if len(papers) >= max_papers:
+                break
+        LOGGER.info("Fetched %d unique papers via arxiv.py", len(papers))
+        return papers
+    except Exception as exc:
+        last_error = exc
+        LOGGER.warning("arxiv.py fetch failed: %s", exc)
+
     try:
         return fetch_browse_fallback(target_date, categories, max_papers)
     except Exception as exc:
