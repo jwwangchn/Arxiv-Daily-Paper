@@ -1,0 +1,257 @@
+{
+  "source": "ICLR2026_all_papers_CN.json",
+  "areas": [
+    {
+      "primary_area_en": "alignment, fairness, safety, privacy, and societal considerations",
+      "primary_area": "对齐/安全/公平性/隐私",
+      "categories": [
+        "公平性与偏见",
+        "其他",
+        "安全对齐",
+        "幻觉与事实性",
+        "红队与评估",
+        "越狱与攻击",
+        "隐私 / 水印 / 版权",
+        "鲁棒性与对抗"
+      ]
+    },
+    {
+      "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+      "primary_area": "应用：CV/音频/语言等",
+      "categories": [
+        "3D 视觉与场景",
+        "其他应用",
+        "医学图像",
+        "文档/OCR/图表",
+        "自然语言处理",
+        "视觉-语言模型 (VLM/MLLM)",
+        "视觉理解",
+        "视频理解",
+        "语音与音频",
+        "遥感与科学图像"
+      ]
+    },
+    {
+      "primary_area_en": "applications to neuroscience & cognitive science",
+      "primary_area": "应用：神经/认知科学",
+      "categories": [
+        "神经网络与大脑对齐",
+        "脑信号 / 脑解码",
+        "认知建模"
+      ]
+    },
+    {
+      "primary_area_en": "applications to physical sciences (physics, chemistry, biology, etc.)",
+      "primary_area": "应用：物理科学",
+      "categories": [
+        "其他",
+        "化学",
+        "材料科学",
+        "气候/地球科学",
+        "物理 / 分子动力学",
+        "生物 / 蛋白质 / 药物"
+      ]
+    },
+    {
+      "primary_area_en": "applications to robotics, autonomy, planning",
+      "primary_area": "应用：机器人/自动化/规划",
+      "categories": [
+        "GUI / Web / Mobile Agent",
+        "任务规划",
+        "仿真到现实",
+        "其他",
+        "导航",
+        "操作 (Manipulation)",
+        "模仿学习",
+        "视觉-语言-动作 (VLA)"
+      ]
+    },
+    {
+      "primary_area_en": "causal reasoning",
+      "primary_area": "因果推理",
+      "categories": [
+        "其他",
+        "反事实推理",
+        "因果发现 / 结构学习",
+        "因果推断 / 处理效应",
+        "因果表征学习",
+        "因果鲁棒性 / 不变性",
+        "异质性处理效应"
+      ]
+    },
+    {
+      "primary_area_en": "datasets and benchmarks",
+      "primary_area": "数据集与基准",
+      "categories": [
+        "Agent / 工具使用评测",
+        "代码与领域基准",
+        "安全/对齐评测",
+        "推理与数学评测",
+        "数据集（不含评测协议）",
+        "视觉理解基准",
+        "视频/长任务基准",
+        "通用 VLM/MLLM 评测"
+      ]
+    },
+    {
+      "primary_area_en": "foundation or frontier models, including LLMs",
+      "primary_area": "基础/前沿模型 (含LLM)",
+      "categories": [
+        "Agent 与工具使用",
+        "LLM 预训练",
+        "其他",
+        "多模态基础模型",
+        "指令微调与对齐",
+        "推理与思维链",
+        "效率与压缩",
+        "模型架构",
+        "长上下文"
+      ]
+    },
+    {
+      "primary_area_en": "generative models",
+      "primary_area": "生成模型",
+      "categories": [
+        "3D / 4D 生成",
+        "其他",
+        "图像编辑",
+        "扩散模型",
+        "文本到图像 (T2I)",
+        "文本到视频 (T2V)",
+        "生成评测与可控",
+        "自回归 / 流匹配生成"
+      ]
+    },
+    {
+      "primary_area_en": "infrastructure, software libraries, hardware, systems, etc.",
+      "primary_area": "基础设施/软硬件",
+      "categories": [
+        "其他",
+        "库与工具",
+        "推理加速系统",
+        "硬件 / 量化加速",
+        "训练系统"
+      ]
+    },
+    {
+      "primary_area_en": "interpretability and explainable AI",
+      "primary_area": "可解释 AI",
+      "categories": [
+        "其他",
+        "归因与因果",
+        "探针与表征分析",
+        "机制可解释性"
+      ]
+    },
+    {
+      "primary_area_en": "learning on graphs and other geometries & topologies",
+      "primary_area": "图与几何拓扑学习",
+      "categories": [
+        "其他",
+        "几何深度学习",
+        "图 Transformer",
+        "图神经网络 (GNN)"
+      ]
+    },
+    {
+      "primary_area_en": "learning on time series and dynamical systems",
+      "primary_area": "时间序列与动力系统",
+      "categories": [
+        "其他",
+        "动力系统建模",
+        "时空数据",
+        "时间序列预测"
+      ]
+    },
+    {
+      "primary_area_en": "learning theory",
+      "primary_area": "学习理论",
+      "categories": [
+        "优化理论",
+        "其他",
+        "泛化理论",
+        "表达能力"
+      ]
+    },
+    {
+      "primary_area_en": "neurosymbolic & hybrid AI systems (physics-informed, logic & formal reasoning, etc.)",
+      "primary_area": "神经符号/混合 AI",
+      "categories": [
+        "形式化验证",
+        "物理引导",
+        "符号推理 + 神经网络"
+      ]
+    },
+    {
+      "primary_area_en": "optimization",
+      "primary_area": "优化",
+      "categories": [
+        "优化器设计",
+        "其他",
+        "凸 / 非凸优化",
+        "训练动态"
+      ]
+    },
+    {
+      "primary_area_en": "other topics in machine learning (i.e., none of the above)",
+      "primary_area": "其他 ML 主题",
+      "categories": [
+        "AI for Science (杂项)",
+        "其他",
+        "异常检测",
+        "新方法/算法",
+        "检索与索引",
+        "状态空间模型 (SSM/Mamba)",
+        "联邦学习",
+        "量子机器学习"
+      ]
+    },
+    {
+      "primary_area_en": "probabilistic methods (Bayesian methods, variational inference, sampling, UQ, etc.)",
+      "primary_area": "概率方法",
+      "categories": [
+        "不确定性量化",
+        "其他",
+        "变分推断",
+        "贝叶斯方法",
+        "采样方法"
+      ]
+    },
+    {
+      "primary_area_en": "reinforcement learning",
+      "primary_area": "强化学习",
+      "categories": [
+        "RL 理论",
+        "其他",
+        "基于偏好/反馈的 RL",
+        "多智能体 RL",
+        "应用型 RL",
+        "探索与奖励设计",
+        "离线 RL"
+      ]
+    },
+    {
+      "primary_area_en": "transfer learning, meta learning, and lifelong learning",
+      "primary_area": "迁移/元/终身学习",
+      "categories": [
+        "元学习",
+        "其他",
+        "持续/终身学习",
+        "测试时适应",
+        "迁移学习"
+      ]
+    },
+    {
+      "primary_area_en": "unsupervised, self-supervised, semi-supervised, and supervised representation learning",
+      "primary_area": "表征学习",
+      "categories": [
+        "其他",
+        "域适应与泛化",
+        "对比学习",
+        "自监督学习",
+        "表征分析",
+        "跨模态表征"
+      ]
+    }
+  ]
+}

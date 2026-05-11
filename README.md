@@ -7,6 +7,7 @@
 - 从 arXiv Atom API 抓取指定日期、指定分类的论文 metadata；未指定日期时自动回溯到最近一个有论文更新的日期。
 - arXiv API 临时限流时，会退回到官方 browse 页面读取同一天条目，并从 abs 页面补充摘要。
 - 基于 `title + abstract` 调用 DeepSeek OpenAI-compatible API 生成中文导读。
+- 基于 ICLR 2026 分类体系生成 `primary_area_en`、`primary_area`、`category`；分类 taxonomy 固定放在 system prompt 中，便于 DeepSeek prefix/KV cache 复用。
 - 支持断点续跑，已分析论文不会重复请求 API。
 - 生成 `docs/` 静态网站，包含首页、历史日期页、日期索引和静态资源。
 - 前端支持实时搜索、大类/小类导航、日历日期切换、tag 过滤、priority 过滤、分类过滤和折叠 abstract。
@@ -136,6 +137,7 @@ Actions → Daily arXiv Guide → Run workflow
 - `arxiv.categories`：默认抓取分类，目前聚焦 `cs.CV`、`cs.AI`。
 - `arxiv.max_papers`：默认每日最多论文数。
 - `topics`：用于后续筛选、prompt 优化和 tags 对齐的主题关键词配置。
+- `data/iclr_taxonomy.json`：从 `ICLR2026_all_papers_CN.json` 提取的 ICLR 一级/二级分类体系，用于 DeepSeek 分类。
 
 ## 常见问题
 

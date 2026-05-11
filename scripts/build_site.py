@@ -65,6 +65,9 @@ def primary_area(paper: dict[str, Any]) -> str:
 
 def sub_area(paper: dict[str, Any]) -> str:
     analysis = paper.get("analysis") or {}
+    category = str(analysis.get("category") or "").strip()
+    if category:
+        return category
     sub = str(analysis.get("sub_area") or "").strip()
     if sub:
         return sub
