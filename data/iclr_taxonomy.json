@@ -11,13 +11,13 @@
         "幻觉与事实性",
         "红队与评估",
         "越狱与攻击",
-        "隐私 / 水印 / 版权",
+        "隐私/水印/版权",
         "鲁棒性与对抗"
       ]
     },
     {
       "primary_area_en": "applications to computer vision, audio, language, and other modalities",
-      "primary_area": "应用：CV/音频/语言等",
+      "primary_area": "应用: CV/音频/语言等",
       "categories": [
         "3D 视觉与场景",
         "其他应用",
@@ -33,30 +33,30 @@
     },
     {
       "primary_area_en": "applications to neuroscience & cognitive science",
-      "primary_area": "应用：神经/认知科学",
+      "primary_area": "应用: 神经/认知科学",
       "categories": [
         "神经网络与大脑对齐",
-        "脑信号 / 脑解码",
+        "脑信号/脑解码",
         "认知建模"
       ]
     },
     {
       "primary_area_en": "applications to physical sciences (physics, chemistry, biology, etc.)",
-      "primary_area": "应用：物理科学",
+      "primary_area": "应用: 物理科学",
       "categories": [
         "其他",
         "化学",
         "材料科学",
         "气候/地球科学",
-        "物理 / 分子动力学",
-        "生物 / 蛋白质 / 药物"
+        "物理/分子动力学",
+        "生物/蛋白质/药物"
       ]
     },
     {
       "primary_area_en": "applications to robotics, autonomy, planning",
-      "primary_area": "应用：机器人/自动化/规划",
+      "primary_area": "应用: 机器人/自动化/规划",
       "categories": [
-        "GUI / Web / Mobile Agent",
+        "GUI/Web/Mobile Agent",
         "任务规划",
         "仿真到现实",
         "其他",
@@ -72,10 +72,10 @@
       "categories": [
         "其他",
         "反事实推理",
-        "因果发现 / 结构学习",
-        "因果推断 / 处理效应",
+        "因果发现/结构学习",
+        "因果推断/处理效应",
         "因果表征学习",
-        "因果鲁棒性 / 不变性",
+        "因果鲁棒性/不变性",
         "异质性处理效应"
       ]
     },
@@ -83,11 +83,11 @@
       "primary_area_en": "datasets and benchmarks",
       "primary_area": "数据集与基准",
       "categories": [
-        "Agent / 工具使用评测",
+        "Agent/工具使用评测",
         "代码与领域基准",
         "安全/对齐评测",
         "推理与数学评测",
-        "数据集（不含评测协议）",
+        "数据集 (不含评测协议)",
         "视觉理解基准",
         "视频/长任务基准",
         "通用 VLM/MLLM 评测"
@@ -112,14 +112,14 @@
       "primary_area_en": "generative models",
       "primary_area": "生成模型",
       "categories": [
-        "3D / 4D 生成",
+        "3D/4D 生成",
         "其他",
         "图像编辑",
         "扩散模型",
         "文本到图像 (T2I)",
         "文本到视频 (T2V)",
         "生成评测与可控",
-        "自回归 / 流匹配生成"
+        "自回归/流匹配生成"
       ]
     },
     {
@@ -129,7 +129,7 @@
         "其他",
         "库与工具",
         "推理加速系统",
-        "硬件 / 量化加速",
+        "硬件/量化加速",
         "训练系统"
       ]
     },
@@ -188,7 +188,7 @@
       "categories": [
         "优化器设计",
         "其他",
-        "凸 / 非凸优化",
+        "凸/非凸优化",
         "训练动态"
       ]
     },
