@@ -13,6 +13,10 @@ on:
         description: "Optional max number of papers to fetch"
         required: false
         type: string
+      concurrency:
+        description: "Optional DeepSeek request concurrency, safe-capped at 4"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -37,6 +41,7 @@ jobs:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           REQUESTED_DATE: ${{ github.event.inputs.date }}
           REQUESTED_MAX_PAPERS: ${{ github.event.inputs.max_papers }}
+          REQUESTED_CONCURRENCY: ${{ github.event.inputs.concurrency }}
         run: |
           args=()
           if [ -n "$REQUESTED_DATE" ]; then
@@ -44,6 +49,9 @@ jobs:
           fi
           if [ -n "$REQUESTED_MAX_PAPERS" ]; then
             args+=(--max-papers "$REQUESTED_MAX_PAPERS")
+          fi
+          if [ -n "$REQUESTED_CONCURRENCY" ]; then
+            args+=(--concurrency "$REQUESTED_CONCURRENCY")
           fi
           python scripts/run_daily.py "${args[@]}"
 

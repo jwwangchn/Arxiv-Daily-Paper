@@ -13,10 +13,23 @@ from utils import PROJECT_ROOT, ensure_dirs, load_config, read_json, setup_loggi
 
 
 LOGGER = logging.getLogger("build_site")
+TAXONOMY_PATH = PROJECT_ROOT / "data" / "iclr_taxonomy.json"
 
 
 def h(value: Any) -> str:
     return html.escape(str(value or ""), quote=True)
+
+
+def cjk_spacing(value: Any) -> str:
+    text = str(value or "")
+    ascii_token = r"A-Za-z0-9@#&%/+=\\-"
+    text = re.sub(rf"([\u4e00-\u9fff])([{ascii_token}])", r"\1 \2", text)
+    text = re.sub(rf"([{ascii_token}])([\u4e00-\u9fff])", r"\1 \2", text)
+    return text
+
+
+def ht(value: Any) -> str:
+    return h(cjk_spacing(value))
 
 
 def load_analyzed_data(use_mock: bool = False) -> list[dict[str, Any]]:
@@ -33,7 +46,7 @@ def load_analyzed_data(use_mock: bool = False) -> list[dict[str, Any]]:
 def list_items(values: list[Any]) -> str:
     if not values:
         return "<span class=\"muted\">无</span>"
-    return "<ul>" + "".join(f"<li>{h(value)}</li>" for value in values) + "</ul>"
+    return "<ul>" + "".join(f"<li>{ht(value)}</li>" for value in values) + "</ul>"
 
 
 def paper_tags(paper: dict[str, Any]) -> list[str]:
@@ -41,41 +54,101 @@ def paper_tags(paper: dict[str, Any]) -> list[str]:
     return [str(tag) for tag in analysis.get("tags", []) if tag]
 
 
+def normalize_label(value: str) -> str:
+    return re.sub(r"\s+", "", value.replace("：", ":").strip().lower())
+
+
+def load_taxonomy() -> dict[str, Any]:
+    if not TAXONOMY_PATH.exists():
+        return {"areas": []}
+    return read_json(TAXONOMY_PATH)
+
+
+def taxonomy_area_map() -> dict[str, str]:
+    mapping: dict[str, str] = {}
+    for area in load_taxonomy().get("areas", []):
+        primary = str(area.get("primary_area") or "").strip()
+        if primary:
+            mapping[normalize_label(primary)] = primary
+    return mapping
+
+
+def taxonomy_category_map() -> dict[str, str]:
+    mapping: dict[str, str] = {}
+    for area in load_taxonomy().get("areas", []):
+        for category in area.get("categories", []):
+            category_name = str(category).strip()
+            if category_name:
+                mapping[normalize_label(category_name)] = category_name
+    return mapping
+
+
+def taxonomy_category_area_map() -> dict[str, str]:
+    candidates: dict[str, set[str]] = {}
+    for area in load_taxonomy().get("areas", []):
+        primary = str(area.get("primary_area") or "").strip()
+        for category in area.get("categories", []):
+            candidates.setdefault(normalize_label(str(category)), set()).add(primary)
+    return {category: next(iter(areas)) for category, areas in candidates.items() if len(areas) == 1}
+
+
+def taxonomy_area_categories_map() -> dict[str, set[str]]:
+    mapping: dict[str, set[str]] = {}
+    for area in load_taxonomy().get("areas", []):
+        primary = str(area.get("primary_area") or "").strip()
+        if not primary:
+            continue
+        mapping[primary] = {normalize_label(str(category)) for category in area.get("categories", [])}
+    return mapping
+
+
+AREA_MAP = taxonomy_area_map()
+CATEGORY_MAP = taxonomy_category_map()
+CATEGORY_AREA_MAP = taxonomy_category_area_map()
+AREA_CATEGORIES_MAP = taxonomy_area_categories_map()
+DEFAULT_AREA = AREA_MAP.get(normalize_label("其他 ML 主题"), "其他 ML 主题")
+DEFAULT_CATEGORY = CATEGORY_MAP.get(normalize_label("其他"), "其他")
+
+
+def canonical_area(value: str) -> str:
+    cleaned = str(value or "").strip()
+    if not cleaned:
+        return ""
+    direct = AREA_MAP.get(normalize_label(cleaned))
+    if direct:
+        return direct
+    legacy_aliases = {
+        normalize_label("医学与科学AI"): "应用: CV/音频/语言等",
+        normalize_label("医学与科学 AI"): "应用: CV/音频/语言等",
+    }
+    alias = legacy_aliases.get(normalize_label(cleaned))
+    return AREA_MAP.get(normalize_label(alias), alias) if alias else ""
+
+
+def canonical_category(value: str, area: str) -> str:
+    category = CATEGORY_MAP.get(normalize_label(value))
+    if category and (not area or normalize_label(category) in AREA_CATEGORIES_MAP.get(area, set())):
+        return category
+    return DEFAULT_CATEGORY
+
+
 def primary_area(paper: dict[str, Any]) -> str:
     analysis = paper.get("analysis") or {}
-    area = str(analysis.get("primary_area") or "").strip()
+    category = str(analysis.get("category") or analysis.get("sub_area") or "").strip()
+    category_area = CATEGORY_AREA_MAP.get(normalize_label(category))
+    if category_area:
+        return category_area
+    area = canonical_area(str(analysis.get("primary_area") or ""))
     if area:
         return area
-
-    tags = " ".join(paper_tags(paper)).lower()
-    categories = " ".join(paper.get("categories") or []).lower()
-    haystack = f"{paper.get('title', '')} {paper.get('abstract', '')} {tags} {categories}".lower()
-    if any(token in haystack for token in ["video generation", "text-to-video", "diffusion", "generative", "motion"]):
-        return "生成模型"
-    if any(token in haystack for token in ["vlm", "mllm", "vision-language", "multimodal", "cs.cv", "eess.iv"]):
-        return "应用：CV/音频/语言等"
-    if any(token in haystack for token in ["llm", "language model", "pretraining", "alignment", "instruction tuning"]):
-        return "基础/前沿模型 (含LLM)"
-    if any(token in haystack for token in ["medical", "radiology", "ct", "clinical"]):
-        return "医学与科学 AI"
-    if any(token in haystack for token in ["benchmark", "dataset", "evaluation"]):
-        return "数据集与基准"
-    return "其他 ML 主题"
+    return DEFAULT_AREA
 
 
 def sub_area(paper: dict[str, Any]) -> str:
     analysis = paper.get("analysis") or {}
-    category = str(analysis.get("category") or "").strip()
-    if category:
-        return category
-    sub = str(analysis.get("sub_area") or "").strip()
-    if sub:
-        return sub
-
-    tags = paper_tags(paper)
-    if tags:
-        return tags[0]
-    return str(paper.get("primary_category") or (paper.get("categories") or ["其他"])[0] or "其他")
+    area = primary_area(paper)
+    category = str(analysis.get("category") or analysis.get("sub_area") or "").strip()
+    return canonical_category(category, area)
 
 
 def anchor(value: str) -> str:
@@ -119,7 +192,12 @@ def paper_card(paper: dict[str, Any]) -> str:
     authors = paper.get("authors") or []
     title = paper.get("title", "")
     tldr = analysis_text(analysis, "tldr", "one_sentence_summary", default="暂无中文导读。")
-    motivation = analysis_text(analysis, "research_motivation", "motivation", "problem")
+    motivation = analysis_text(
+        analysis,
+        "research_motivation",
+        "motivation",
+        default="旧数据未提供研究动机；重新分析后会生成该字段。",
+    )
     phenomenon = analysis_text(analysis, "phenomenon_analysis", "phenomena", default="摘要未提供明确现象分析。")
     search_blob = " ".join(
         [
@@ -170,16 +248,16 @@ def paper_card(paper: dict[str, Any]) -> str:
     <a href="{h(paper.get('pdf_url'))}" target="_blank" rel="noopener">PDF</a>
     <span>{h(paper.get('primary_category'))}</span>
   </div>
-  <div class="paper-tldr"><b>TL;DR：</b>{h(tldr)}</div>
+  <div class="paper-tldr"><b>TL;DR：</b>{ht(tldr)}</div>
   {error_html}
   <div class="analysis-grid">
-    {field_row("🎯", "研究动机", f"<p>{h(motivation)}</p>")}
-    {field_row("❓", "解决问题", f"<p>{h(analysis.get('problem', '暂无'))}</p>")}
-    {field_row("🔎", "现象分析", f"<p>{h(phenomenon)}</p>")}
-    {field_row("🛠️", "主要方法", f"<p>{h(analysis.get('method', '暂无'))}</p>")}
-    {field_row("📊", "数据与实验", f"<p>{h(analysis.get('experiments', '摘要未提供具体实验结果'))}</p>")}
+    {field_row("🎯", "研究动机", f"<p>{ht(motivation)}</p>")}
+    {field_row("❓", "解决问题", f"<p>{ht(analysis.get('problem', '暂无'))}</p>")}
+    {field_row("🔎", "现象分析", f"<p>{ht(phenomenon)}</p>")}
+    {field_row("🛠️", "主要方法", f"<p>{ht(analysis.get('method', '暂无'))}</p>")}
+    {field_row("📊", "实验结果", f"<p>{ht(analysis.get('experiments', '摘要未提供具体实验结果'))}</p>")}
     {field_row("⭐", "主要贡献", list_items(analysis.get('contributions') or []))}
-    {field_row("⚠️", "局限性", list_items(analysis.get('limitations') or []))}
+    {field_row("⚠️", "方法局限", list_items(analysis.get('limitations') or []))}
   </div>
   <details class="abstract-block">
     <summary>查看完整摘要 (Abstract)</summary>
@@ -430,6 +508,10 @@ def build_site(use_mock: bool = False) -> None:
     docs_dir = PROJECT_ROOT / "docs"
     daily_dir = docs_dir / "daily"
     daily_dir.mkdir(parents=True, exist_ok=True)
+    expected_daily_files = {f"{date}.html" for date in dates}
+    for stale_page in daily_dir.glob("*.html"):
+        if stale_page.name not in expected_daily_files:
+            stale_page.unlink()
 
     for bundle in bundles:
         date = bundle.get("date", "empty")

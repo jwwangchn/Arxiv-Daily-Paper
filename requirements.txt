@@ -2,3 +2,5 @@ arxiv
 requests
 PyYAML
 openai
+socksio
+tqdm

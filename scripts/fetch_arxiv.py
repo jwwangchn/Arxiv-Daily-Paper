@@ -12,6 +12,7 @@ from typing import Any
 import arxiv
 import requests
 
+from progress import progress_bar
 from utils import ensure_dirs, load_config, normalize_space, parse_date, setup_logging, write_json, PROJECT_ROOT
 
 
@@ -117,7 +118,7 @@ def fetch_browse_fallback(target_date: str, categories: list[str], max_papers: i
     seen: set[str] = set()
     papers: list[dict[str, Any]] = []
 
-    for category in categories:
+    for category in progress_bar(categories, desc="arXiv browse categories", unit="cat"):
         if len(papers) >= max_papers:
             break
         url = f"{ARXIV_BASE_URL}/list/{category}/recent?show=1000"
@@ -129,7 +130,8 @@ def fetch_browse_fallback(target_date: str, categories: list[str], max_papers: i
             continue
 
         entries = re.finditer(r"<dt>(.*?)</dt>\s*<dd>(.*?)</dd>", section_match.group(1), re.S)
-        for entry in entries:
+        entry_list = list(entries)
+        for entry in progress_bar(entry_list, total=len(entry_list), desc=f"arXiv abs {category}", unit="paper"):
             if len(papers) >= max_papers:
                 break
             id_match = re.search(r"/abs/([0-9]{4}\.[0-9]{4,5})(?:v[0-9]+)?", entry.group(1))
@@ -183,7 +185,8 @@ def fetch_papers(target_date: str, categories: list[str], max_papers: int, retri
     try:
         seen: set[str] = set()
         papers: list[dict[str, Any]] = []
-        for result in client.results(search):
+        results = client.results(search)
+        for result in progress_bar(results, total=max_papers, desc=f"arXiv {target_date}", unit="paper"):
             paper = parse_result(result)
             if paper["arxiv_id"] in seen:
                 continue

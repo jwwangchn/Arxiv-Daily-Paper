@@ -6,9 +6,10 @@
 
 - 从 arXiv Atom API 抓取指定日期、指定分类的论文 metadata；未指定日期时自动回溯到最近一个有论文更新的日期。
 - arXiv API 临时限流时，会退回到官方 browse 页面读取同一天条目，并从 abs 页面补充摘要。
-- 基于 `title + abstract` 调用 DeepSeek OpenAI-compatible API 生成中文导读。
+- 基于 `title + abstract` 调用 DeepSeek OpenAI-compatible API 生成中文导读，默认使用 `deepseek-v4-flash` 非思考模式。
 - 基于 ICLR 2026 分类体系生成 `primary_area_en`、`primary_area`、`category`；分类 taxonomy 固定放在 system prompt 中，便于 DeepSeek prefix/KV cache 复用。
 - 支持断点续跑，已分析论文不会重复请求 API。
+- 抓取 arXiv 和调用 DeepSeek 时使用 `tqdm` 显示进度、速度和预计剩余时间；GitHub Actions 日志中也会保留进度输出。
 - 生成 `docs/` 静态网站，包含首页、历史日期页、日期索引和静态资源。
 - 前端支持实时搜索、大类/小类导航、日历日期切换、tag 过滤、priority 过滤、分类过滤和折叠 abstract。
 - 提供 mock 模式，无需 API key 即可预览页面。
@@ -51,18 +52,29 @@ export DEEPSEEK_API_KEY="your_api_key_here"
 python scripts/run_daily.py --date 2026-05-10
 ```
 
+默认模型为 `deepseek-v4-flash`，并在请求中显式设置 `thinking` 为 `disabled`。如需临时覆盖模型，可设置：
+
+```bash
+export DEEPSEEK_MODEL="deepseek-v4-flash"
+```
+
 可选参数：
 
 ```bash
 python scripts/run_daily.py --date 2026-05-10 --max-papers 30
 python scripts/run_daily.py --max-papers 30
+python scripts/run_daily.py --date 2026-05-10 --max-papers 30 --concurrency 2
 python scripts/fetch_arxiv.py --date 2026-05-10 --max-papers 30
 python scripts/fetch_arxiv.py --latest-with-papers --max-papers 30
-python scripts/analyze_deepseek.py --date 2026-05-10
+python scripts/analyze_deepseek.py --date 2026-05-10 --concurrency 2
 python scripts/build_site.py
 ```
 
 不传 `--date` 时，`run_daily.py` 会从当前日期向前回溯，选择最近一个有 arXiv 更新的日期；如果该日期的论文已经全部分析过，会跳过 DeepSeek 调用，只重新构建静态网站。
+
+DeepSeek 分析默认并发数为 `2`，可通过 `--concurrency` 或环境变量 `DEEPSEEK_CONCURRENCY` 调整。为避免触发限速，代码会将并发数上限限制为 `4`；如果遇到 429 或连接波动，建议降到 `1` 或 `2`。
+
+arXiv 抓取和 DeepSeek 分析都会显示 `tqdm` 进度条，包括已完成数量、处理速度和预计剩余时间。GitHub Actions 支持这类 stderr 日志输出；在 CI 中脚本会降低刷新频率并使用 ASCII 进度条，避免日志过度刷屏。
 
 ## Mock 模式
 
@@ -117,6 +129,7 @@ workflow 位于 `.github/workflows/daily.yml`：
 - 使用 Python 3.11。
 - 安装 `requirements.txt`。
 - 执行 `python scripts/run_daily.py`。
+- DeepSeek 分析默认使用并发 `2`；手动触发 workflow 时可填写 concurrency，代码会安全限制到最多 `4`。
 - 将 `data/` 和 `docs/` 的变化 commit 并 push。
 - 如果没有变化，会输出 `No changes`，不会报错。
 
@@ -148,6 +161,14 @@ Actions → Daily arXiv Guide → Run workflow
 **DeepSeek 返回非 JSON**
 
 脚本要求模型输出 JSON，并使用 `response_format={"type": "json_object"}`。如果仍然解析失败，该论文会保留原始信息，并记录 `analysis_error` 和可用的原始响应信息。
+
+**DeepSeek 连接失败**
+
+如果本地网络直连失败，可以通过代理运行，例如：
+
+```bash
+ALL_PROXY=socks5://127.0.0.1:1082 HTTPS_PROXY=socks5://127.0.0.1:1082 python scripts/analyze_deepseek.py --date 2026-05-10
+```
 
 **当天没有论文**
 

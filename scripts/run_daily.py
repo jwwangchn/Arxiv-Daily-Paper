@@ -20,6 +20,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-papers", type=int, default=config.get("arxiv", {}).get("max_papers", 30))
     parser.add_argument("--categories", nargs="+", default=config.get("arxiv", {}).get("categories", []))
     parser.add_argument("--lookback-days", type=int, default=14, help="Days to look back when no --date is provided.")
+    parser.add_argument("--concurrency", type=int, default=None, help="Concurrent DeepSeek requests; safe-capped by analyze_deepseek.py.")
     parser.add_argument("--mock", action="store_true", help="Skip arXiv and DeepSeek; build the site with mock data.")
     return parser.parse_args()
 
@@ -67,7 +68,7 @@ def main() -> None:
         LOGGER.info("%s is already fully analyzed; skipping DeepSeek calls.", target_date)
     else:
         try:
-            analyze_date(target_date)
+            analyze_date(target_date, concurrency=args.concurrency)
         except Exception:
             analysis_failed = True
             LOGGER.exception("DeepSeek analysis step failed. Site build will continue with available data.")
