@@ -28,28 +28,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06667",
       "pdf_url": "https://arxiv.org/pdf/2605.06667",
       "analysis": {
-        "one_sentence_summary": "ActCam 是一种零样本视频生成方法，能够联合控制角色运动与相机轨迹，无需额外训练。",
-        "problem": "现有视频生成方法难以同时精细控制角色运动和相机轨迹，尤其在视角大幅变化时缺乏几何一致性。",
-        "method": "基于预训练的图像到视频扩散模型，通过两阶段条件调度：早期去噪步骤同时使用姿态和稀疏深度条件以保持场景结构，后期仅用姿态条件细化高频细节。",
+        "tldr": "ActCam 是一种零样本视频生成方法，通过联合控制角色动作和相机轨迹，无需训练即可实现几何一致的相机与运动控制。",
+        "research_motivation": "视频生成需要精细控制角色动作和相机轨迹，但现有方法通常分别处理两者，难以保持几何一致性，且需要大量训练数据。",
+        "problem": "如何在不训练的情况下，联合控制视频生成中的角色动作和相机参数，并保持跨帧几何一致性。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "基于预训练的图像到视频扩散模型，通过两阶段条件调度：早期去噪步骤同时使用姿态和稀疏深度条件，后期仅使用姿态条件，实现零样本联合控制。",
         "contributions": [
-          "提出零样本联合控制角色运动和相机参数的方法，无需训练。",
-          "设计两阶段条件调度策略，平衡场景结构与细节生成。",
-          "在多个基准上验证，相比仅姿态控制和其他方法，在相机遵循度和运动保真度上更优。"
+          "提出零样本联合控制角色动作和相机轨迹的视频生成方法 ActCam。",
+          "设计两阶段条件调度策略，平衡场景结构与细节生成。"
         ],
-        "experiments": "摘要未提供具体实验结果，但提到在多个基准上评估，并进行了人类偏好评估。",
+        "experiments": "在多个基准上评估，涵盖多样角色动作和挑战性视角变化，与姿态控制及其他方法相比，ActCam 在相机遵循度和运动保真度上更优，人类评估中更受偏好。",
         "limitations": [
-          "依赖预训练模型的深度和姿态估计能力，可能受限于其泛化性。",
-          "两阶段调度中深度条件的丢弃可能导致复杂场景下的结构不一致。"
+          "依赖预训练模型的质量和条件能力。",
+          "可能对极端相机运动或复杂场景的泛化能力有限。"
         ],
-        "relevance": "与视频生成方向直接相关，涉及扩散模型的条件控制。",
+        "primary_area_en": "generative models",
         "primary_area": "生成模型",
-        "sub_area": "视频生成",
+        "category": "文本到视频 (T2V)",
+        "sub_area": "文本到视频 (T2V)",
         "tags": [
           "Video Generation",
-          "Diffusion Model",
-          "Camera Control"
+          "Camera Control",
+          "Motion Control",
+          "Zero-Shot"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "ActCam 是一种零样本视频生成方法，通过联合控制角色动作和相机轨迹，无需训练即可实现几何一致的相机与运动控制。"
       }
     },
     {
@@ -77,28 +81,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06664",
       "pdf_url": "https://arxiv.org/pdf/2605.06664",
       "analysis": {
-        "one_sentence_summary": "提出一种无需训练的偏差感知操作推理方法BAMI，通过粗到细聚焦和候选选择缓解GUI grounding中的精度偏差和模糊偏差，显著提升模型在ScreenSpot-Pro基准上的准确率。",
-        "problem": "GUI grounding在复杂场景下因高分辨率导致的精度偏差和复杂界面元素导致的模糊偏差，现有模型性能不佳。",
-        "method": "基于掩码预测分布归因方法识别偏差来源，提出BAMI方法，包含粗到细聚焦和候选选择两种操作，无需训练即可缓解偏差。",
+        "tldr": "提出训练无关的BAMI方法，通过粗到细聚焦和候选选择缓解GUI定位中的精度偏差和模糊偏差。",
+        "research_motivation": "GUI定位是GUI智能体执行点击、拖拽等任务的关键能力，但在复杂场景下现有模型性能不佳，需要有效的偏差缓解方法。",
+        "problem": "现有GUI定位模型在高分辨率图像和复杂界面元素下存在精度偏差和模糊偏差，导致定位不准确。",
+        "phenomenon_analysis": "通过提出的掩码预测分布归因方法，发现误差主要源于高图像分辨率（精度偏差）和复杂界面元素（模糊偏差）。",
+        "method": "提出BAMI方法，包含粗到细聚焦和候选选择两种操作，在训练无关设置下缓解偏差。",
         "contributions": [
-          "提出掩码预测分布归因方法，识别GUI grounding中精度偏差和模糊偏差两大误差来源",
-          "提出无需训练的偏差感知操作推理方法BAMI，通过粗到细聚焦和候选选择有效缓解偏差",
-          "在ScreenSpot-Pro基准上验证BAMI能显著提升多种GUI grounding模型的准确率，例如TianXi-Action-7B从51.9%提升至57.8%"
+          "提出掩码预测分布归因方法，识别GUI定位中的两种主要偏差来源。",
+          "提出BAMI方法，通过粗到细聚焦和候选选择有效缓解偏差，无需额外训练。"
         ],
-        "experiments": "在ScreenSpot-Pro基准上测试，TianXi-Action-7B模型准确率从51.9%提升至57.8%，消融实验验证了BAMI在不同参数配置下的鲁棒性。",
+        "experiments": "在ScreenSpot-Pro基准上，将TianXi-Action-7B模型准确率从51.9%提升至57.8%，消融实验验证了鲁棒性。",
         "limitations": [
-          "方法仅在GUI grounding任务上验证，可能不适用于其他视觉任务",
-          "依赖归因方法识别偏差，归因准确性可能影响最终效果"
+          "方法仅在GUI定位任务上验证，可能不适用于其他视觉任务。",
+          "依赖预定义参数配置，可能需针对不同模型调整。"
         ],
-        "relevance": "与视觉-语言模型（VLM）中的GUI grounding任务相关，属于视觉理解方向。",
-        "primary_area": "应用：CV/音频/语言等",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉-语言模型 (VLM/MLLM)",
         "sub_area": "视觉-语言模型 (VLM/MLLM)",
         "tags": [
-          "VLM",
           "GUI Grounding",
-          "Bias Mitigation"
+          "Bias Mitigation",
+          "Training-Free"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出训练无关的BAMI方法，通过粗到细聚焦和候选选择缓解GUI定位中的精度偏差和模糊偏差。"
       }
     },
     {
@@ -126,26 +133,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06658",
       "pdf_url": "https://arxiv.org/pdf/2605.06658",
       "analysis": {
-        "one_sentence_summary": "Relit-LiVE 提出一种无需相机位姿先验的视频重光照框架，通过联合学习环境视频和引入原始参考图像，实现物理一致且时间稳定的重光照效果。",
-        "problem": "现有基于视频扩散模型的重光照方法依赖不稳定的内在分解，导致真实视频重光照时出现外观扭曲、材质破损和时间伪影。",
-        "method": "在渲染过程中显式引入原始参考图像以恢复丢失的场景线索，并联合预测重光照视频和每帧环境贴图，通过单一扩散过程实现几何-光照对齐。",
+        "tldr": "Relit-LiVE通过联合预测环境视频和重光照视频，无需相机位姿先验即可实现物理一致、时间稳定的视频重光照。",
+        "research_motivation": "现有基于内在分解的视频重光照方法在真实视频中分解不准确，导致外观失真、材质破碎和时间伪影累积，且依赖相机位姿先验，限制了实用性。",
+        "problem": "解决视频重光照中内在分解不可靠、需要相机位姿先验以及物理一致性和时间稳定性不足的问题。",
+        "phenomenon_analysis": "摘要指出，基于内在分解的范式在真实视频中高度不可靠，常导致扭曲外观、破碎材质和累积的时间伪影。",
+        "method": "提出Relit-LiVE框架，显式引入原始参考图像到渲染过程以恢复丢失的场景线索；并设计环境视频预测公式，在单个扩散过程中联合生成重光照视频和每帧环境贴图，强制几何-光照对齐，支持动态光照和相机运动。",
         "contributions": [
-          "提出无需相机位姿先验的视频重光照框架，通过引入原始参考图像提升物理一致性",
-          "提出环境视频预测公式，联合生成重光照视频和逐帧环境贴图，支持动态光照和相机运动"
+          "提出一种无需相机位姿先验的视频重光照框架，通过引入原始参考图像提升内在分解的可靠性。",
+          "提出环境视频预测方法，联合生成重光照视频和对齐的环境贴图，实现物理一致和时间稳定的结果。"
         ],
-        "experiments": "在合成和真实基准上，Relit-LiVE 一致优于最先进的视频重光照和神经渲染方法。",
+        "experiments": "在合成和真实基准上，Relit-LiVE一致优于最先进的视频重光照和神经渲染方法。",
         "limitations": [
-          "可能依赖高质量原始参考图像，在极端退化场景下效果受限",
-          "环境视频预测的计算开销可能较大，影响实时应用"
+          "可能对极端光照变化或复杂场景的泛化能力有限。",
+          "联合预测环境视频可能增加计算开销。"
         ],
-        "relevance": "与视频生成相关，属于生成模型在视频重光照任务上的应用。",
-        "primary_area": "生成模型",
-        "sub_area": "视频生成",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉-语言模型 (VLM/MLLM)",
+        "sub_area": "视觉-语言模型 (VLM/MLLM)",
         "tags": [
-          "Video Generation",
-          "Neural Rendering"
+          "Video Relighting",
+          "Diffusion Model",
+          "Environment Map"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "Relit-LiVE通过联合预测环境视频和重光照视频，无需相机位姿先验即可实现物理一致、时间稳定的视频重光照。"
       }
     },
     {
@@ -172,27 +184,30 @@
       "entry_url": "https://arxiv.org/abs/2605.06643",
       "pdf_url": "https://arxiv.org/pdf/2605.06643",
       "analysis": {
-        "one_sentence_summary": "本文提出首个统一的多模态域泛化基准MMDG-Bench，通过标准化评估发现现有方法提升有限且存在鲁棒性不足等问题。",
-        "problem": "多模态域泛化领域缺乏标准化评估协议，现有研究在数据集、模态配置和实验设置上差异大，导致难以判断算法真实进展。",
-        "method": "构建统一基准MMDG-Bench，涵盖6个数据集、3类任务、6种模态组合、9种代表性方法，系统评估标准准确率、鲁棒性、缺失模态泛化、误分类检测和分布外检测。",
+        "tldr": "多模态域泛化（MMDG）领域进展被高估，现有方法在统一基准下仅比ERM基线有边际提升。",
+        "research_motivation": "多模态域泛化（MMDG）研究日益增多，但缺乏标准化评估协议，导致难以判断性能提升是真实算法进步还是评估不一致的产物。现有基准局限于动作识别，忽略了输入损坏、模态缺失和模型可信度等实际挑战。",
+        "problem": "缺乏统一、全面的基准来公平比较MMDG方法，并评估其在多种任务、模态组合和实际挑战下的表现。",
+        "phenomenon_analysis": "通过大规模实验发现：1) 公平比较下，近期专用MMDG方法仅比ERM基线有边际提升；2) 没有方法在所有数据集或模态组合上一致最优；3) 与上界性能仍有较大差距；4) 三模态融合并不总是优于最强的双模态组合；5) 所有方法在损坏和缺失模态场景下性能显著下降，部分方法还损害了模型可信度。",
+        "method": "构建MMDG-Bench，统一评估框架，涵盖6个数据集（动作识别、机械故障诊断、情感分析）、6种模态组合、9种代表性方法，并评估标准准确率、损坏鲁棒性、缺失模态泛化、误分类检测和分布外检测。",
         "contributions": [
-          "提出首个统一的多模态域泛化基准MMDG-Bench",
-          "通过大规模实验（7402个神经网络、95个跨域任务）揭示五个关键发现"
+          "提出首个统一、全面的多模态域泛化基准MMDG-Bench，标准化评估协议。",
+          "通过大规模实验（7402个神经网络，95个跨域任务）揭示当前MMDG方法的真实进展有限，并指出关键挑战。"
         ],
-        "experiments": "在6个数据集（动作识别、机械故障诊断、情感分析）上评估9种方法，训练7402个神经网络，涵盖95个跨域任务，评估标准准确率、鲁棒性、缺失模态泛化、误分类检测和分布外检测。",
+        "experiments": "在6个数据集、6种模态组合、9种方法上进行了大规模实验，包括标准准确率、损坏鲁棒性、缺失模态泛化、误分类检测和分布外检测。",
         "limitations": [
-          "基准可能未覆盖所有多模态域泛化场景",
-          "未提出新的算法改进"
+          "基准可能未覆盖所有MMDG任务或最新方法。",
+          "实验结论基于特定数据集和设置，泛化性需进一步验证。"
         ],
-        "relevance": "与视觉-语言模型（VLM）的多模态域泛化评估相关，可指导VLM在真实场景下的鲁棒性研究。",
+        "primary_area_en": "datasets and benchmarks",
         "primary_area": "数据集与基准",
-        "sub_area": "多模态域泛化",
+        "category": "数据集 (不含评测协议)",
+        "sub_area": "数据集 (不含评测协议)",
         "tags": [
-          "多模态域泛化",
-          "基准",
-          "鲁棒性"
+          "Multimodal Domain Generalization",
+          "Benchmark"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "多模态域泛化（MMDG）领域进展被高估，现有方法在统一基准下仅比ERM基线有边际提升。"
       }
     },
     {
@@ -215,28 +230,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06637",
       "pdf_url": "https://arxiv.org/pdf/2605.06637",
       "analysis": {
-        "one_sentence_summary": "提出动态掩码度量学习框架DPM++，通过自适应选择可靠身份子空间和CLIP引导的两阶段监督，解决遮挡行人重识别中的可见性不一致匹配问题。",
-        "problem": "遮挡导致行人图像不完整，全局度量学习不可靠，现有方法依赖额外预训练模型或数据增强，缺乏统一框架处理真实遮挡模式下的鲁棒匹配。",
-        "method": "DPM++框架：在分类器-原型空间中学习输入自适应的动态掩码度量，利用CLIP文本分支传递ID级语义先验；引入显著性引导的块迁移策略合成可控逼真遮挡样本；采用遮挡感知样本配对和掩码引导优化。",
+        "tldr": "提出动态掩码度量学习框架DPM++，通过自适应选择可靠身份子空间解决遮挡行人重识别中的不完整样本匹配问题。",
+        "research_motivation": "遮挡导致行人图像不完整，全局度量学习不可靠，现有方法依赖额外预训练模型或数据增强，缺乏统一框架处理真实遮挡模式。",
+        "problem": "遮挡行人重识别中，不完整遮挡样本与整体身份表示之间的不匹配问题。",
+        "phenomenon_analysis": "严重遮挡会移除判别性身体线索并引入背景和遮挡物的干扰，使全局度量学习不可靠。",
+        "method": "提出DPM++框架，包含：1) 输入自适应的掩码度量，动态选择可靠身份子空间；2) CLIP两阶段监督，从文本分支学习ID语义先验并迁移到分类器-原型空间；3) 显著性引导的补丁转移策略，生成可控且逼真的遮挡样本；4) 遮挡感知样本配对和掩码引导优化。",
         "contributions": [
-          "提出动态掩码度量学习框架，自适应选择可靠身份子空间进行遮挡匹配",
-          "引入CLIP两阶段监督，将文本语义先验迁移到分类器-原型空间",
-          "设计显著性引导的块迁移策略，生成真实遮挡样本增强训练"
+          "提出动态掩码度量学习框架，实现遮挡场景下可见性一致的匹配",
+          "引入CLIP两阶段监督和显著性引导的遮挡样本生成策略"
         ],
         "experiments": "在遮挡和整体行人重识别基准上，DPM++在整体和遮挡场景下均一致优于先前最先进方法。",
         "limitations": [
-          "依赖CLIP模型，可能引入额外计算开销",
-          "块迁移策略可能不适用于极端遮挡或复杂背景"
+          "可能依赖CLIP预训练模型，增加计算开销",
+          "动态掩码机制在极端遮挡下可能仍存在局限性"
         ],
-        "relevance": "与视觉-语言模型（VLM）相关，利用CLIP进行语义监督",
-        "primary_area": "应用：CV/音频/语言等",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉理解",
         "sub_area": "视觉理解",
         "tags": [
-          "VLM",
-          "行人重识别",
-          "遮挡"
+          "Person Re-identification",
+          "Occlusion",
+          "Metric Learning"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "提出动态掩码度量学习框架DPM++，通过自适应选择可靠身份子空间解决遮挡行人重识别中的不完整样本匹配问题。"
       }
     },
     {
@@ -261,28 +279,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06592",
       "pdf_url": "https://arxiv.org/pdf/2605.06592",
       "analysis": {
-        "one_sentence_summary": "DINORANKCLIP通过注入冻结的DINOv3教师和引入高阶排序一致性损失，同时解决了CLIP中对称InfoNCE损失忽略负样本排序和全局池化丢失细粒度局部结构的问题。",
-        "problem": "CLIP存在两个结构弱点：对称InfoNCE损失丢弃了批次内不匹配样本对的相对排序，以及全局池化将视觉表示压缩为对细粒度局部结构不敏感的语义瓶颈。",
-        "method": "提出DINORANKCLIP框架，主要贡献是向对比主干注入冻结的DINOv3教师，通过双分支轻量学生网络和多尺度融合模块（含通道-空间注意力、自注意力精炼器和冲突感知门）保持一阶跨模态对齐；同时引入高阶Plackett-Luce排序模型，其中每位置效用通过注意力参数化的成对和元组转移项增强，最优阶数为R*=3。",
+        "tldr": "DINORANKCLIP通过注入DINOv3教师和高阶排序一致性损失，同时解决CLIP的全局池化瓶颈和排序信息丢失问题。",
+        "research_motivation": "CLIP存在两个结构弱点：对称的InfoNCE损失丢弃了未匹配批次对之间的相对排序，且全局池化将视觉表示压缩为语义瓶颈，对细粒度局部结构不敏感。RANKCLIP仅部分解决了第一个问题，且模型严格一阶，未触及第二个弱点。",
+        "problem": "同时解决CLIP的全局池化导致的细粒度结构丢失和对比学习中的排序信息丢失问题。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "提出DINORANKCLIP框架，通过双分支轻量学生网络和多尺度融合模块（含通道-空间注意力、自注意力精炼器和冲突感知门）注入冻结的DINOv3教师，并引入高阶Plackett-Luce排序模型，其中每位置效用被注意力参数化的成对和元组转移项增强。",
         "contributions": [
-          "提出DINORANKCLIP框架，联合解决CLIP的两个结构弱点",
-          "引入高阶Plackett-Luce排序一致性损失，包含注意力参数化的成对和元组转移项",
-          "通过双分支轻量学生网络和多尺度融合模块注入冻结的DINOv3教师，保持一阶跨模态对齐"
+          "提出DINORANKCLIP框架，联合解决CLIP的全局池化瓶颈和排序信息丢失问题。",
+          "引入高阶Plackett-Luce排序模型，包含CLIP和RANKCLIP作为零阶和一阶特例，并确定最优阶数为3。"
         ],
-        "experiments": "在Conceptual Captions 3M上训练，单节点8 GPU H100耗时72小时。进行了阶数扫描、五个数据集上的细粒度探测、四节点模态间隙分析、六变体融合消融实验。DINORANKCLIP在匹配计算量下一致优于CLIP、CyCLIP、ALIP和RANKCLIP，在细粒度和分布外评估上相对增益最大。",
+        "experiments": "在Conceptual Captions 3M上训练，进行阶数扫描、五个数据集的细粒度探测、四节点模态间隙分析、六变体融合消融实验，均在单节点8-GPU H100上72小时内完成。DINORANKCLIP在匹配计算量下一致优于CLIP、CyCLIP、ALIP和RANKCLIP，在细粒度和分布外评估上增益最大。",
         "limitations": [
-          "依赖冻结的DINOv3教师，可能限制学生网络学习新特征的能力",
-          "高阶排序模型增加了计算复杂度，可能影响训练效率"
+          "依赖冻结的DINOv3教师，可能限制跨模态对齐的灵活性。",
+          "高阶排序模型的计算开销可能随阶数增加而增长。"
         ],
-        "relevance": "与视觉-语言模型（VLM）预训练直接相关，可提升细粒度理解和分布外泛化能力。",
-        "primary_area": "基础/前沿模型 (含LLM)",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉-语言模型 (VLM/MLLM)",
         "sub_area": "视觉-语言模型 (VLM/MLLM)",
         "tags": [
-          "VLM",
-          "对比学习",
-          "排序一致性"
+          "CLIP",
+          "Vision-Language Pretraining",
+          "Ranking Consistency",
+          "DINOv3"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "DINORANKCLIP通过注入DINOv3教师和高阶排序一致性损失，同时解决CLIP的全局池化瓶颈和排序信息丢失问题。"
       }
     },
     {
@@ -304,24 +326,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06572",
       "pdf_url": "https://arxiv.org/pdf/2605.06572",
       "analysis": {
-        "one_sentence_summary": "提出一种基于FFT插值的无矩阵求逆方法，用于高效求解相机几何估计中的最小问题。",
-        "problem": "传统基于Gröbner基或结式的方法在求解最小问题时需要矩阵求逆，计算成本高。",
-        "method": "采用稀疏隐变量结式，通过逆快速傅里叶变换插值从采样评估中重构行列式多项式，避免符号展开；利用秩1缺陷子矩阵和Cramer法则恢复未知数，并基于最大公约数准则实现鲁棒子矩阵识别。",
+        "tldr": "提出一种基于FFT插值的无矩阵求逆最小问题求解器，用于相机几何估计。",
+        "research_motivation": "现有基于Gröbner基或结式的方法在求解最小问题时需要矩阵求逆，计算复杂且数值稳定性受限。",
+        "problem": "如何在不进行矩阵求逆的情况下高效求解相机几何估计中的最小问题。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "使用稀疏隐变量结式，通过逆快速傅里叶变换插值重构隐变量行列式多项式，避免符号展开；求解多项式后通过识别秩1亏缺子矩阵并应用Cramer法则恢复其余未知量，并采用最大公约数准则实现鲁棒子矩阵识别。",
         "contributions": [
-          "提出无矩阵求逆的采样求解方法，降低计算复杂度",
-          "利用FFT插值高效重构隐变量结式的行列式多项式",
-          "引入GCD准则增强噪声下子矩阵识别的鲁棒性"
+          "提出一种无矩阵求逆的采样方法，基于稀疏隐变量结式和FFT插值构建求解器。",
+          "引入最大公约数准则，在噪声下鲁棒识别秩1亏缺子矩阵。"
         ],
-        "experiments": "在多种最小问题上实验，表明所提求解器数值稳定性强，小规模问题运行时竞争力好。",
+        "experiments": "在多种最小问题上实验，表明所提求解器数值稳定性强，运行时间有竞争力，尤其适用于小规模问题。",
         "limitations": [
-          "可能对大规模问题效率提升有限",
-          "依赖采样和插值，精度受采样密度影响"
+          "可能对大规模问题效率不高。",
+          "依赖采样和插值，精度可能受采样点数量影响。"
         ],
-        "relevance": "与视觉几何估计相关，但与VLM/视频生成/医学影像/LLM训练无直接关系。",
-        "primary_area": "其他ML主题",
-        "sub_area": "其他",
-        "tags": [],
-        "reading_priority": "low"
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉理解",
+        "sub_area": "视觉理解",
+        "tags": [
+          "Minimal Problems",
+          "Camera Geometry",
+          "FFT Interpolation"
+        ],
+        "reading_priority": "medium",
+        "one_sentence_summary": "提出一种基于FFT插值的无矩阵求逆最小问题求解器，用于相机几何估计。"
       }
     },
     {
@@ -350,29 +379,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06537",
       "pdf_url": "https://arxiv.org/pdf/2605.06537",
       "analysis": {
-        "one_sentence_summary": "MedHorizon 是一个用于评估长上下文医学视频理解能力的基准，包含759小时完整临床手术视频和1253个基于证据的多选题，揭示了现有模型在稀疏证据检索和临床推理上的严重不足。",
-        "problem": "现有医学多模态大模型主要处理图像和短视频，缺乏对完整临床手术视频的长上下文理解能力，且现有基准假设证据已被定位，未充分测试检索-推理问题。",
-        "method": "构建 MedHorizon 基准，包含759小时完整临床手术视频和1253个基于证据的多选题，证据帧平均仅占0.166%，要求模型在噪声流程中检索稀疏证据并进行多跳临床推理。",
+        "tldr": "提出长上下文医疗视频理解基准MedHorizon，揭示当前模型在稀疏证据检索与多跳推理上的瓶颈。",
+        "research_motivation": "真实临床审查需要全程视频理解，但现有基准仅关注图像或短片段，忽略了从冗长视频中检索稀疏证据再推理的挑战。",
+        "problem": "现有MLLM在完整临床流程视频中难以同时实现稀疏证据检索与多跳临床推理。",
+        "phenomenon_analysis": "摘要指出：性能不随帧数增加可靠提升；证据检索和临床解释是主要瓶颈；冗余下注意力漂移导致推理弱；通用采样方法无法平衡局部细节与全局覆盖。",
+        "method": "构建MedHorizon基准，包含759小时完整临床视频和1253个基于证据的多选题，平均仅0.166%证据帧，评估模型在稀疏证据理解与多跳推理上的能力。",
         "contributions": [
-          "提出了首个面向野外长上下文医学视频理解的基准 MedHorizon",
-          "通过1253个基于证据的多选题联合评估稀疏证据理解和多跳临床推理",
-          "揭示了当前模型在完整手术视频理解上的瓶颈：证据检索和临床解释"
+          "提出首个面向完整临床流程的长上下文医疗视频理解基准MedHorizon",
+          "系统评估多种MLLM并揭示稀疏证据检索与临床推理的关键瓶颈"
         ],
-        "experiments": "摘要未提供具体实验结果，但提到最佳模型准确率仅41.1%，并给出四个关键发现。",
+        "experiments": "评估多个通用、医疗和长视频MLLM，最佳模型准确率仅41.1%，摘要未提供更多实验细节。",
         "limitations": [
-          "基准仅包含手术视频，可能不覆盖其他医学视频类型",
-          "多选题形式可能无法完全反映真实临床决策的复杂性"
+          "基准仅包含选择题形式，可能无法完全反映真实临床决策的复杂性",
+          "未提供模型改进方法或缓解瓶颈的具体方案"
         ],
-        "relevance": "与视觉-语言模型（VLM/MLLM）、长视频理解、医学影像分析、多模态推理等方向密切相关。",
-        "primary_area": "数据集与基准",
-        "sub_area": "医学视频理解基准",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉-语言模型 (VLM/MLLM)",
+        "sub_area": "视觉-语言模型 (VLM/MLLM)",
         "tags": [
-          "VLM",
-          "Video Understanding",
-          "Medical Imaging",
+          "MLLM",
+          "Medical Video Understanding",
+          "Long-context",
           "Benchmark"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出长上下文医疗视频理解基准MedHorizon，揭示当前模型在稀疏证据检索与多跳推理上的瓶颈。"
       }
     },
     {
@@ -395,27 +427,33 @@
       "entry_url": "https://arxiv.org/abs/2605.06535",
       "pdf_url": "https://arxiv.org/pdf/2605.06535",
       "analysis": {
-        "one_sentence_summary": "本文提出Sparkle数据集和模型，通过解耦引导实现指令驱动的视频背景替换，显著优于现有方法。",
-        "problem": "视频背景替换任务因缺乏高质量训练数据而未被充分探索，现有数据集生成的背景静态且不自然。",
-        "method": "设计可扩展的数据合成流水线，以解耦方式生成前景和背景引导，并经过严格质量过滤，构建Sparkle数据集和Sparkle-Bench基准。",
+        "tldr": "提出解耦引导的指令驱动视频背景替换数据集Sparkle及模型，显著优于现有基线。",
+        "research_motivation": "视频背景替换是影视、广告等创意应用的核心任务，但现有公开数据集主要聚焦局部编辑或风格迁移，缺乏高质量背景替换数据，导致现有模型（如Kiwi-Edit）生成结果静态、不自然。",
+        "problem": "解决视频背景替换任务中高质量训练数据稀缺的问题，以及现有数据合成方法因缺乏精确背景引导导致质量低下的问题。",
+        "phenomenon_analysis": "现有开源数据集OpenVE-3M生成的背景替换结果常出现静态、不自然的背景，原因是数据合成过程中缺乏精确的背景引导。",
+        "method": "设计可扩展的数据合成流水线，采用解耦方式分别生成前景和背景引导，并经过严格质量过滤；基于此构建Sparkle数据集（约14万视频对，覆盖5种常见背景更换主题）和Sparkle-Bench评估基准。",
         "contributions": [
-          "提出Sparkle数据集，包含约14万视频对，覆盖五种常见背景更换主题",
-          "构建Sparkle-Bench，目前最大的视频背景替换评估基准",
-          "开源数据集、基准和模型，实验表明在OpenVE-Bench和Sparkle-Bench上均显著优于现有基线"
+          "提出解耦引导的数据合成流水线，有效提升背景替换数据质量。",
+          "构建Sparkle数据集和Sparkle-Bench基准，填补高质量背景替换数据空白。",
+          "实验表明基于Sparkle训练的模型在OpenVE-Bench和Sparkle-Bench上均显著优于现有基线。"
         ],
-        "experiments": "摘要未提供具体实验结果，仅说明模型在OpenVE-Bench和Sparkle-Bench上优于所有现有基线。",
+        "experiments": "在OpenVE-Bench和Sparkle-Bench上评估，模型性能显著优于所有现有基线。",
         "limitations": [
-          "数据集规模有限（约14万对），可能无法覆盖所有复杂场景",
-          "解耦引导流水线可能依赖特定质量过滤阈值，泛化性需进一步验证"
+          "数据集仅覆盖五种常见背景更换主题，可能无法涵盖所有场景。",
+          "方法依赖解耦引导，对复杂前景-背景交互可能仍有局限。"
         ],
-        "relevance": "与视频生成、视觉-语言模型（VLM）相关，涉及指令引导的视频编辑。",
-        "primary_area": "数据集与基准",
-        "sub_area": "视频生成",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉-语言模型 (VLM/MLLM)",
+        "sub_area": "视觉-语言模型 (VLM/MLLM)",
         "tags": [
-          "VLM",
-          "Video Generation"
+          "Video Editing",
+          "Background Replacement",
+          "Dataset",
+          "Instruction-Guided"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出解耦引导的指令驱动视频背景替换数据集Sparkle及模型，显著优于现有基线。"
       }
     },
     {
@@ -435,28 +473,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06512",
       "pdf_url": "https://arxiv.org/pdf/2605.06512",
       "analysis": {
-        "one_sentence_summary": "提出默认完成排斥（DCR）框架，通过反事实吸引子投影排斥机制抑制扩散模型中的默认完成偏差，实现稀有组合生成。",
-        "problem": "扩散模型在生成稀有但合理的组合（如雪地海滩、夜晚彩虹）时，由于默认完成偏差，倾向于生成高频语义配置，导致组合失败。",
-        "method": "构建反事实吸引子，通过放松稀有组合因子并保留周围语义，诱导出反映模型偏好完成的替代去噪轨迹；定义目标轨迹与吸引子轨迹的差异为反事实漂移，并采用基于投影的排斥机制移除与该漂移方向对齐的引导成分，从而抑制不期望的频繁完成。",
+        "tldr": "提出无需训练的 Default Completion Repulsion (DCR) 框架，通过反事实吸引子抑制扩散模型的默认完成偏差，提升罕见组合生成保真度。",
+        "research_motivation": "扩散模型在生成罕见但合理的组合（如雪地海滩、夜间彩虹）时，常因训练数据中的高频语义配置而坍缩为常见结果，现有引导机制无法显式建模这种竞争倾向。",
+        "problem": "扩散模型在罕见组合生成中存在的默认完成偏差，即去噪轨迹被隐式吸引向高频语义配置，导致生成失败。",
+        "phenomenon_analysis": "识别出默认完成偏差这一失败模式：模型在罕见组合提示下倾向于生成更常见的替代结果。",
+        "method": "DCR 框架：通过松弛罕见组合因子构建反事实吸引子，定义目标与吸引子轨迹间的反事实漂移，并采用基于投影的排斥机制移除与该漂移方向对齐的引导分量，从而抑制默认完成行为。",
         "contributions": [
-          "识别并命名了扩散模型中的默认完成偏差问题",
-          "提出无需重新训练或修改架构的DCR框架，通过反事实吸引子和投影排斥机制有效抑制默认完成偏差",
-          "实验证明DCR在稀有组合提示下提高了组合保真度并保持视觉质量"
+          "识别并形式化了扩散模型中的默认完成偏差问题。",
+          "提出无需训练的反事实吸引子引导框架 DCR，通过投影排斥机制提升罕见组合生成质量。"
         ],
-        "experiments": "在稀有组合提示上进行实验，结果显示DCR提高了组合保真度并保持了视觉质量。",
+        "experiments": "在罕见组合提示上实验，DCR 提升了组合保真度并保持了视觉质量。摘要未提供具体实验结果。",
         "limitations": [
-          "可能依赖反事实吸引子的构建质量",
-          "未在多种扩散模型架构上验证泛化性"
+          "可能仅适用于特定类型的罕见组合，泛化性需进一步验证。",
+          "排斥机制可能在某些情况下过度抑制合理语义。"
         ],
-        "relevance": "与生成模型（尤其是扩散模型）的可控生成和偏差校正相关，可应用于视觉-语言模型中的组合生成任务。",
+        "primary_area_en": "generative models",
         "primary_area": "生成模型",
+        "category": "扩散模型",
         "sub_area": "扩散模型",
         "tags": [
-          "扩散模型",
-          "可控生成",
-          "组合生成"
+          "Diffusion Models",
+          "Counterfactual Guidance",
+          "Compositional Generation"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出无需训练的 Default Completion Repulsion (DCR) 框架，通过反事实吸引子抑制扩散模型的默认完成偏差，提升罕见组合生成保真度。"
       }
     },
     {
@@ -480,27 +521,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06509",
       "pdf_url": "https://arxiv.org/pdf/2605.06509",
       "analysis": {
-        "one_sentence_summary": "FreeSpec 提出一种无需训练的频谱重建框架，通过奇异值分解融合全局和局部特征，解决长视频生成中的内容漂移和时间不一致问题。",
-        "problem": "现有视频扩散模型在无训练扩展至长视频时，存在内容漂移、时间不一致和动态过度平滑的问题，且全局与局部分支的刚性特征划分在动作与外观紧密耦合时不可靠。",
-        "method": "从奇异谱角度分析问题，提出 FreeSpec 框架：利用奇异值分解将全局和局部特征分解，全局分支作为低秩谱指导，局部分支作为高秩重建基，实现谱级融合。",
+        "tldr": "FreeSpec 通过奇异谱分解实现免训练长视频生成，避免内容漂移并保留时空细节。",
+        "research_motivation": "现有视频扩散模型在短视频合成上表现良好，但免训练扩展至长视频时容易出现内容漂移、时序不一致和动态过度平滑等问题。",
+        "problem": "长视频生成中，全局与局部特征分解规则不可靠，导致外观与动作紧密耦合时（如相机运动）出现光谱能量集中，抑制高频细节和运动变化。",
+        "phenomenon_analysis": "摘要观察到，扩大自注意力窗口会导致光谱能量集中，即能量被少数低秩奇异方向主导，保留粗结构但抑制高秩空间细节和运动丰富的时序变化。",
+        "method": "提出 FreeSpec，一种免训练的光谱重建框架，通过奇异值分解将全局特征作为低秩光谱引导，局部特征作为高秩重建基础，实现频谱级融合。",
         "contributions": [
-          "从奇异谱视角揭示了长视频生成中自注意力窗口扩大导致谱能量集中的问题",
-          "提出 FreeSpec，一种无需训练的谱重建框架，通过谱级融合避免刚性特征划分",
-          "在 Wan2.1 和 LTX-Video 上验证了方法在保持视觉质量和时间一致性的同时提升时间动态"
+          "从奇异谱角度分析长视频时序扩展问题，揭示自注意力窗口扩大导致的光谱集中现象。",
+          "提出 FreeSpec 框架，通过频谱级融合避免刚性特征划分，同时保持长程一致性和时空细节。"
         ],
-        "experiments": "在 Wan2.1 和 LTX-Video 上实验，FreeSpec 改进了长视频生成，特别是时间动态，同时保持强视觉质量和时间一致性。摘要未提供具体数值结果。",
+        "experiments": "在 Wan2.1 和 LTX-Video 上实验，FreeSpec 提升了长视频生成质量，特别是时序动态，同时保持视觉质量和时序一致性。",
         "limitations": [
-          "可能依赖预训练模型的奇异谱特性，泛化性需进一步验证",
-          "未讨论计算开销，谱分解可能增加推理时间"
+          "可能依赖特定扩散模型架构，泛化性需进一步验证。",
+          "未讨论计算开销，尽管是免训练方法。"
         ],
-        "relevance": "与视频生成方向直接相关，涉及扩散模型的无训练扩展和时序一致性，与 VLM 的视觉理解有间接关联。",
+        "primary_area_en": "generative models",
         "primary_area": "生成模型",
-        "sub_area": "视频生成",
+        "category": "文本到视频 (T2V)",
+        "sub_area": "文本到视频 (T2V)",
         "tags": [
           "Video Generation",
-          "Diffusion Models"
+          "Diffusion Models",
+          "Training-Free"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "FreeSpec 通过奇异谱分解实现免训练长视频生成，避免内容漂移并保留时空细节。"
       }
     },
     {
@@ -525,28 +570,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06507",
       "pdf_url": "https://arxiv.org/pdf/2605.06507",
       "analysis": {
-        "one_sentence_summary": "提出MARBLE框架，通过梯度空间优化平衡多奖励信号，实现扩散模型的多维度对齐。",
-        "problem": "现有扩散模型强化学习微调中，多奖励优化存在样本级不匹配问题，加权求和或顺序微调难以有效联合训练。",
-        "method": "为每个奖励维护独立优势估计器，计算各奖励策略梯度，通过二次规划求解统一更新方向，并采用摊销公式和EMA平滑降低计算成本。",
+        "tldr": "提出梯度空间优化框架MARBLE，通过解耦多奖励梯度并求解二次规划实现扩散模型多目标对齐，无需手动调权。",
+        "research_motivation": "扩散模型微调需同时优化多个评估维度（如美学、文本对齐等），现有加权求和或顺序微调方法无法有效联合训练，导致模型偏向单一奖励或需要大量手动调参。",
+        "problem": "如何在不手动调整奖励权重的前提下，实现扩散模型在多个奖励维度上的联合优化，避免样本级不匹配导致的梯度冲突。",
+        "phenomenon_analysis": "发现加权求和奖励聚合存在样本级不匹配：大部分采样样本仅对部分奖励维度有高信息量，对其他维度无关，加权求和会稀释有效监督信号。",
+        "method": "提出MARBLE框架，为每个奖励维护独立优势估计器，计算各奖励的策略梯度，通过求解二次规划问题将多个梯度协调为单一更新方向；进一步利用扩散损失仿射结构设计摊销版本，将每步计算成本从K+1次反向传播降至接近单奖励基线，并采用EMA平滑平衡系数。",
         "contributions": [
-          "提出梯度空间优化框架MARBLE，无需手动调权即可平衡多奖励。",
-          "设计摊销公式将每步反向传播次数从K+1降至接近单奖励基线。",
-          "在SD3.5 Medium上五个奖励维度同时提升，训练速度达基线0.97倍。"
+          "揭示加权求和奖励聚合在扩散模型多奖励微调中的样本级不匹配问题。",
+          "提出MARBLE梯度空间优化框架，无需手动调权即可联合优化多个奖励。",
+          "设计摊销版本降低计算开销，使训练速度达到基线训练的0.97倍。"
         ],
-        "experiments": "在SD3.5 Medium上使用五个奖励进行实验，所有奖励维度同时提升，最差对齐奖励的梯度余弦从80%小批量负值转为持续正值，训练速度为基线0.97倍。",
+        "experiments": "在SD3.5 Medium上使用五个奖励进行实验，MARBLE同时提升所有五个奖励维度，将最差对齐奖励的梯度余弦从加权求和下80%小批量为负变为持续为正，训练速度为基线0.97倍。",
         "limitations": [
           "可能依赖奖励函数的设计质量。",
-          "二次规划求解可能带来额外计算开销。"
+          "二次规划求解可能引入额外超参数。"
         ],
-        "relevance": "与扩散模型对齐、多目标优化相关，可应用于图像生成、视频生成等生成模型。",
+        "primary_area_en": "generative models",
         "primary_area": "生成模型",
-        "sub_area": "扩散模型对齐",
+        "category": "扩散模型",
+        "sub_area": "扩散模型",
         "tags": [
           "Diffusion Models",
           "Reinforcement Learning",
           "Multi-Objective Optimization"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出梯度空间优化框架MARBLE，通过解耦多奖励梯度并求解二次规划实现扩散模型多目标对齐，无需手动调权。"
       }
     },
     {
@@ -567,27 +616,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06487",
       "pdf_url": "https://arxiv.org/pdf/2605.06487",
       "analysis": {
-        "one_sentence_summary": "提出一种基于可控2D切片导航的自监督预训练方法，将3D MRI体积转化为可控制的视频动作序列，用于学习解剖和空间表示。",
-        "problem": "现有自监督预训练方法将MRI扫描视为静态切片、块或体积的聚合，缺乏利用内在自监督信号的新形式。",
-        "method": "通过渲染连续位置、方向和尺度的切片，将3D体积转化为可控的2D视频动作序列，并采用动作条件预训练目标，包括切片编码器和潜在动力学模型。",
+        "tldr": "将3D MRI扫描转化为可控2D切片导航视频序列，通过动作条件预训练学习解剖与空间表征。",
+        "research_motivation": "现有自监督预训练方法将MRI扫描视为静态切片/体素聚合，缺乏利用内在空间导航信号的机制。",
+        "problem": "如何设计一种不同于掩码重建的自监督信号，从3D MRI中学习解剖与空间表征。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "将3D体素渲染为连续位置、方向、尺度的2D切片序列，形成视频-动作对；使用tokenizer编码切片观测，并训练潜在动力学模型预测潜在特征演化。",
         "contributions": [
-          "提出将3D MRI体积转化为可控2D切片导航序列的新预训练范式",
-          "设计动作条件预训练目标，结合切片编码器和潜在动力学模型"
+          "提出一种基于可控2D切片导航的自监督预训练框架，将3D MRI转化为视频动作序列。",
+          "在多个解剖和空间下游任务上验证了该方法相比静态体素基线、仅tokenizer预训练及无对齐动作的动力学变体的有效性。"
         ],
-        "experiments": "摘要未提供具体实验结果，仅提及在解剖和空间下游任务中与多种基线对比，表明该方法有效。",
+        "experiments": "在代表性解剖和空间下游任务上评估，对比标准静态体素基线、仅tokenizer预训练及无对齐动作的动力学变体。",
         "limitations": [
-          "可能依赖高质量切片渲染和动作控制",
-          "潜在动力学模型可能难以捕捉复杂解剖结构"
+          "可能依赖渲染质量与动作轨迹设计。",
+          "未在超大规模数据集或临床场景中验证。"
         ],
-        "relevance": "与视频生成（可控序列）、医学影像（MRI预训练）相关，但与VLM/LLM训练无直接关系。",
-        "primary_area": "医学与科学AI",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "医学图像",
         "sub_area": "医学图像",
         "tags": [
-          "医学图像",
-          "自监督学习",
-          "视频生成"
+          "3D MRI",
+          "Self-supervised Pretraining",
+          "Controllable Slice Navigation"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "将3D MRI扫描转化为可控2D切片导航视频序列，通过动作条件预训练学习解剖与空间表征。"
       }
     },
     {
@@ -607,27 +660,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06477",
       "pdf_url": "https://arxiv.org/pdf/2605.06477",
       "analysis": {
-        "one_sentence_summary": "GeoStack 提出一种模块化框架，通过几何约束实现视觉-语言模型中多领域专家知识的无损组合，并保持恒定推理复杂度。",
-        "problem": "视觉-语言模型在积累多领域或多任务知识时面临灾难性遗忘问题。",
-        "method": "提出 GeoStack 框架，通过几何堆叠（Geometric Stacking）对适配器流形施加几何与结构约束，保留基模型知识，并利用权重折叠性质实现恒定推理复杂度。",
+        "tldr": "GeoStack通过几何约束的适配器流形实现VLM多领域知识组合，避免灾难性遗忘并保持恒定推理时间。",
+        "research_motivation": "VLM在多个领域或任务上积累专业知识时，通常会导致灾难性遗忘，现有方法缺乏高效且可扩展的知识组合机制。",
+        "problem": "如何在不遗忘基础知识的前提下，将多个独立训练的领域专家模型组合成一个统一的VLM，并保持推理效率。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "GeoStack框架：对适配器流形施加几何和结构约束，确保基础模型知识被保留；并利用权重折叠性质实现与专家数量无关的恒定推理复杂度。",
         "contributions": [
-          "提出 GeoStack 模块化框架，支持独立训练的领域专家组合成统一模型。",
-          "数学证明权重折叠性质，实现与专家数量无关的恒定推理复杂度 O(1)。"
+          "提出GeoStack模块化框架，支持独立训练的领域专家组合成统一VLM。",
+          "数学证明权重折叠性质，实现O(1)推理复杂度。",
+          "在多领域适应和类增量学习任务上验证了缓解灾难性遗忘的有效性。"
         ],
-        "experiments": "摘要未提供具体实验结果。",
+        "experiments": "在多领域适应和类增量学习任务上进行实验，显示GeoStack能有效缓解灾难性遗忘。摘要未提供具体数值。",
         "limitations": [
-          "可能仅适用于适配器形式的专家组合，对全模型微调场景不适用。",
-          "几何约束可能限制专家间的交互灵活性。"
+          "可能仅适用于适配器架构的VLM，对全微调模型不适用。",
+          "几何约束的设计可能依赖特定任务，泛化性需进一步验证。"
         ],
-        "relevance": "与视觉-语言模型（VLM）的知识组合与持续学习相关。",
+        "primary_area_en": "foundation or frontier models, including LLMs",
         "primary_area": "基础/前沿模型 (含LLM)",
-        "sub_area": "视觉-语言模型 (VLM/MLLM)",
+        "category": "多模态基础模型",
+        "sub_area": "多模态基础模型",
         "tags": [
           "VLM",
           "Knowledge Composition",
           "Catastrophic Forgetting"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "GeoStack通过几何约束的适配器流形实现VLM多领域知识组合，避免灾难性遗忘并保持恒定推理时间。"
       }
     },
     {
@@ -650,27 +708,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06421",
       "pdf_url": "https://arxiv.org/pdf/2605.06421",
       "analysis": {
-        "one_sentence_summary": "FREPix提出了一种频率异质流匹配框架，将像素空间图像生成显式分解为低频和高频分量，实现从粗到细的生成。",
-        "problem": "现有像素空间扩散方法将图像生成视为频率同质过程，忽略了低频和高频分量的不同作用和学习动态。",
-        "method": "将生成显式分解为低频和高频分量，分配独立传输路径，使用分解网络预测，并采用频率感知目标训练。",
+        "tldr": "FREPix 通过频率异质流匹配框架，在像素空间图像生成中显式分离高低频成分，实现粗到细生成，在低NFE下取得强性能。",
+        "research_motivation": "像素空间扩散模型避免了VAE的表示瓶颈，但现有方法将图像生成视为频率同质过程，忽略了低频和高频成分的不同角色和学习动态，导致生成效率和质量受限。",
+        "problem": "如何显式建模图像生成中低频和高频成分的异质学习过程，以提升像素空间生成模型的效率和保真度。",
+        "phenomenon_analysis": "摘要指出，现有方法将图像生成视为频率同质过程，忽略了低频和高频成分的不同角色和学习动态。",
+        "method": "提出FREPix框架，将生成过程显式分解为低频和高频成分，分配独立传输路径，使用分解网络预测，并采用频率感知目标训练，实现显式的粗到细生成。",
         "contributions": [
-          "提出频率异质流匹配框架，显式实现从粗到细的生成。",
+          "提出频率异质流匹配框架FREPix，显式分离低频和高频成分的生成路径。",
           "在ImageNet类条件生成上达到竞争性FID（256×256: 1.91, 512×512: 2.38），尤其在低NFE下表现突出。"
         ],
-        "experiments": "在ImageNet类条件图像生成任务上评估，256×256分辨率下FID为1.91，512×512下FID为2.38，低NFE下表现优异。",
+        "experiments": "在ImageNet类条件图像生成任务上评估，256×256分辨率下FID为1.91，512×512下FID为2.38，低NFE下表现强。",
         "limitations": [
-          "可能依赖特定频率分解策略，泛化性待验证。",
-          "仅针对像素空间生成，未探讨在潜在空间或其他任务上的适用性。"
+          "可能仅适用于像素空间生成，未验证在潜在空间或其他模态的泛化性。",
+          "频率分解策略可能增加模型复杂度和训练开销。"
         ],
-        "relevance": "与生成模型（尤其是扩散/流匹配模型）相关，可启发视频生成或医学图像生成中的频率感知设计。",
+        "primary_area_en": "generative models",
         "primary_area": "生成模型",
-        "sub_area": "图像生成",
+        "category": "图像编辑",
+        "sub_area": "图像编辑",
         "tags": [
-          "Flow Matching",
-          "Pixel-Space Generation",
-          "Frequency Decomposition"
+          "Pixel-space generation",
+          "Flow matching",
+          "Frequency decomposition"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "FREPix 通过频率异质流匹配框架，在像素空间图像生成中显式分离高低频成分，实现粗到细生成，在低NFE下取得强性能。"
       }
     },
     {
@@ -694,28 +756,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06388",
       "pdf_url": "https://arxiv.org/pdf/2605.06388",
       "analysis": {
-        "one_sentence_summary": "本文系统比较了重建型与语义型潜空间在机器人世界模型中的效果，发现语义潜空间在策略相关任务上表现更优。",
-        "problem": "在基于潜扩散模型的世界模型中，选择何种潜空间（重建型还是语义型）对机器人策略评估更有效。",
-        "method": "在BridgeV2数据集上，使用固定协议训练六种编码器（重建型与语义型）的动作条件潜扩散模型，并从视觉保真度、规划与下游策略性能、潜表示质量三个维度评估。",
+        "tldr": "系统比较重建型和语义型潜空间在机器人世界模型中的表现，发现语义潜空间在策略相关任务上更优。",
+        "research_motivation": "基于扩散模型的世界模型在机器人策略评估中日益重要，但潜空间的选择（重建型 vs 语义型）缺乏系统研究，现有工作多默认使用VAE等重建型潜空间，而语义型潜空间的潜力未被充分探索。",
+        "problem": "如何系统评估不同潜空间（重建型与语义型）对动作条件潜扩散世界模型性能的影响，并确定更优选择。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "在BridgeV2数据集上，使用固定协议训练基于六种重建和语义编码器的世界模型变体，提出三个评估轴（视觉保真度、规划与下游策略性能、潜表示质量）进行系统比较。",
         "contributions": [
-          "系统比较了重建型与语义型潜空间在机器人世界模型中的表现",
-          "提出三个评估维度：视觉保真度、规划与策略性能、潜表示质量",
-          "发现语义潜空间（如V-JEPA 2.1）在策略相关任务上优于重建型潜空间"
+          "系统比较了六种重建型和语义型潜空间在机器人世界模型中的表现。",
+          "提出三个评估轴（视觉保真度、规划与策略性能、潜表示质量）用于评估世界模型。",
+          "发现语义潜空间（如V-JEPA 2.1）在策略相关任务上整体优于重建型潜空间。"
         ],
-        "experiments": "在BridgeV2数据集上，使用固定协议训练六种编码器的世界模型变体，并评估三个维度的性能。摘要未提供具体实验结果数值。",
+        "experiments": "在BridgeV2数据集上，使用固定协议训练世界模型变体，比较六种编码器（VAE、Cosmos、V-JEPA 2.1、Web-DINO、SigLIP 2等），评估视觉保真度、规划与策略性能、潜表示质量。",
         "limitations": [
-          "仅基于BridgeV2数据集，可能缺乏泛化性",
-          "未讨论不同编码器计算效率的差异"
+          "仅基于BridgeV2数据集，泛化性需验证。",
+          "未涉及更复杂的机器人任务或真实世界部署。"
         ],
-        "relevance": "与视频生成（动作条件视频扩散模型）和机器人策略学习相关，间接涉及视觉-语言模型（如Web-DINO、SigLIP 2）的应用。",
-        "primary_area": "应用：CV/音频/语言等",
-        "sub_area": "机器人世界模型与视频生成",
+        "primary_area_en": "applications to robotics, autonomy, planning",
+        "primary_area": "应用: 机器人/自动化/规划",
+        "category": "其他",
+        "sub_area": "其他",
         "tags": [
-          "Video Generation",
-          "Robotics",
-          "World Model"
+          "World Model",
+          "Latent Diffusion",
+          "Robotics"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "系统比较重建型和语义型潜空间在机器人世界模型中的表现，发现语义潜空间在策略相关任务上更优。"
       }
     },
     {
@@ -736,26 +802,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06380",
       "pdf_url": "https://arxiv.org/pdf/2605.06380",
       "analysis": {
-        "one_sentence_summary": "本文通过提出迭代四边形网格填充程序，为深度神经网络决策区域的单连通性提供了经验证据。",
-        "problem": "研究图像分类器中决策区域的拓扑性质，特别是其是否具有单连通性（即区域内任何闭合环路能否连续收缩为一点）。",
-        "method": "提出一种迭代四边形网格填充程序，为给定环路构造有限分辨率的标签保持曲面，该曲面完全位于同一决策区域内，并通过Coons补片量化与标准几何插值的偏差。",
+        "tldr": "通过迭代四边形网格填充方法，实验证明深度图像分类器的决策区域不仅是路径连通的，而且是单连通的。",
+        "research_motivation": "理解深度神经网络决策区域的拓扑结构对于解释其内部工作机制至关重要，但现有研究仅证明了路径连通性，更强的单连通性尚未被验证。",
+        "problem": "验证深度图像分类器决策区域是否具有单连通性，即闭合环路能否在区域内连续收缩为一点。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "提出一种迭代四边形网格填充过程，构造给定环路边界内的有限分辨率标签保持曲面，并与Coons曲面片结合量化偏差。",
         "contributions": [
-          "提出了一种验证决策区域单连通性的方法，即迭代四边形网格填充程序。",
-          "通过多个现代图像分类模型上的实验，提供了决策区域不仅路径连通而且单连通的实证证据。"
+          "提出一种验证决策区域单连通性的迭代四边形网格填充方法",
+          "通过多个现代图像分类模型提供支持单连通性假设的实证证据"
         ],
-        "experiments": "摘要未提供具体实验结果。",
+        "experiments": "在多个现代图像分类模型上评估了所提方法，但摘要未提供具体实验结果。",
         "limitations": [
-          "方法可能受限于有限分辨率，无法完全证明连续情况下的单连通性。",
-          "实验仅针对图像分类模型，可能不适用于其他类型网络。"
+          "方法依赖于有限分辨率近似，可能无法完全证明连续情况下的单连通性",
+          "仅针对图像分类器，未推广到其他类型网络"
         ],
-        "relevance": "与可解释AI和深度学习理论相关，不直接涉及VLM、视频生成、医学影像或LLM训练。",
+        "primary_area_en": "interpretability and explainable AI",
         "primary_area": "可解释 AI",
-        "sub_area": "神经网络可解释性",
+        "category": "其他",
+        "sub_area": "其他",
         "tags": [
-          "可解释性",
-          "决策区域拓扑"
+          "决策区域拓扑",
+          "单连通性",
+          "图像分类器"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "通过迭代四边形网格填充方法，实验证明深度图像分类器的决策区域不仅是路径连通的，而且是单连通的。"
       }
     },
     {
@@ -785,27 +856,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06376",
       "pdf_url": "https://arxiv.org/pdf/2605.06376",
       "analysis": {
-        "one_sentence_summary": "提出连续时间分布匹配（CDM）方法，将分布匹配蒸馏从离散时间步扩展到连续时间优化，以提升少步扩散模型的视觉保真度。",
-        "problem": "现有分布匹配蒸馏（DMD）方法仅在少数预定义离散时间步进行监督，导致视觉伪影和过度平滑输出，常需复杂辅助模块（如GAN或奖励模型）来恢复视觉质量。",
-        "method": "CDM通过两种连续时间设计：1）用动态随机长度的连续调度替代固定离散调度，使分布匹配在采样轨迹的任意点而非固定锚点进行；2）提出连续时间对齐目标，在通过学生速度场外推的潜在表示上进行主动离轨迹匹配，改善泛化并保留细节。",
+        "tldr": "提出连续时间分布匹配（CDM），将DMD从离散锚点扩展到连续优化，实现少步扩散蒸馏的高保真图像生成。",
+        "research_motivation": "现有分布匹配蒸馏（DMD）依赖离散时间步的稀疏监督，导致视觉伪影和过平滑输出，常需GAN或奖励模型等复杂辅助模块来恢复保真度，限制了其实际应用。",
+        "problem": "如何在不依赖复杂辅助模块的情况下，通过连续时间优化提升少步扩散蒸馏的视觉保真度。",
+        "phenomenon_analysis": "摘要指出，DMD的离散时间公式和逆KL散度的模式寻求特性会导致视觉伪影和过平滑输出。",
+        "method": "提出连续时间分布匹配（CDM），包含两个连续时间设计：1）动态连续调度，用随机长度的连续调度替代固定离散调度，在采样轨迹的任意点施加分布匹配；2）连续时间对齐目标，通过学生速度场外推的潜在表示进行主动离轨迹匹配，改善泛化并保留精细细节。",
         "contributions": [
-          "首次将分布匹配蒸馏从离散锚定迁移到连续时间优化",
-          "提出动态连续调度和连续时间对齐目标，无需复杂辅助模块即可提升少步生成的视觉保真度"
+          "首次将DMD框架从离散锚点扩展到连续优化，提出连续时间分布匹配（CDM）。",
+          "设计了动态连续调度和连续时间对齐目标，无需复杂辅助模块即可实现高保真少步图像生成。"
         ],
-        "experiments": "在SD3-Medium和Longcat-Image等不同架构上的实验表明，CDM在少步图像生成中提供了极具竞争力的视觉保真度，无需依赖复杂辅助目标。",
+        "experiments": "在SD3-Medium和Longcat-Image等不同架构上进行实验，CDM在少步图像生成中提供了极具竞争力的视觉保真度。",
         "limitations": [
-          "可能对连续时间调度的随机长度敏感，需要调参",
-          "未在视频生成或更大规模模型上验证"
+          "摘要未提及计算开销或训练稳定性方面的潜在问题。",
+          "可能对连续时间调度的超参数敏感。"
         ],
-        "relevance": "与生成模型（尤其是扩散模型加速）相关，可应用于图像生成，对视频生成有潜在借鉴意义。",
+        "primary_area_en": "generative models",
         "primary_area": "生成模型",
-        "sub_area": "扩散模型蒸馏",
+        "category": "扩散模型",
+        "sub_area": "扩散模型",
         "tags": [
-          "扩散模型",
-          "分布匹配蒸馏",
-          "少步生成"
+          "Diffusion Models",
+          "Distribution Matching Distillation",
+          "Continuous-Time",
+          "Few-Step Generation"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出连续时间分布匹配（CDM），将DMD从离散锚点扩展到连续优化，实现少步扩散蒸馏的高保真图像生成。"
       }
     },
     {
@@ -828,27 +904,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06368",
       "pdf_url": "https://arxiv.org/pdf/2605.06368",
       "analysis": {
-        "one_sentence_summary": "提出eX2L框架，通过对比解释惩罚解耦混淆特征，在分布偏移基准上超越当前最优。",
-        "problem": "现有分布偏移缓解方法性能不稳定且缺乏可解释性，难以直接处理虚假相关。",
-        "method": "在训练中惩罚主分类器与混淆分类器的Grad-CAM激活图相似性，实现特征解耦。",
+        "tldr": "提出eX2L框架，通过对比解释图正则化解耦混淆特征，在分布偏移基准上超越SOTA。",
+        "research_motivation": "现有分布偏移缓解方法性能不稳定，常不如ERM，且算法复杂、可解释性差，难以直接处理虚假相关。",
+        "problem": "如何通过可解释的、基于解释的正则化方法，在训练中解耦混淆特征与标签特征，以提升模型在分布偏移下的泛化能力。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "eX2L框架：在训练中同时训练主标签分类器和混淆因子分类器，通过惩罚两者Grad-CAM激活图之间的相似性，实现混淆特征与潜在表征的解耦。",
         "contributions": [
-          "提出基于解释的框架eX2L，通过对比解释对实现可解释的正则化",
-          "在Spawrious Many-to-Many Hard Challenge上以82.24%平均准确率和66.31%最差组准确率超越SOTA"
+          "提出一种可解释的、基于对比解释图的正则化方法eX2L，用于解耦混淆特征。",
+          "在Spawrious Many-to-Many Hard Challenge上取得SOTA，平均准确率82.24%，最差组准确率66.31%。"
         ],
-        "experiments": "在Spawrious Many-to-Many Hard Challenge基准上，eX2L平均准确率82.24%±3.87%，最差组准确率66.31%±8.73%，分别超越SOTA 5.49%和10.90%。",
+        "experiments": "在Spawrious Many-to-Many Hard Challenge基准上评估，eX2L的平均准确率（AA）为82.24%±3.87%，最差组准确率（WGA）为66.31%±8.73%，分别超过当前SOTA 5.49%和10.90%。",
         "limitations": [
-          "依赖Grad-CAM解释质量，可能受限于解释方法的准确性",
-          "需要同时训练两个分类器，计算开销可能较大"
+          "方法依赖Grad-CAM，可能受限于解释图的质量。",
+          "需要同时训练两个分类器，计算开销可能较大。"
         ],
-        "relevance": "与视觉-语言模型（VLM）的分布外泛化相关，可应用于提升VLM在虚假相关下的鲁棒性。",
-        "primary_area": "可解释 AI",
-        "sub_area": "解释性正则化",
+        "primary_area_en": "alignment, fairness, safety, privacy, and societal considerations",
+        "primary_area": "对齐/安全/公平性/隐私",
+        "category": "鲁棒性与对抗",
+        "sub_area": "鲁棒性与对抗",
         "tags": [
-          "分布偏移",
-          "可解释性",
-          "Grad-CAM"
+          "Distribution Shift",
+          "Explainability",
+          "Regularization"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "提出eX2L框架，通过对比解释图正则化解耦混淆特征，在分布偏移基准上超越SOTA。"
       }
     },
     {
@@ -872,26 +952,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06356",
       "pdf_url": "https://arxiv.org/pdf/2605.06356",
       "analysis": {
-        "one_sentence_summary": "SwiftI2V提出了一种高效的图像到视频生成框架，通过条件分段生成实现2K分辨率视频合成，在保持输入图像细节的同时大幅降低计算成本。",
-        "problem": "高分辨率（2K）图像到视频生成面临内存和延迟开销巨大、级联超分辨率方法易产生伪影且偏离输入局部结构的问题。",
-        "method": "采用两阶段设计：首先生成低分辨率运动参考以降低令牌成本和建模负担，然后通过强图像条件化的2K合成恢复输入保真细节；引入条件分段生成（CSG）按段合成视频，每步令牌预算有限，并在段内进行双向上下文交互以提升跨段连贯性和输入保真度。",
+        "tldr": "提出高效高分辨率图像到视频生成框架SwiftI2V，通过条件分段生成实现2K分辨率下202倍GPU时间加速。",
+        "research_motivation": "高分辨率图像到视频生成在2K分辨率下计算成本极高，现有端到端模型内存和延迟过大，而级联超分辨率方法会丢失输入图像的细节结构。",
+        "problem": "如何高效生成高分辨率（2K）图像到视频，同时保持输入图像的细粒度外观细节和时序动态。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "采用两阶段设计：首先生成低分辨率运动参考以减少token成本，然后进行强图像条件化的2K合成；引入条件分段生成（CSG）逐段合成视频，每步token预算有界，并在段内采用双向上下文交互以改善跨段连贯性和输入保真度。",
         "contributions": [
-          "提出SwiftI2V框架，在2K分辨率下实现与端到端基线相当的性能，同时将总GPU时间减少202倍。",
-          "引入条件分段生成（CSG）方法，通过分段合成和双向上下文交互实现高效高分辨率视频生成。"
+          "提出SwiftI2V框架，实现高效高分辨率I2V生成，在2K分辨率下性能与端到端基线相当，GPU时间减少202倍。",
+          "引入条件分段生成（CSG）方法，通过逐段合成和双向上下文交互，在控制开销的同时保持输入保真度和跨段连贯性。"
         ],
-        "experiments": "在VBench-I2V基准上评估2K分辨率性能，与端到端基线相比GPU时间减少202倍，并能在单块数据中心GPU（如H800）或消费级GPU（如RTX 4090）上运行。",
+        "experiments": "在VBench-I2V的2K分辨率上评估，与端到端基线比较，GPU时间减少202倍，并能在单块数据中心GPU（如H800）或消费级GPU（如RTX 4090）上运行。",
         "limitations": [
-          "可能依赖低分辨率运动参考的质量，若运动估计不准确可能影响最终效果。",
-          "分段生成可能引入段间不一致性，尽管双向交互有所缓解。"
+          "可能依赖低分辨率运动参考的质量，若运动估计不准确可能影响最终结果。",
+          "分段生成可能引入段间边界伪影，尽管有双向交互但仍需进一步验证。"
         ],
-        "relevance": "属于视频生成方向，与视觉-语言模型（VLM）中的视频理解与生成任务相关。",
+        "primary_area_en": "generative models",
         "primary_area": "生成模型",
-        "sub_area": "视频生成",
+        "category": "文本到视频 (T2V)",
+        "sub_area": "文本到视频 (T2V)",
         "tags": [
-          "VLM",
-          "Video Generation"
+          "Image-to-Video",
+          "High-Resolution",
+          "Efficient Generation"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出高效高分辨率图像到视频生成框架SwiftI2V，通过条件分段生成实现2K分辨率下202倍GPU时间加速。"
       }
     },
     {
@@ -934,26 +1019,33 @@
       "entry_url": "https://arxiv.org/abs/2605.06337",
       "pdf_url": "https://arxiv.org/pdf/2605.06337",
       "analysis": {
-        "one_sentence_summary": "Earth-o1是一种无需网格的观测原生大气世界模型，直接从非网格观测数据学习连续三维物理演化，实现实时预测和跨传感器推理。",
-        "problem": "传统大气建模将异构观测数据强制映射到预定义网格，限制了原始传感器数据的充分利用并造成计算瓶颈。",
-        "method": "提出观测原生（observation-native）的网格自由世界模型，直接从未网格化的观测数据学习地球系统的连续三维物理演化，集成多种传感器输入到统一的动态场中，无需显式数值求解器。",
+        "tldr": "Earth-o1 是一种无需网格的观测原生大气世界模型，直接从非网格观测数据学习连续三维物理演化，实现实时预报且精度媲美传统数值模型。",
+        "research_motivation": "现代地球观测系统提供海量多模态数据，但传统建模框架将异构测量数据强制映射到预定义空间网格，限制了原始传感器数据的充分利用并造成严重计算瓶颈。",
+        "problem": "如何构建一种无需网格、直接利用非网格观测数据学习大气连续三维物理演化的世界模型，以克服传统网格化建模的局限。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "Earth-o1 是一种观测原生的大气世界模型，通过将多种传感器输入整合到统一的、无网格的连续动力学场中，直接学习地球系统的三维物理演化，无需显式数值求解器即可实现实时预报和跨传感器推理。",
         "contributions": [
-          "提出一种全新的观测原生大气建模范式，避免传统网格化和数据同化步骤",
-          "实现实时预测和跨传感器推理，在回算评估中表面预报技能与业务化IFS相当"
+          "提出了一种全新的观测原生大气世界模型范式，无需网格化预处理，直接利用非网格观测数据。",
+          "在回算评估中，地表预报技能与业务化综合预报系统（IFS）相当，证明了连续、观测驱动世界模型的可行性。"
         ],
-        "experiments": "摘要未提供具体实验结果。",
+        "experiments": "在回算评估中，Earth-o1 的地表预报技能与业务化综合预报系统（IFS）相当。",
         "limitations": [
-          "可能对传感器覆盖稀疏区域表现不佳",
-          "模型可解释性可能不如传统物理模型"
+          "摘要未提及模型在极端天气或长期预报中的表现。",
+          "可能依赖高质量、多样化的观测数据，数据稀疏区域性能未知。"
         ],
-        "relevance": "与视频生成（时空动态建模）和VLM（多模态传感器融合）相关。",
-        "primary_area": "医学与科学AI",
-        "sub_area": "地球科学与气候建模",
+        "primary_area_en": "applications to physical sciences (physics, chemistry, biology, etc.)",
+        "primary_area": "应用: 物理科学",
+        "category": "气候/地球科学",
+        "sub_area": "气候/地球科学",
         "tags": [
-          "VLM",
-          "Video Generation"
+          "大气模型",
+          "世界模型",
+          "无网格",
+          "地球系统",
+          "数据驱动"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "Earth-o1 是一种无需网格的观测原生大气世界模型，直接从非网格观测数据学习连续三维物理演化，实现实时预报且精度媲美传统数值模型。"
       }
     },
     {
@@ -977,29 +1069,34 @@
       "entry_url": "https://arxiv.org/abs/2605.06333",
       "pdf_url": "https://arxiv.org/pdf/2605.06333",
       "analysis": {
-        "one_sentence_summary": "TinyBayes提出了一种结合雅可比先验的闭式贝叶斯推理框架，用于在边缘设备上实现实时、轻量级的作物病害图像分类。",
-        "problem": "现有边缘可部署的植物病害检测系统缺乏不确定性量化，而贝叶斯方法多关注硬件推理架构而非农业应用，需要一种既小又快且无需联网的模型。",
-        "method": "使用YOLOv8-Nano进行病灶定位，MobileNetV3-Small提取特征，并采用雅可比先验的闭式非迭代贝叶斯分类器（Jacobi-DMR）进行分类。",
+        "tldr": "TinyBayes 通过雅可比先验实现闭式贝叶斯推理，在边缘设备上实现快速、轻量的作物病害图像分类。",
+        "research_motivation": "西非小农户依赖可可种植，但 CSSVD 和炭疽病造成严重减产。现有边缘部署的植物病害系统缺乏不确定性量化，而贝叶斯方法多关注硬件架构而非农业应用，亟需一种小、快、无需联网的解决方案。",
+        "problem": "在资源受限的边缘设备上，如何实现兼具不确定性量化、高精度、小模型尺寸和快速推理的作物病害图像分类。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "提出 TinyBayes 框架，结合 YOLOv8-Nano（5.9 MB）进行病灶定位、MobileNetV3-Small（3.5 MB）提取特征，以及基于雅可比先验的闭式贝叶斯分类器 Jacobi-DMR（13.5 KB），实现非迭代的投影估计。",
         "contributions": [
-          "首个将闭式贝叶斯分类器与移动级计算机视觉流水线结合用于作物病害检测的框架",
-          "证明了Jacobi-DMR的渐近等价性、一致性、渐近正态性和偏差校正",
-          "在Amini Cocoa Contamination Challenge数据集上达到78.7%准确率，总模型大小9.5 MB，端到端CPU推理每张图像低于150 ms"
+          "首个将闭式贝叶斯分类器与移动级视觉流水线结合用于作物病害检测的框架。",
+          "证明了 Jacobi-DMR 的渐近等价性、一致性、渐近正态性和偏差校正。",
+          "在 Amini Cocoa Contamination Challenge 数据集上达到 78.7% 准确率，总模型大小 9.5 MB，CPU 推理时间低于 150 ms。"
         ],
-        "experiments": "在Amini Cocoa Contamination Challenge数据集上，Jacobi-DMR分类器达到78.7%准确率，并与随机森林、SVM、Ridge、Lasso、Elastic Net、XGBoost和Jacobi-GP七种分类器进行了基准比较。",
+        "experiments": "在 Amini Cocoa Contamination Challenge 数据集上，与随机森林、SVM、Ridge、Lasso、Elastic Net、XGBoost 和 Jacobi-GP 七种分类器对比，Jacobi-DMR 在准确率、模型大小和推理速度之间取得最佳平衡。",
         "limitations": [
-          "仅针对可可病害检测，可能不直接适用于其他作物或病害",
-          "准确率78.7%可能不足以满足高精度要求"
+          "仅在单一作物病害数据集上验证，泛化性有待进一步测试。",
+          "准确率 78.7% 可能不足以满足高精度农业应用需求。"
         ],
-        "relevance": "与视觉-语言模型（VLM）和视频生成方向关系较弱，但涉及边缘设备上的轻量级视觉模型，与医学影像中的实时诊断有潜在关联。",
-        "primary_area": "应用：CV/音频/语言等",
-        "sub_area": "边缘设备上的图像分类",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "其他应用",
+        "sub_area": "其他应用",
         "tags": [
-          "边缘计算",
-          "贝叶斯推理",
-          "作物病害检测",
-          "轻量级模型"
+          "Bayesian Inference",
+          "Edge AI",
+          "Plant Disease Detection",
+          "YOLOv8",
+          "MobileNetV3"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "TinyBayes 通过雅可比先验实现闭式贝叶斯推理，在边缘设备上实现快速、轻量的作物病害图像分类。"
       }
     },
     {
@@ -1025,29 +1122,33 @@
       "entry_url": "https://arxiv.org/abs/2605.06317",
       "pdf_url": "https://arxiv.org/pdf/2605.06317",
       "analysis": {
-        "one_sentence_summary": "提出NavOne框架，将视觉-语言导航重定义为在预构建俯视地图上的单步全局路径规划，实现高效全局导航。",
-        "problem": "现有视觉-语言导航方法采用逐步的自我中心范式，存在误差累积和效率低下的问题；基于地图的方法依赖增量更新或离散路径评分，限制了连续空间推理。",
-        "method": "提出Top-Down VLN范式，将导航转化为在预构建俯视地图上的单步全局路径规划；引入NavOne框架，通过端到端前向传播直接预测多模态地图上的密集路径概率，包含俯视地图融合器和注意力残差模块。",
+        "tldr": "将视觉语言导航重构为一步全局路径规划，提出NavOne框架实现端到端密集路径预测，速度提升80倍。",
+        "research_motivation": "现有VLN方法采用逐步导航范式，存在误差累积和效率低下的问题；基于地图的方法依赖增量更新或离散路径评分，限制了连续空间推理并造成离散瓶颈。",
+        "problem": "如何将VLN任务转化为一步全局路径规划问题，并实现高效、连续的路径预测。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "提出Top-Down VLN框架，将导航重构为在预构建俯视地图上的一步全局路径规划；设计NavOne框架，通过Top-Down Map Fuser进行多模态地图联合表示，并扩展Attention Residuals实现空间感知深度混合，直接预测密集路径概率。",
         "contributions": [
-          "提出TD-VLN范式，将VLN重定义为单步全局路径规划问题",
-          "构建R2R-TopDown数据集",
-          "提出NavOne框架，实现端到端密集路径概率预测",
-          "在规划阶段实现8倍于现有地图方法、80倍于自我中心方法的加速"
+          "提出Top-Down VLN新范式，将导航转化为一步全局路径规划问题。",
+          "构建R2R-TopDown数据集。",
+          "提出NavOne框架，实现端到端密集路径预测，显著提升规划速度和性能。"
         ],
-        "experiments": "在R2R-TopDown数据集上，NavOne在基于地图的VLN方法中达到最优性能，规划阶段加速8倍（vs地图基线）和80倍（vs自我中心方法）。",
+        "experiments": "在R2R-TopDown数据集上，NavOne在基于地图的VLN方法中达到最优性能，规划阶段速度比现有基于地图的基线快8倍，比逐步方法快80倍。",
         "limitations": [
-          "依赖预构建的俯视地图，可能不适用于未知环境",
-          "未提及在真实机器人上的部署验证"
+          "依赖预构建的俯视地图，可能限制在未知环境中的泛化。",
+          "未讨论地图构建误差对导航性能的影响。"
         ],
-        "relevance": "与视觉-语言模型（VLM）相关，涉及多模态地图表示和空间推理。",
-        "primary_area": "应用：CV/音频/语言等",
-        "sub_area": "视觉-语言导航",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉-语言模型 (VLM/MLLM)",
+        "sub_area": "视觉-语言模型 (VLM/MLLM)",
         "tags": [
           "VLM",
-          "视觉-语言导航",
-          "路径规划"
+          "Vision-Language Navigation",
+          "Global Planning",
+          "Top-Down Map"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "将视觉语言导航重构为一步全局路径规划，提出NavOne框架实现端到端密集路径预测，速度提升80倍。"
       }
     },
     {
@@ -1068,28 +1169,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06298",
       "pdf_url": "https://arxiv.org/pdf/2605.06298",
       "analysis": {
-        "one_sentence_summary": "NOVA 通过将系统状态表示为坐标基隐式神经网络的权重，实现了可解析渲染的世界模型，消除了解码器瓶颈并支持零样本超分辨率，同时无需额外损失即可解耦场景结构。",
-        "problem": "现有世界模型依赖编码像素到不透明潜空间和重型解码器，导致计算昂贵且不可解释。",
-        "method": "提出 NOVA 框架，使用辅助坐标基隐式神经网络（INR）的权重和偏置表示系统状态，通过解析渲染消除解码器瓶颈，并通过动作匹配目标蒸馏为视频生成器。",
+        "tldr": "NOVA 用隐式神经表示的权重作为世界模型状态，消除解码器瓶颈并实现可控预测与场景解耦。",
+        "research_motivation": "现有世界模型依赖编码-解码范式，计算成本高且缺乏可解释性，难以支持高效可控的预测。",
+        "problem": "如何构建紧凑、可解释且高效的世界模型，同时实现场景结构解耦与可控生成。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "提出 NOVA 框架，将系统状态表示为辅助坐标基隐式神经表示（INR）的权重和偏置，通过解析渲染避免解码器瓶颈，并利用动作匹配目标蒸馏为上下文相关的视频生成器。",
         "contributions": [
-          "提出基于 INR 权重的结构化状态表示，实现紧凑、可移植和零样本超分辨率的世界模型",
-          "无需辅助损失或对抗目标即可解耦背景、前景和帧间运动等结构成分"
+          "提出基于 INR 权重的世界模型表示，实现紧凑、可移植和零样本超分辨率。",
+          "无需辅助损失或对抗目标即可解耦背景、前景和帧间运动等结构成分。"
         ],
-        "experiments": "在多个具有挑战性的数据集上验证，使用单个消费级 GPU（约40M参数）实现强可控预测。",
+        "experiments": "在多个挑战性数据集上验证，使用单张消费级 GPU（约40M参数）实现强可控预测。",
         "limitations": [
-          "可能对复杂动态场景的建模能力有限",
+          "可能对复杂动态场景的解耦能力有限",
           "INR 表示的泛化性可能受限于训练数据分布"
         ],
-        "relevance": "与视频生成和视觉-语言模型（VLM）相关，因为世界模型是视频预测和可控生成的基础。",
+        "primary_area_en": "generative models",
         "primary_area": "生成模型",
-        "sub_area": "视频生成",
+        "category": "其他",
+        "sub_area": "其他",
         "tags": [
-          "世界模型",
-          "隐式神经表示",
-          "视频生成",
-          "可控生成"
+          "World Model",
+          "Implicit Neural Representation",
+          "Video Generation"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "NOVA 用隐式神经表示的权重作为世界模型状态，消除解码器瓶颈并实现可控预测与场景解耦。"
       }
     },
     {
@@ -1113,26 +1217,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06280",
       "pdf_url": "https://arxiv.org/pdf/2605.06280",
       "analysis": {
-        "one_sentence_summary": "提出基于欧拉运动引导的图像动画方法，通过相邻帧运动场和双向几何一致性机制提升生成鲁棒性和效率。",
-        "problem": "现有图像动画方法依赖拉格朗日运动引导，存在训练效率低、误差累积和漂移伪影等问题。",
-        "method": "使用相邻帧欧拉运动场进行局部监督，并引入双向几何一致性机制，通过前向-后向循环检查识别并掩蔽遮挡区域，避免学习错误变形目标。",
+        "tldr": "提出基于欧拉运动引导的图像动画方法，通过相邻帧运动场和双向几何一致性减少漂移伪影。",
+        "research_motivation": "现有图像动画方法依赖拉格朗日运动引导（基于初始帧的光流），存在误差累积和训练效率低的问题。",
+        "problem": "如何利用相邻帧运动场实现高效、鲁棒的图像动画生成，并解决漂移伪影。",
+        "phenomenon_analysis": "相邻帧生成容易产生漂移伪影，因为遮挡区域导致错误的学习目标。",
+        "method": "使用相邻帧欧拉运动场替代初始帧光流，实现并行训练和有界误差监督；引入双向几何一致性机制，通过前向-后向循环检查识别并掩蔽遮挡区域。",
         "contributions": [
-          "提出欧拉运动引导框架，实现并行化训练和有界误差监督",
-          "设计双向几何一致性机制，有效缓解相邻帧生成中的漂移伪影"
+          "提出基于欧拉运动引导的图像动画框架，支持并行训练和误差有界监督。",
+          "设计双向几何一致性机制，有效减少漂移伪影。"
         ],
         "experiments": "摘要未提供具体实验结果。",
         "limitations": [
-          "可能对复杂运动或大位移场景的鲁棒性有限",
-          "双向一致性检查可能增加计算开销"
+          "可能对复杂运动或大位移场景效果有限。",
+          "双向一致性计算增加额外开销。"
         ],
-        "relevance": "与视频生成方向相关，涉及运动引导和时序一致性。",
-        "primary_area": "生成模型",
-        "sub_area": "视频生成",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉理解",
+        "sub_area": "视觉理解",
         "tags": [
-          "Video Generation",
-          "Image Animation"
+          "Image Animation",
+          "Diffusion Models",
+          "Optical Flow"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "提出基于欧拉运动引导的图像动画方法，通过相邻帧运动场和双向几何一致性减少漂移伪影。"
       }
     },
     {
@@ -1160,28 +1269,33 @@
       "entry_url": "https://arxiv.org/abs/2605.06273",
       "pdf_url": "https://arxiv.org/pdf/2605.06273",
       "analysis": {
-        "one_sentence_summary": "提出一种在轨实时野火检测系统，利用密集掩码自编码器预训练在极端类别不平衡下实现高精度低延迟检测。",
-        "problem": "在轨卫星上资源受限（模型小于1MB、推理延迟低于150ms、端到端小于10分钟）条件下，从单波段中波红外图像中检测亚像素或单像素野火热异常，现有阈值方法（如MODIS、VIIRS）无法处理极端类别不平衡。",
-        "method": "使用密集掩码自编码器（DenseMAE）及其混合DenseMAE+EMA蒸馏变体进行轻量级密集表示学习，通过线性探测和全分布像素级平均精度评估，在延迟-精度帕累托前沿上获得紧凑下游模型。",
+        "tldr": "在轨卫星上部署轻量级实时野火检测系统，利用自监督预训练在极端类别不平衡下优于监督基线。",
+        "research_motivation": "现有MODIS/VIIRS等热阈值方法无法处理亚像素/单像素热异常和极端类别不平衡，且缺乏满足星上计算、存储和延迟约束的轻量级深度学习方案。",
+        "problem": "在星载约束（模型<1MB、推理<150ms、端到端<10分钟）下，利用未校准单波段中波红外图像实现高精度实时野火检测。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "采用密集掩码自编码（DenseMAE）及其混合DenseMAE+EMA蒸馏变体进行自监督预训练，再训练紧凑下游模型，并通过线性探测和全分布像素级平均精度评估。",
         "contributions": [
-          "首个在商业热红外卫星星座上部署的实时野火检测系统，满足严格星上约束",
-          "提出DenseMAE预训练方法，在极端类别不平衡下优于监督基线",
-          "实现最快模型65.34ms延迟、0.52MB引擎，达到0.640 AP和0.69 Fire-F1"
+          "首个在商业热红外卫星星座上部署的实时野火检测系统，满足严格星载约束。",
+          "实证表明DenseMAE自监督预训练在极端类别不平衡下优于监督基线，实现延迟-精度帕累托前沿。"
         ],
-        "experiments": "使用专有九卫星MWIR数据集，比较DenseMAE和DenseMAE+EMA蒸馏，通过线性探测和像素级AP评估。最佳配置低于1MB达到0.699 AP和0.744 Fire-F1，优于监督基线0.650 AP。",
+        "experiments": "在九颗卫星的专有MWIR数据集上评估，最快SSL预训练模型达到0.640 AP和0.69 Fire-F1，延迟65.34ms，引擎0.52MB；最佳配置低于1MB达到0.699 AP和0.744 Fire-F1，优于监督基线（0.650 AP）。",
         "limitations": [
-          "仅使用单波段MWIR数据，未利用多光谱信息",
-          "未讨论模型在非火点异常（如工业热源）上的表现"
+          "仅使用单波段MWIR图像，未融合多光谱或可见光信息。",
+          "数据集为专有，可能限制可复现性和泛化性。"
         ],
-        "relevance": "与视觉-语言模型（VLM）无关，但自监督预训练方法可迁移至其他遥感或医学图像异常检测任务",
-        "primary_area": "应用：CV/音频/语言等",
-        "sub_area": "遥感图像分析",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "遥感与科学图像",
+        "sub_area": "遥感与科学图像",
         "tags": [
-          "遥感",
-          "野火检测",
-          "自监督学习"
+          "Wildfire Detection",
+          "Self-Supervised Learning",
+          "On-Orbit",
+          "Thermal Infrared",
+          "DenseMAE"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "在轨卫星上部署轻量级实时野火检测系统，利用自监督预训练在极端类别不平衡下优于监督基线。"
       }
     },
     {
@@ -1207,27 +1321,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06270",
       "pdf_url": "https://arxiv.org/pdf/2605.06270",
       "analysis": {
-        "one_sentence_summary": "Spark3R提出了一种无需训练的非对称令牌缩减框架，通过区分查询令牌和键值令牌的压缩策略，显著加速前馈式3D重建模型。",
-        "problem": "基于Vision Transformer的前馈式3D重建模型在处理视频输入时，全局注意力层的二次复杂度导致计算成本过高，现有令牌合并方法对查询和键值令牌采用统一缩减，忽略了它们在3D重建中的不同作用。",
-        "method": "提出Spark3R，一种无需训练的加速框架，对查询令牌和键值令牌解耦压缩：查询令牌使用组内令牌合并，键值令牌使用轻量级令牌剪枝，并自适应调整各层的键值缩减因子。",
+        "tldr": "Spark3R通过非对称令牌压缩实现快速前馈3D重建，在1000帧输入上加速28倍。",
+        "research_motivation": "前馈3D重建模型基于Vision Transformer，可从小量输入图像直接估计场景几何和相机位姿，但扩展到数百或数千帧的视频输入时，全局注意力层的二次成本成为瓶颈。现有令牌合并方法对查询令牌和键值令牌采用统一压缩，忽略了它们在3D重建中功能角色的差异。",
+        "problem": "如何在不重新训练的情况下，高效压缩前馈3D重建模型中的令牌序列，以处理长视频输入并保持重建质量。",
+        "phenomenon_analysis": "发现查询令牌编码视图特定的几何请求，对压缩敏感；而键值令牌表示共享场景上下文，可容忍更激进的压缩。",
+        "method": "提出Spark3R，一种无需训练的加速框架，解耦查询令牌和键值令牌的压缩，对查询令牌采用组内令牌合并，对键值令牌采用轻量级令牌剪枝，并自适应调整各层的键值压缩因子。",
         "contributions": [
-          "识别出前馈式3D重建模型中查询令牌对压缩敏感而键值令牌可容忍高压缩的关键特性",
-          "提出非对称令牌缩减框架Spark3R，实现高达28倍加速且保持重建质量"
+          "识别了前馈3D重建模型中查询令牌和键值令牌的功能差异，并据此提出非对称压缩策略。",
+          "提出Spark3R，一种即插即用的加速框架，无需重新训练即可集成到多个预训练模型，实现高达28倍加速。"
         ],
-        "experiments": "摘要未提供具体实验结果",
+        "experiments": "在VGGT、π³和Depth-Anything-3等多个预训练模型上评估，在1000帧输入上实现高达28倍加速，同时保持有竞争力的重建质量。",
         "limitations": [
-          "可能对极短序列或单视图输入效果有限",
-          "自适应缩减因子可能引入额外计算开销"
+          "可能对极短序列（如2-3帧）加速效果有限。",
+          "自适应压缩因子调整可能增加少量计算开销。"
         ],
-        "relevance": "与视频生成相关，因为加速3D重建可提升视频输入的处理效率；与VLM关系较弱，但可应用于需要3D理解的视觉语言任务。",
-        "primary_area": "应用：CV/音频/语言等",
-        "sub_area": "3D重建与视觉理解",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "3D 视觉与场景",
+        "sub_area": "3D 视觉与场景",
         "tags": [
           "3D Reconstruction",
           "Token Reduction",
-          "Video Processing"
+          "Vision Transformer"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "Spark3R通过非对称令牌压缩实现快速前馈3D重建，在1000帧输入上加速28倍。"
       }
     },
     {
@@ -1249,28 +1367,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06266",
       "pdf_url": "https://arxiv.org/pdf/2605.06266",
       "analysis": {
-        "one_sentence_summary": "提出一种基于高效涂鸦标注和最大化涂鸦监督的医学图像分割框架ZScribbleSeg，在六个分割任务上取得竞争性能。",
-        "problem": "医学图像分割需要大量精确标注，而现有弱监督涂鸦标注方法因监督不足和形状信息不完整导致分割不准确。",
-        "method": "首先研究良好涂鸦标注原则，通过监督最大化和随机模拟生成高效涂鸦形式；引入正则项编码空间关系和形状约束，利用EM算法估计标签类别的混合比例以识别未标注像素并纠正错误预测；将高效涂鸦监督与先验集成到框架中。",
+        "tldr": "提出ZScribbleSeg框架，通过高效涂鸦标注设计和最大化涂鸦监督，在六项医学图像分割任务上取得竞争性能。",
+        "research_motivation": "医学图像分割需要大量全标注数据，标注成本高且依赖专家，现有弱监督方法因监督不足和形状信息不完整导致分割不准确。",
+        "problem": "如何设计高效的涂鸦标注形式并最大化涂鸦监督，以实现准确的弱监督医学图像分割。",
+        "phenomenon_analysis": "现有涂鸦监督方法因监督不足和形状信息不完整导致分割不准确。",
+        "method": "首先研究良好涂鸦标注原则，通过监督最大化和随机模拟生成高效涂鸦；引入正则项编码空间关系和形状约束，利用EM算法估计标签类别的混合比例以识别未标注像素并纠正错误预测；将高效涂鸦监督与先验集成到ZScribbleSeg框架。",
         "contributions": [
-          "提出高效涂鸦标注形式的设计原则，通过监督最大化和随机模拟生成。",
+          "提出高效涂鸦标注原则，通过监督最大化和随机模拟生成高效涂鸦形式。",
           "引入基于EM算法的混合比例估计方法，有效利用空间先验纠正错误预测。",
-          "在六个医学图像分割任务上验证了仅用涂鸦标注即可达到竞争性能。"
+          "集成框架ZScribbleSeg在六个医学图像分割任务上仅用涂鸦标注即取得竞争性能。"
         ],
-        "experiments": "在ACDC、MSCMRseg、BTCV、MyoPS、Decathlon-BrainTumor和Decathlon-Prostate六个分割任务上进行了实验，仅使用涂鸦标注即取得竞争性能。",
+        "experiments": "在ACDC、MSCMRseg、BTCV、MyoPS、Decathlon-BrainTumor和Decathlon-Prostate六个分割任务上评估，仅用涂鸦标注取得竞争性能。",
         "limitations": [
-          "可能对复杂形状或边界模糊区域的分割效果有限。",
-          "EM算法估计混合比例可能对初始值敏感。"
+          "可能对复杂形状或小目标分割效果有限。",
+          "EM算法估计混合比例可能受初始值影响。"
         ],
-        "relevance": "与医学影像分割相关，涉及弱监督学习，与VLM/视频生成/LLM训练无直接关系。",
-        "primary_area": "医学与科学AI",
-        "sub_area": "医学图像分割",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "医学图像",
+        "sub_area": "医学图像",
         "tags": [
-          "医学图像",
-          "弱监督分割",
+          "医学图像分割",
+          "弱监督学习",
           "涂鸦标注"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "提出ZScribbleSeg框架，通过高效涂鸦标注设计和最大化涂鸦监督，在六项医学图像分割任务上取得竞争性能。"
       }
     },
     {
@@ -1297,27 +1419,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06229",
       "pdf_url": "https://arxiv.org/pdf/2605.06229",
       "analysis": {
-        "one_sentence_summary": "提出逆注意力嵌入机制，通过结合传统视觉嵌入与逆注意力嵌入，在不额外训练的情况下提升密集场景视频语义检索性能。",
-        "problem": "视频语义搜索在密集场景中因视觉编码器偏向显著前景区域而忽略背景信息，导致检索性能下降。",
-        "method": "提出逆注意力嵌入机制，显式捕获并突出被忽略的背景区域，并与传统视觉嵌入结合，无需额外训练即可增强语义检索。",
+        "tldr": "提出逆注意力嵌入机制，结合传统视觉嵌入提升密集场景视频语义检索性能。",
+        "research_motivation": "密集场景中视觉编码器过度关注显著前景区域，忽略背景上下文信息，导致语义检索性能受限。",
+        "problem": "解决视频语义搜索中视觉编码器忽视背景上下文信息的问题。",
+        "phenomenon_analysis": "视觉编码器倾向于优先处理显著前景区域，而忽略对语义检索同样重要的背景区域。",
+        "method": "提出逆注意力嵌入机制，显式捕获被忽略的区域，并与传统视觉嵌入结合，无需额外训练。",
         "contributions": [
-          "提出逆注意力嵌入机制，有效捕获被忽略的背景区域",
-          "无需额外训练即可提升密集场景视频语义检索的召回率"
+          "提出逆注意力嵌入机制，用于捕获被忽略的视觉区域。",
+          "在无需额外训练的情况下，通过结合逆注意力嵌入与传统嵌入提升密集场景视频语义检索性能。"
         ],
         "experiments": "摘要未提供具体实验结果。",
         "limitations": [
-          "可能仅在密集场景中有效，稀疏场景效果未知",
-          "逆注意力嵌入的生成可能依赖特定注意力机制，泛化性待验证"
+          "可能仅在密集场景下有效，稀疏场景效果未知。",
+          "逆注意力嵌入的泛化能力未在多种数据集上验证。"
         ],
-        "relevance": "与视频理解、视觉-语言模型中的注意力机制相关，可应用于视频检索任务。",
-        "primary_area": "应用：CV/音频/语言等",
-        "sub_area": "视频理解与检索",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉理解",
+        "sub_area": "视觉理解",
         "tags": [
-          "视频语义检索",
-          "注意力机制",
-          "逆注意力"
+          "Video Semantic Search",
+          "Inverse Attention",
+          "Dense Crowds"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "提出逆注意力嵌入机制，结合传统视觉嵌入提升密集场景视频语义检索性能。"
       }
     },
     {
@@ -1339,28 +1465,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06214",
       "pdf_url": "https://arxiv.org/pdf/2605.06214",
       "analysis": {
-        "one_sentence_summary": "提出一种可微分的自适应4D结构光框架，用于同时高效高质量地捕获物体的形状和反射率。",
-        "problem": "如何高效、高质量地同时获取物体的形状和反射率。",
-        "method": "使用基于直方图的像素级概率模型，可微地链接下一次照明条件与减少深度不确定性的损失，通过迭代更新不确定性，最后通过微调最小化物理测量与模拟的差异来重建深度图和反射率参数图。",
+        "tldr": "提出可微自适应4D结构光框架，联合捕获物体形状与反射率。",
+        "research_motivation": "传统结构光方法通常分别处理形状和反射率捕获，效率低且质量受限，需要一种统一、高效的方法。",
+        "problem": "如何自适应地计算4D照明条件，以联合高效捕获物体的形状和反射率。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "基于直方图的像素级概率模型，可微地链接下一照明条件与深度不确定性损失，通过迭代更新不确定性，最后用微调方法重建深度图和反射率参数图。",
         "contributions": [
-          "提出可微分的自适应4D照明条件计算框架",
-          "统一空间-角度结构光与单相机实现形状和反射率联合捕获",
-          "基于直方图的像素级概率模型用于深度和反射率不确定性估计"
+          "提出可微自适应4D结构光框架，联合捕获形状和反射率。",
+          "使用直方图概率模型和可微损失减少深度不确定性。"
         ],
-        "experiments": "在形状和外观变化广泛的物理物体上验证，深度结果优于现有技术，反射率结果与照片验证相当。",
+        "experiments": "在物理物体上验证，深度结果优于SOTA，反射率结果与照片相当。",
         "limitations": [
-          "可能依赖初始照明条件",
-          "对复杂反射率（如透明或高光）可能效果有限"
+          "可能依赖初始照明条件。",
+          "计算复杂度可能较高。"
         ],
-        "relevance": "与视觉感知和3D重建相关，但与VLM/视频生成/医学影像/LLM训练等方向无直接关系。",
-        "primary_area": "应用：CV/音频/语言等",
-        "sub_area": "视觉理解",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "3D 视觉与场景",
+        "sub_area": "3D 视觉与场景",
         "tags": [
-          "3D重建",
-          "结构光",
-          "反射率捕获"
+          "3D Reconstruction",
+          "Structured Illumination",
+          "Reflectance Capture"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "提出可微自适应4D结构光框架，联合捕获物体形状与反射率。"
       }
     },
     {
@@ -1385,27 +1514,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06207",
       "pdf_url": "https://arxiv.org/pdf/2605.06207",
       "analysis": {
-        "one_sentence_summary": "提出可变码本大小量化（VCQ）方法，通过沿序列单调增加码本大小来避免视觉自回归生成中的熵悬崖问题，显著提升生成质量并自然形成语义层次。",
-        "problem": "现有离散视觉分词器使用固定码本，导致序列中大部分位置的条件熵极低，码本容量浪费在记忆化而非有效建模，形成熵悬崖现象。",
-        "method": "提出可变码本大小量化（VCQ），让码本大小沿序列从K_min=2单调增长到K_max，保持损失函数、参数数量和自回归训练过程不变。",
+        "tldr": "提出变长码本量化（VCQ），通过沿序列单调增加码本大小解决视觉自回归生成中的熵悬崖问题，显著提升生成质量。",
+        "research_motivation": "离散视觉分词器默认所有位置共享相同码本，但图像序列中条件熵快速衰减，导致大部分位置变成记忆问题，限制了生成性能。",
+        "problem": "固定码本大小设计在视觉自回归生成中遭遇信息论极限，即熵悬崖现象，需要更高效的码本容量分配策略。",
+        "phenomenon_analysis": "观察到图像序列中条件熵沿位置快速衰减，在ImageNet上K=16384时仅2个位置后分布几乎确定，剩余254个位置成为记忆问题，并形式化为t* = ceil(log2 N / log2 K)。该现象在语言中不出现。",
+        "method": "提出变长码本量化（VCQ），码本大小K_t沿序列从K_min=2单调增长至K_max，保持损失函数、参数数量和自回归训练过程不变。",
         "contributions": [
-          "发现并形式化了视觉自回归生成中的熵悬崖现象，给出简单表达式t* = ceil(log2 N / log2 K)。",
-          "提出VCQ方法，在不增加额外训练技巧的情况下，在ImageNet 256×256上将gFID从27.98降至14.80（基础版），缩放至684M参数时达到1.71。",
-          "揭示极端信息瓶颈（K_min=2）自然诱导出从粗到细的语义层次，仅用前10个token的线性探针即可达到43.8%的top-1准确率。"
+          "发现并形式化了视觉自回归生成中的熵悬崖现象",
+          "提出VCQ方法，通过变长码本分配容量，显著提升生成质量",
+          "实验表明极小的初始码本自然诱导粗到细的语义层次，前10个token的线性探针达到43.8% top-1准确率"
         ],
-        "experiments": "在ImageNet 256×256上使用标准自回归Transformer和下一个token预测，基础版VCQ将gFID（无CFG）从27.98降至14.80；缩放至684M参数时gFID达到1.71。",
+        "experiments": "在ImageNet 256x256上，基础版VCQ将gFID（无CFG）从27.98降至14.80；扩展至684M参数时达到gFID 1.71，无需语义正则化或因果对齐等额外技术。",
         "limitations": [
-          "方法仅在图像生成任务上验证，未在视频或语言模态上测试。",
-          "码本大小单调增长的策略可能不是最优的，需要进一步探索自适应分配。"
+          "方法在图像生成上验证，未在视频或其他模态测试",
+          "码本大小增长策略可能需针对不同数据集调整"
         ],
-        "relevance": "与视觉自回归生成模型密切相关，可应用于VLM中的视觉分词器设计，提升图像/视频生成质量。",
+        "primary_area_en": "generative models",
         "primary_area": "生成模型",
-        "sub_area": "视觉自回归生成",
+        "category": "自回归/流匹配生成",
+        "sub_area": "自回归/流匹配生成",
         "tags": [
-          "VLM",
-          "Video Generation"
+          "Autoregressive Generation",
+          "Visual Tokenization",
+          "Codebook Quantization"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出变长码本量化（VCQ），通过沿序列单调增加码本大小解决视觉自回归生成中的熵悬崖问题，显著提升生成质量。"
       }
     },
     {
@@ -1429,27 +1563,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06197",
       "pdf_url": "https://arxiv.org/pdf/2605.06197",
       "analysis": {
-        "one_sentence_summary": "提出一种多模态可解释性框架，结合CNN、视觉显著性方法和LLM，为脑肿瘤分类生成可解释的诊断报告。",
-        "problem": "深度学习模型在医学影像中的不透明性阻碍了临床采用，需要可解释的诊断工具。",
-        "method": "三阶段框架：1) 九种CNN架构扩展为双输出（分类+分割）；2) 应用Grad-CAM等方法生成热图并转为二值掩膜；3) 将掩膜映射到脑图谱，提取结构信息编码为JSON，驱动LLM生成放射学报告。",
+        "tldr": "提出多模态可解释性框架，结合CNN、视觉显著性图与LLM生成脑肿瘤诊断报告。",
+        "research_motivation": "深度学习模型在医学影像中的黑箱特性阻碍了临床采纳，需要可解释的方法来提供临床可操作的诊断依据。",
+        "problem": "如何将CNN预测转化为人类可理解的诊断叙述，弥合模型输出与临床决策之间的可解释性鸿沟。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "三阶段框架：1) 九种CNN架构扩展为双输出（分类+分割）；2) 视觉显著性方法（Grad-CAM等）生成热图并二值化为肿瘤掩膜；3) 掩膜映射到哈佛-牛津皮层图谱，提取结构信息编码为JSON，输入LLM（Grok3、Mistral、LLaMA）生成放射学风格报告。",
         "contributions": [
-          "提出结合视觉显著性和LLM的多模态可解释性框架",
-          "在脑肿瘤MRI数据集上验证了框架的有效性，InceptionResNetV2分类最优，Grad-CAM++分割最佳，Grok3在词汇多样性和连贯性上领先"
+          "提出结合CNN、显著性图与LLM的多模态可解释性框架",
+          "通过解剖图谱映射和结构化JSON编码实现像素级证据到临床叙述的转化"
         ],
-        "experiments": "在包含4,834张增强T1加权脑MRI图像（三类肿瘤）的数据集上评估，报告了分类性能、分割重叠和语言模型指标。",
+        "experiments": "在4,834张增强T1加权脑MRI图像上评估，InceptionResNetV2分类最优，Grad-CAM++分割最佳；Grok3词汇多样性和连贯性领先，LLaMA可读性最高。",
         "limitations": [
-          "仅针对脑肿瘤分类，可能不直接适用于其他医学影像任务",
-          "依赖预定义的脑图谱，可能不适用于解剖结构变异的病例"
+          "仅针对脑肿瘤分类，泛化性待验证",
+          "依赖预定义解剖图谱，可能不适用于非标准解剖结构"
         ],
-        "relevance": "与视觉-语言模型（VLM）和医学影像分析相关，结合了CNN、视觉显著性方法和LLM生成文本报告。",
-        "primary_area": "医学与科学AI",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "医学图像",
         "sub_area": "医学图像",
         "tags": [
-          "VLM",
-          "医学图像",
-          "可解释AI"
+          "Medical Imaging",
+          "Explainability",
+          "LLM",
+          "Visual Saliency"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出多模态可解释性框架，结合CNN、视觉显著性图与LLM生成脑肿瘤诊断报告。"
       }
     },
     {
@@ -1474,27 +1613,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06192",
       "pdf_url": "https://arxiv.org/pdf/2605.06192",
       "analysis": {
-        "one_sentence_summary": "EA-WM提出了一种事件感知的生成式世界模型，通过结构化运动到视觉的动作场将运动控制与视觉感知闭环，在机器人世界模型基准上取得最优性能。",
-        "problem": "现有世界-动作模型将视频生成仅作为策略学习的辅助表示，未能利用动作信号引导视频合成，导致生成结果中机器人空间几何和细粒度交互动态不精确。",
-        "method": "将动作和运动状态投影到目标相机视角形成结构化运动到视觉动作场，并引入事件感知双向融合模块调节跨分支注意力以捕捉对象状态变化和交互动态。",
+        "tldr": "EA-WM通过结构化运动-视觉动作场和事件感知融合，提升了机器人世界模型在视频生成中的几何精度与交互动态保真度。",
+        "research_motivation": "现有世界-动作模型将视频生成视为策略学习的辅助表示，未能充分利用动作信号引导视频合成，导致生成轨迹中机器人空间几何和细粒度交互动态的保真度不足。",
+        "problem": "如何利用动作信号有效引导视频合成，以在生成的世界模型 rollout 中精确保持机器人空间几何和机器人-物体交互动态。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "提出EA-WM，将动作和运动状态投影到目标相机视图形成结构化运动-视觉动作场，并引入事件感知双向融合块调制跨分支注意力以捕捉物体状态变化和交互动态。",
         "contributions": [
-          "提出结构化运动到视觉动作场，将动作信号直接映射到视觉空间以保持几何一致性",
-          "设计事件感知双向融合模块，增强对物体状态变化和交互动态的建模能力"
+          "提出结构化运动-视觉动作场，将动作和运动状态投影到相机视图，提供几何有意义的表示。",
+          "引入事件感知双向融合块，通过调制跨分支注意力捕捉物体状态变化和交互动态。",
+          "在WorldArena基准上达到最先进性能，显著超越现有基线。"
         ],
-        "experiments": "在WorldArena基准上评估，EA-WM显著优于现有基线，达到最先进性能。",
+        "experiments": "在WorldArena基准上评估，EA-WM达到最先进性能，显著超越现有基线。",
         "limitations": [
-          "可能依赖特定相机视角和运动状态表示，泛化性需进一步验证",
-          "未提及在真实机器人场景中的部署效果和计算效率"
+          "可能依赖特定相机视图和运动状态表示，泛化性需进一步验证。",
+          "事件感知融合块的计算开销可能较大。"
         ],
-        "relevance": "与视频生成和机器人世界模型相关，涉及视觉-语言模型中的动作与视觉融合。",
-        "primary_area": "生成模型",
-        "sub_area": "视频生成",
+        "primary_area_en": "applications to robotics, autonomy, planning",
+        "primary_area": "应用: 机器人/自动化/规划",
+        "category": "视觉-语言-动作 (VLA)",
+        "sub_area": "视觉-语言-动作 (VLA)",
         "tags": [
-          "Video Generation",
           "World Model",
+          "Video Generation",
           "Robotics"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "EA-WM通过结构化运动-视觉动作场和事件感知融合，提升了机器人世界模型在视频生成中的几何精度与交互动态保真度。"
       }
     },
     {
@@ -1521,27 +1665,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06179",
       "pdf_url": "https://arxiv.org/pdf/2605.06179",
       "analysis": {
-        "one_sentence_summary": "SuperFace 提出一种基于人类偏好优化的框架，将 ARKit 面部表情估计从伪标签模仿转向感知对齐，提升动画表情的真实性。",
-        "problem": "现有 ARKit 系数预测方法依赖 Live Link Face 等软件提供的伪标签，这些标签存在噪声、偏差和缺失，导致模型学习到不完美的伪标签而非优化感知表情保真度。",
-        "method": "提出 SuperFace 框架，将软件估计的系数仅作为初始化，通过人类对渲染面部表情的偏好反馈进一步优化系数预测，使模型与感知判断对齐。",
+        "tldr": "SuperFace 通过人类偏好反馈优化 ARKit 面部表情系数预测，超越伪标签监督。",
+        "research_motivation": "现有 ARKit 系数预测依赖 Live Link Face 等软件提供的伪标签，这些标签存在噪声激活、系数偏差和动作缺失，导致模型学习到不完美的伪标签而非感知级表情保真度。",
+        "problem": "如何从伪标签模仿转向人类对齐的感知优化，提升 ARKit 面部表情系数预测的视觉保真度。",
+        "phenomenon_analysis": "伪标签存在噪声激活、系数幅度偏差、缺失或不准确的面部动作，监督学习模型会复现这些不完美标签。",
+        "method": "提出 SuperFace，一种偏好驱动框架：将软件估计系数作为初始化，通过人类对渲染面部表情的偏好反馈进一步优化系数预测，实现感知对齐。",
         "contributions": [
-          "提出一种偏好驱动的 ARKit 面部表情估计框架，摆脱对伪标签的完全依赖",
-          "通过人类偏好反馈优化系数预测，提升表情保真度"
+          "提出偏好驱动的 ARKit 面部表情估计框架，超越伪标签监督。",
+          "通过人类偏好反馈优化系数预测，提升表情视觉保真度。"
         ],
-        "experiments": "摘要提到实验表明 SuperFace 比 Live Link Face 监督方法提升了表情保真度，但未提供具体数值或数据集细节。",
+        "experiments": "实验表明 SuperFace 在表情保真度上优于 Live Link Face 监督，摘要未提供具体数值。",
         "limitations": [
-          "依赖人类偏好反馈，可能引入标注成本",
-          "未讨论在极端表情或遮挡情况下的表现"
+          "依赖人类偏好反馈收集，可能成本较高。",
+          "未讨论跨种族、跨文化表情的泛化性。"
         ],
-        "relevance": "与视觉-语言模型（VLM）中的对齐方法相关，但主要面向数字人动画和面部表情估计。",
-        "primary_area": "应用：CV/音频/语言等",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉理解",
         "sub_area": "视觉理解",
         "tags": [
-          "面部表情估计",
-          "偏好对齐",
+          "Facial Expression Estimation",
+          "Preference Optimization",
           "ARKit"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "SuperFace 通过人类偏好反馈优化 ARKit 面部表情系数预测，超越伪标签监督。"
       }
     },
     {
@@ -1564,28 +1712,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06173",
       "pdf_url": "https://arxiv.org/pdf/2605.06173",
       "analysis": {
-        "one_sentence_summary": "提出Retina-RAG，一种低成本的模块化框架，联合进行糖尿病视网膜病变分级、黄斑水肿检测和临床报告生成，在单个消费级GPU上运行。",
-        "problem": "现有自动化视网膜筛查系统仅限于图像级分类，缺乏临床结构化报告，且需要大量计算资源。",
-        "method": "将高性能视网膜分类器与通过LoRA适配的参数高效视觉语言模型（Qwen2.5-VL-7B-Instruct）解耦，并在推理时通过检索增强生成模块注入精选眼科知识和结构化分类器输出。",
+        "tldr": "Retina-RAG 通过检索增强生成和轻量级视觉语言模型，在单 GPU 上实现糖尿病视网膜病变分级、黄斑水肿检测和临床报告生成。",
+        "research_motivation": "现有糖尿病视网膜病变筛查系统多限于图像级分类，缺乏临床结构化报告生成能力，且高精度模型通常计算资源需求大。",
+        "problem": "如何以低计算成本实现联合视网膜疾病分级、检测和结构化临床报告生成。",
+        "phenomenon_analysis": "零样本视觉语言模型在视网膜诊断任务上表现较差（如 Qwen2.5-VL 的 DR 分级 F1 仅 0.096），而检索增强生成可有效提升诊断一致性和减少幻觉。",
+        "method": "将高性能视网膜分类器与基于 LoRA 微调的 Qwen2.5-VL-7B 视觉语言模型解耦，并在推理时通过 RAG 模块注入结构化分类器输出和眼科学知识。",
         "contributions": [
-          "提出Retina-RAG框架，联合进行DR分级、ME检测和报告生成，具有低成本和模块化特点。",
-          "通过RAG模块注入眼科知识，提高诊断一致性并减少幻觉。",
-          "在单个消费级GPU上实现临床结构化视网膜AI，显著降低计算资源需求。"
+          "提出 Retina-RAG 模块化框架，联合实现 DR 分级、ME 检测和报告生成。",
+          "在单消费级 GPU 上达到临床级性能，DR 分级 F1 0.731，ME 检测 F1 0.948，报告生成 ROUGE-L 0.438。"
         ],
-        "experiments": "在带有标题的视网膜疾病检测数据集上，Retina-RAG在DR分级上F1-score为0.731，ME检测上为0.948，显著优于零样本Qwen（0.096, 0.732）和MMed-RAG（0.541, 0.641）；报告生成上ROUGE-L为0.438，SBERT相似度为0.884，超过所有基线。",
+        "experiments": "在带标注的视网膜疾病数据集上评估，与零样本 Qwen2.5-VL 和 MMed-RAG 对比，Retina-RAG 在所有指标上显著领先。",
         "limitations": [
-          "可能依赖特定数据集，泛化性需进一步验证。",
-          "RAG模块的知识库构建和维护可能增加额外成本。"
+          "可能依赖特定数据集和知识库，泛化性需进一步验证。",
+          "报告生成质量可能受限于 RAG 检索知识的覆盖范围。"
         ],
-        "relevance": "与视觉-语言模型（VLM）和医学影像分析相关，特别是检索增强生成在医学报告生成中的应用。",
-        "primary_area": "医学与科学AI",
-        "sub_area": "医学图像",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉-语言模型 (VLM/MLLM)",
+        "sub_area": "视觉-语言模型 (VLM/MLLM)",
         "tags": [
           "VLM",
-          "医学图像",
-          "检索增强生成"
+          "Retrieval-Augmented Generation",
+          "Medical Report Generation",
+          "Diabetic Retinopathy"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "Retina-RAG 通过检索增强生成和轻量级视觉语言模型，在单 GPU 上实现糖尿病视网膜病变分级、黄斑水肿检测和临床报告生成。"
       }
     },
     {
@@ -1609,26 +1761,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06170",
       "pdf_url": "https://arxiv.org/pdf/2605.06170",
       "analysis": {
-        "one_sentence_summary": "提出一个动态评估框架DynT2I-Eval，通过持续生成新提示和在线排行榜来缓解文本到图像模型的过拟合和基准污染问题。",
-        "problem": "现有文本到图像基准依赖固定提示集，容易导致过拟合和基准污染。",
-        "method": "从长描述构建结构化视觉语义空间，将提示分解为可控维度，通过任务特定空间和难度感知采样持续生成新提示；采用提示条件成对比较、动态调度器、微批聚合和加权贝叶斯更新维护在线排行榜。",
+        "tldr": "提出动态评估框架DynT2I-Eval，通过结构化视觉语义空间持续生成新提示，避免文本到图像模型评估中的过拟合与基准污染。",
+        "research_motivation": "现有文本到图像基准依赖固定提示集，易受过度拟合和基准污染影响，一旦公开重复使用后评估结果不可靠。",
+        "problem": "如何构建一个能持续生成新提示、避免基准污染且稳定排名的动态评估框架。",
+        "phenomenon_analysis": "固定提示集导致模型针对特定提示调优，降低评估泛化性；公开后反复使用引发基准污染。",
+        "method": "从长描述构建结构化视觉语义空间，将提示分解为可控维度（如主体、逻辑约束、环境、组合），通过任务特定空间和难度感知采样持续生成新提示；采用提示条件成对比较、动态调度器、微批聚合和加权贝叶斯更新维护在线排行榜。",
         "contributions": [
-          "提出完全自动化的动态评估框架DynT2I-Eval，支持持续生成新提示。",
-          "设计基于成对比较和贝叶斯更新的在线排行榜，平衡冷启动收敛、后期发现和长期排名保真度。"
+          "提出首个全自动动态评估框架DynT2I-Eval，持续生成新提示以抵抗过拟合和基准污染。",
+          "设计结构化视觉语义空间和难度感知采样，实现可控提示生成。",
+          "提出基于成对比较和贝叶斯更新的在线排名机制，平衡冷启动收敛、新模型发现和长期排名保真度。"
         ],
-        "experiments": "摘要未提供具体实验结果，但提到独立采样提示流的实验表明持续刷新提示提供了稳健的评估协议，模拟和消融验证了排名框架的平衡性。",
+        "experiments": "使用独立采样的提示流进行实验，模拟和消融研究验证排名框架在冷启动收敛、后期模型发现和长期排名保真度上的平衡。摘要未提供具体数值结果。",
         "limitations": [
-          "框架依赖长描述构建语义空间，可能不适用于简短提示。",
-          "动态排行榜的稳定性可能受提示分布变化影响。"
+          "框架依赖长描述构建视觉语义空间，可能不适用于短提示场景。",
+          "动态排名机制的计算开销可能较大。"
         ],
-        "relevance": "与视觉-语言模型（VLM）的评估相关，特别是文本到图像生成模型的基准测试。",
+        "primary_area_en": "datasets and benchmarks",
         "primary_area": "数据集与基准",
-        "sub_area": "文本到图像评估",
+        "category": "视觉理解基准",
+        "sub_area": "视觉理解基准",
         "tags": [
-          "VLM",
+          "Text-to-Image",
+          "Dynamic Evaluation",
           "Benchmark"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出动态评估框架DynT2I-Eval，通过结构化视觉语义空间持续生成新提示，避免文本到图像模型评估中的过拟合与基准污染。"
       }
     },
     {
@@ -1650,27 +1808,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06160",
       "pdf_url": "https://arxiv.org/pdf/2605.06160",
       "analysis": {
-        "one_sentence_summary": "本文提出了一个面向临床场景的持续医学图像分割基准研究，定义了三种场景并引入综合评估框架，实验表明重放方法在稳定性和可塑性之间取得最佳平衡。",
-        "problem": "持续医学图像分割中场景标准化不足、现有研究过度关注遗忘而忽视可塑性等关键属性、缺乏对现有方法的全面基准评估。",
-        "method": "定义三种临床场景（Domain-CL、Class-CL、Organ-CL），引入评估框架衡量通用性能、遗忘、可塑性、前向泛化性、参数效率和重放负担，并对代表性持续学习方法进行广泛实验。",
+        "tldr": "提出持续医学图像分割的基准研究，定义三个临床场景并引入多维度评估框架。",
+        "research_motivation": "持续学习对医学图像分割在临床部署中至关重要，但现有研究场景不标准化、过度关注遗忘而忽视塑性，且缺乏综合基准。",
+        "problem": "解决持续医学图像分割中场景标准化不足、评估维度单一（仅关注遗忘）以及缺乏全面方法比较的问题。",
+        "phenomenon_analysis": "实验表明：基于重放的方法在稳定性和塑性之间取得最佳平衡；参数隔离方法能有效减少遗忘但增加模型大小；前向泛化能力是显著未被充分研究的方面。",
+        "method": "定义三个临床场景（Domain-CL、Class-CL、Organ-CL），并引入评估框架衡量通用性能、遗忘、塑性、前向泛化性、参数效率和重放负担。",
         "contributions": [
-          "定义了三种临床驱动的持续分割场景，更贴近实际临床需求。",
-          "提出了一个综合评估框架，涵盖遗忘、可塑性、前向泛化性等多个维度。",
-          "通过大量实验揭示了现有方法的优缺点，并指出前向泛化性研究不足。"
+          "定义了三个临床驱动的持续医学图像分割场景",
+          "提出了包含塑性、前向泛化性等多维度的评估框架",
+          "通过大量实验揭示了现有方法的优缺点及未来方向"
         ],
-        "experiments": "摘要未提供具体实验结果，但提到对代表性持续学习方法进行了广泛实验，并给出了定性结论。",
+        "experiments": "在多个代表性持续学习方法上进行广泛实验，评估了通用性能、遗忘、塑性、前向泛化性、参数效率和重放负担。",
         "limitations": [
-          "可能未涵盖所有持续学习场景，如任务增量学习。",
-          "基准方法可能未包含最新或最先进的持续学习算法。"
+          "未提供具体数据集和实验数值结果",
+          "可能未覆盖所有临床场景或方法"
         ],
-        "relevance": "与医学影像分析相关，特别是持续学习在医学图像分割中的应用。",
-        "primary_area": "医学与科学 AI",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "医学图像",
         "sub_area": "医学图像",
         "tags": [
           "Continual Learning",
-          "Medical Image Segmentation"
+          "Medical Image Segmentation",
+          "Benchmark"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出持续医学图像分割的基准研究，定义三个临床场景并引入多维度评估框架。"
       }
     },
     {
@@ -1693,28 +1856,33 @@
       "entry_url": "https://arxiv.org/abs/2605.06148",
       "pdf_url": "https://arxiv.org/pdf/2605.06148",
       "analysis": {
-        "one_sentence_summary": "提出 wAR-Tok，通过 Wasserstein 梯度流在离散图像分词器训练中加入分布级先验匹配信号，使分词器适应自回归先验，降低 AR 损失并提升生成质量。",
-        "problem": "两阶段训练中离散图像分词器与自回归先验模型不匹配，导致学习到的 token 虽能良好重建图像，但难以被 AR 模型从左到右预测。",
-        "method": "利用三部分变分一致性（TVC）分析，在分词器训练中增加分布级先验匹配信号，通过 Wasserstein 梯度流更新优化，仅需辅助 AR 模型的前向传播，无需反向传播。",
+        "tldr": "提出 wAR-Tok，在离散图像分词器训练中加入分布级先验匹配信号，通过 Wasserstein 梯度流优化，使分词器感知后续自回归先验，降低 AR 损失并提升生成质量。",
+        "research_motivation": "现有离散图像分词器采用两阶段训练（先重建，后拟合先验），导致分词器对后续自回归先验不可知，学到的 token 虽保留图像信息但难以被 AR 模型从左到右预测，存在先验不一致问题。",
+        "problem": "解决两阶段训练中分词器与自回归先验之间的先验不一致问题，使分词器在训练时感知后续 AR 先验，从而降低 AR 损失并提升生成性能。",
+        "phenomenon_analysis": "通过三变量变分一致性（TVC）分析，发现两阶段训练仅保证了重建侧的一致性，而先验一致性未被纳入分词器目标：整体 token 分布在 AR 先验参与训练前就已固定。",
+        "method": "在分词器训练中加入分布级先验匹配信号，使用 Wasserstein 梯度流更新；对于硬类别 token，更新简化为辅助 AR 模型（跟踪当前 token 分布）与目标 AR 先验之间的 token 级对比，仅需前向传播，无需反向传播。",
         "contributions": [
-          "提出 TVC 框架分析两阶段训练中分词器与先验的失配问题",
-          "设计基于 Wasserstein 梯度流的先验匹配方法 wAR-Tok，无需端到端反向传播",
-          "在 CIFAR-10 和 ImageNet 上验证 wAR-Tok 降低 AR 损失并提升 FID"
+          "提出 wAR-Tok，一种通过 Wasserstein 梯度流将先验匹配信号融入离散图像分词器训练的方法。",
+          "从三变量变分一致性角度分析了两阶段训练的先验不一致问题，并提供了理论动机。",
+          "在 CIFAR-10 和 ImageNet 上验证了 wAR-Tok 能降低 AR 损失并改善生成 FID，且重建质量相当。"
         ],
-        "experiments": "在 CIFAR-10 和 ImageNet 上评估，在重建质量相当的情况下，wAR-Tok 降低了 AR 损失并改善了生成 FID。",
+        "experiments": "在 CIFAR-10 和 ImageNet 数据集上评估，wAR-Tok 降低了 AR 损失并改善了生成 FID，同时重建质量与基线相当。",
         "limitations": [
-          "可能仅适用于离散 token 的 AR 先验场景",
-          "辅助 AR 模型增加额外计算开销"
+          "可能仅适用于离散图像 tokenizer，未验证其他模态。",
+          "辅助 AR 模型增加了训练计算开销。"
         ],
-        "relevance": "与视觉-语言模型（VLM）中的图像分词、视频生成中的 token 化、以及自回归生成模型相关。",
+        "primary_area_en": "generative models",
         "primary_area": "生成模型",
-        "sub_area": "图像生成",
+        "category": "自回归/流匹配生成",
+        "sub_area": "自回归/流匹配生成",
         "tags": [
-          "图像生成",
-          "自回归模型",
-          "分词器"
+          "Discrete Tokenizer",
+          "Autoregressive Prior",
+          "Wasserstein Gradient Flow",
+          "Image Generation"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出 wAR-Tok，在离散图像分词器训练中加入分布级先验匹配信号，通过 Wasserstein 梯度流优化，使分词器感知后续自回归先验，降低 AR 损失并提升生成质量。"
       }
     },
     {
@@ -1738,27 +1906,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06143",
       "pdf_url": "https://arxiv.org/pdf/2605.06143",
       "analysis": {
-        "one_sentence_summary": "本文研究如何通过可解释AI方法提升AI生成图像检测器的可解释性，并评估其与人类理解的契合度。",
-        "problem": "现有AI生成图像检测器缺乏透明且可解释的预测机制，难以在虚假信息传播中提供人类可理解的解释。",
-        "method": "构建多种架构和微调策略的检测器，在AIText2Image数据集上训练，集成16种XAI方法，并通过100名参与者的调查，利用文本和视觉响应评估XAI输出与人类偏好的对齐程度。",
+        "tldr": "研究AI生成图像检测器的可解释性，通过人类调查评估XAI方法与人类视觉理解的匹配度。",
+        "research_motivation": "生成式AI被滥用于虚假信息传播，现有检测系统缺乏透明且可解释的预测机制，难以让人类理解检测依据。",
+        "problem": "如何使AI生成图像检测器提供符合人类认知的可解释性输出，并量化XAI方法与人类视觉理解的匹配度。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "构建多种架构和微调策略的检测器，集成16种XAI方法，通过100名参与者的调查收集文本和视觉反馈，提出优先考虑人类理解的评估框架。",
         "contributions": [
-          "开发了一套包含多种检测器和XAI方法的检测框架",
-          "提出了一种优先考虑人类理解的新型评估方法，用于衡量XAI方法的清晰度"
+          "构建大规模逼真假图数据集AIText2Image",
+          "提出基于人类调查的XAI方法评估框架，量化XAI输出与人类偏好的对齐程度"
         ],
-        "experiments": "摘要未提供具体实验结果",
+        "experiments": "摘要未提供具体实验结果。",
         "limitations": [
-          "可能仅针对文本到图像生成器，未涵盖其他类型AI生成图像",
-          "XAI方法评估依赖有限样本（100名参与者），泛化性待验证"
+          "可能依赖特定数据集和生成器，泛化性需验证",
+          "人类调查样本量有限，可能影响结论的普适性"
         ],
-        "relevance": "与视觉-语言模型（VLM）相关，涉及图像生成检测和可解释性",
-        "primary_area": "可解释 AI",
-        "sub_area": "视觉-语言模型 (VLM/MLLM)",
+        "primary_area_en": "alignment, fairness, safety, privacy, and societal considerations",
+        "primary_area": "对齐/安全/公平性/隐私",
+        "category": "红队与评估",
+        "sub_area": "红队与评估",
         "tags": [
-          "VLM",
+          "AI生成图像检测",
           "可解释AI",
-          "图像检测"
+          "人类认知"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "研究AI生成图像检测器的可解释性，通过人类调查评估XAI方法与人类视觉理解的匹配度。"
       }
     },
     {
@@ -1783,28 +1955,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06137",
       "pdf_url": "https://arxiv.org/pdf/2605.06137",
       "analysis": {
-        "one_sentence_summary": "提出Prologue方法，通过生成少量序言令牌来弥合自回归图像生成中的重建-生成差距，在不影响重建质量的前提下显著提升生成性能。",
-        "problem": "自回归图像生成中，视觉令牌需要同时满足重建和生成目标，导致两者之间存在差距，影响生成质量。",
-        "method": "生成一组序言令牌（prologue tokens）并前置到视觉令牌序列前，序言令牌仅通过自回归交叉熵损失训练，视觉令牌保持重建专用，实现解耦优化。",
+        "tldr": "提出Prologue方法，通过添加独立的前言令牌弥合自回归图像生成中的重建-生成差距。",
+        "research_motivation": "自回归图像生成中，视觉令牌需同时兼顾重建和生成，导致两者性能难以兼得，存在重建-生成差距。",
+        "problem": "如何在不牺牲重建质量的前提下，提升自回归图像生成的性能。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "生成少量前言令牌（prologue tokens）附加到视觉令牌序列前，前言令牌仅用自回归交叉熵损失训练，视觉令牌专用于重建，实现解耦设计。",
         "contributions": [
-          "提出序言令牌机制，将生成与重建目标解耦，使生成优化基于自回归模型的真实分布而不影响重建质量。",
-          "实验表明序言令牌能自发涌现语义结构，线性探测性能远超标准令牌化器前16个令牌。",
-          "在ImageNet 256x256上，无分类器引导下将gFID从21.01降至10.75，大模型达到rFID 0.99和gFID 1.46。"
+          "提出Prologue方法，通过解耦重建和生成任务，有效缩小重建-生成差距。",
+          "在ImageNet 256x256上，Prologue-Base将gFID从21.01降至10.75（无无分类器引导），Prologue-Large达到rFID 0.99和gFID 1.46。",
+          "发现前言令牌在仅受自回归梯度驱动下涌现语义结构，线性探测Top-1达35.88%，远高于标准令牌的23.71%。"
         ],
-        "experiments": "在ImageNet 256x256上进行了实验，报告了gFID和rFID指标，并进行了线性探测和重采样分析。",
+        "experiments": "在ImageNet 256x256数据集上评估，报告了gFID、rFID等指标，并与基线对比。",
         "limitations": [
           "可能仅适用于自回归图像生成范式，对其他生成模型（如扩散模型）的适用性未知。",
-          "序言令牌的语义结构涌现机制尚不完全清楚，需要进一步理论分析。"
+          "前言令牌的语义涌现机制尚未完全理解，可能缺乏理论保证。"
         ],
-        "relevance": "与视觉-语言模型（VLM）中的视觉编码、视频生成中的时序建模、以及LLM训练中的表示学习相关。",
+        "primary_area_en": "generative models",
         "primary_area": "生成模型",
-        "sub_area": "自回归图像生成",
+        "category": "图像编辑",
+        "sub_area": "图像编辑",
         "tags": [
-          "自回归生成",
-          "图像生成",
-          "表示学习"
+          "Autoregressive Generation",
+          "Image Generation",
+          "Visual Token"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出Prologue方法，通过添加独立的前言令牌弥合自回归图像生成中的重建-生成差距。"
       }
     },
     {
@@ -1829,28 +2005,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06127",
       "pdf_url": "https://arxiv.org/pdf/2605.06127",
       "analysis": {
-        "one_sentence_summary": "提出连续专家组装（CEA）框架，通过实例条件低秩残差实现全合一图像恢复，无需测试时退化标签。",
-        "problem": "真实世界图像退化未知、空间非均匀且具有组合性，现有方法使用全局提示或静态专家路由难以适应局部退化模式。",
-        "method": "使用轻量级交叉注意力超适配器生成实例条件低秩路由基和残差方向，每个空间令牌通过密集符号点积亲和度组装自己的残差更新。",
+        "tldr": "提出连续专家组装（CEA），通过实例条件低秩残差实现全合一图像恢复，无需测试时退化标签。",
+        "research_motivation": "真实图像退化未知、空间非均匀且组合多样，现有方法依赖全局提示或静态专家路由，难以适应局部退化模式。",
+        "problem": "如何在不使用测试时退化标签的情况下，让单一模型适应多样化的局部退化模式。",
+        "phenomenon_analysis": "紧凑全局条件会瓶颈局部退化证据，静态专家路由可能产生同质更新或依赖不稳定稀疏分配。",
+        "method": "CEA使用轻量级交叉注意力超适配器探测中间空间特征，合成实例条件低秩路由基和残差方向，每个空间token通过密集点积亲和度组装残差更新。",
         "contributions": [
-          "提出令牌级动态参数化框架CEA，避免外部提示、静态专家库和离散Top-k选择",
-          "从线性注意力角度解释密集令牌级路由行为，提升透明性",
-          "在多个基准上超越基于提示、描述符和专家的基线，尤其对空间变化和组合退化提升显著"
+          "提出连续专家组装（CEA）框架，实现token级动态参数化。",
+          "引入交叉注意力超适配器，避免外部提示、静态专家库和离散Top-k选择。",
+          "从线性注意力视角解释密集token级路由行为，提升透明度。"
         ],
-        "experiments": "在AIO-3、AIO-5和CDD-11数据集上实验，CEA在平均恢复质量上优于强基线，并保持参数、FLOP和运行时效率优势。",
+        "experiments": "在AIO-3、AIO-5和CDD-11数据集上，CEA在平均恢复质量上优于强基线，尤其在空间变化和组合退化上增益明显，且保持参数、FLOP和运行时效率。",
         "limitations": [
-          "可能对极端退化或未见退化类型泛化能力有限",
-          "交叉注意力超适配器可能增加训练复杂度"
+          "可能对极端复杂退化场景泛化能力有限。",
+          "交叉注意力超适配器可能增加训练复杂度。"
         ],
-        "relevance": "与视觉-语言模型（VLM）中的动态参数化或条件生成相关，但本文专注于图像恢复，与视频生成、医学影像等方向间接相关。",
-        "primary_area": "应用：CV/音频/语言等",
-        "sub_area": "图像恢复",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉理解",
+        "sub_area": "视觉理解",
         "tags": [
-          "图像恢复",
-          "动态参数化",
-          "低秩残差"
+          "All-in-One Image Restoration",
+          "Dynamic Parameterization",
+          "Low-Rank Residuals"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出连续专家组装（CEA），通过实例条件低秩残差实现全合一图像恢复，无需测试时退化标签。"
       }
     },
     {
@@ -1877,29 +2057,33 @@
       "entry_url": "https://arxiv.org/abs/2605.06121",
       "pdf_url": "https://arxiv.org/pdf/2605.06121",
       "analysis": {
-        "one_sentence_summary": "Pest-Thinker 通过知识驱动的强化学习框架，使多模态大语言模型能够像昆虫学家一样推理细粒度害虫形态，显著提升领域内外的形态理解能力。",
-        "problem": "多模态大语言模型在害虫识别任务中面临种间复杂度高、种内变异大以及专家标注数据稀缺等挑战，直接应用效果有限。",
-        "method": "构建两个高清害虫基准数据集（QFSD 和 AgriInsect），利用专家标注的形态特征合成思维链推理轨迹进行监督微调，再采用组相对策略优化（GRPO）结合新颖的特征奖励，通过 LLM-as-a-Judge 策略引导模型关注可观察的形态证据。",
+        "tldr": "提出 Pest-Thinker 框架，通过强化学习让多模态大模型像昆虫学家一样推理细粒度害虫形态。",
+        "research_motivation": "害虫导致的作物损失威胁全球粮食安全，现有 MLLM 在害虫识别上因种间复杂度高、种内变异大、专家标注数据稀缺而表现有限。",
+        "problem": "如何让 MLLM 具备细粒度害虫形态推理能力，实现专家级的视觉理解。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "构建两个高清害虫基准数据集 QFSD 和 AgriInsect，合成 CoT 推理轨迹进行 SFT，再使用 GRPO 结合特征奖励（LLM-as-a-Judge 评估）引导模型关注形态证据。",
         "contributions": [
-          "提出 Pest-Thinker 框架，将知识驱动的强化学习引入害虫形态推理，提升 MLLM 的细粒度视觉理解能力。",
-          "构建两个高质量害虫基准数据集 QFSD 和 AgriInsect，包含多样物种和专家标注的形态特征。",
-          "设计基于 GRPO 的特征奖励机制，结合 LLM-as-a-Judge 策略，有效引导模型关注形态证据。"
+          "提出 Pest-Thinker 知识驱动强化学习框架，提升 MLLM 细粒度害虫形态推理能力。",
+          "构建两个高清害虫基准数据集 QFSD 和 AgriInsect，包含多样物种和专家标注形态特征。",
+          "设计基于 GRPO 的特征奖励机制，结合 LLM-as-a-Judge 策略，显著改善域内和域外形态理解。"
         ],
-        "experiments": "摘要未提供具体实验结果。",
+        "experiments": "在 QFSD 和 AgriInsect 数据集上进行实验，显示 Pest-Thinker 在域内和域外形态理解上均有显著提升。",
         "limitations": [
-          "可能依赖专家标注数据，扩展至新物种或新场景时需重新标注。",
-          "强化学习训练的计算成本可能较高。"
+          "数据集和代码尚未公开，需等待接受后发布。",
+          "方法依赖专家标注的形态特征，扩展至其他领域可能需要额外标注成本。"
         ],
-        "relevance": "与视觉-语言模型（VLM/MLLM）和强化学习训练方向相关。",
-        "primary_area": "基础/前沿模型 (含LLM)",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉-语言模型 (VLM/MLLM)",
         "sub_area": "视觉-语言模型 (VLM/MLLM)",
         "tags": [
-          "VLM",
           "MLLM",
           "Reinforcement Learning",
-          "Agriculture"
+          "Pest Recognition",
+          "Fine-grained Reasoning"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出 Pest-Thinker 框架，通过强化学习让多模态大模型像昆虫学家一样推理细粒度害虫形态。"
       }
     },
     {
@@ -1926,26 +2110,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06112",
       "pdf_url": "https://arxiv.org/pdf/2605.06112",
       "analysis": {
-        "one_sentence_summary": "提出一种动态沉思的稀疏感知混合专家Transformer，用于基于事件流的视觉目标跟踪，通过多尺度事件密度建模和自适应推理深度实现精度与效率的平衡。",
-        "problem": "现有基于事件的跟踪器忽略事件数据的空间稀疏性和时间密度变化，且使用固定的单时间窗口采样策略，在运动动态变化时表现次优。",
-        "method": "提出事件稀疏感知跟踪框架，包括：三级Vision Transformer骨干网络渐进注入稀疏、中密度和密集事件搜索区域实现分层多密度特征学习；稀疏感知混合专家模块促进专家在不同稀疏模式下的专业化；动态沉思策略根据跟踪难度自适应调整推理深度。",
+        "tldr": "提出动态稀疏感知MoE Transformer，利用多密度事件表示实现高效视觉目标跟踪。",
+        "research_motivation": "RGB跟踪器在低光照、快速运动等挑战场景下易失效，事件相机虽具高动态范围和高时间分辨率优势，但现有事件跟踪器未充分利用事件数据的空间稀疏性和时间密度特性，且固定时间窗口采样策略难以适应运动动态变化。",
+        "problem": "如何显式建模事件数据在不同时间尺度上的密度变化，并设计自适应推理机制以平衡跟踪精度与计算效率。",
+        "phenomenon_analysis": "事件数据具有内在的空间稀疏性和时间密度变化，单一固定时间窗口采样策略在运动动态变化下表现次优。",
+        "method": "提出事件稀疏感知跟踪框架，包含三阶段Vision Transformer骨干网络逐步注入稀疏、中等密度和密集事件搜索区域，实现层次化多密度特征学习；引入稀疏感知混合专家模块促进专家在不同稀疏模式下的专业化；设计动态思考策略根据跟踪难度自适应调整推理深度。",
         "contributions": [
-          "提出事件稀疏感知跟踪框架，显式建模多时间尺度的事件密度变化",
-          "设计稀疏感知混合专家模块和动态沉思策略，提升跟踪精度与计算效率的权衡"
+          "首次显式建模事件密度变化，提出多尺度事件密度特征学习框架。",
+          "提出稀疏感知MoE模块和动态推理深度调整策略，实现精度-效率权衡。"
         ],
-        "experiments": "在FE240hz、COESOT和EventVOT数据集上实验，表明方法在跟踪精度和计算效率之间取得了良好权衡。",
+        "experiments": "在FE240hz、COESOT和EventVOT数据集上进行实验，结果表明所提方法在跟踪精度和计算效率之间取得了有利的权衡。",
         "limitations": [
-          "可能依赖特定的事件表示或预处理步骤",
-          "动态沉思策略的复杂度可能带来额外开销"
+          "可能对极端稀疏或密集事件场景的泛化性有限。",
+          "动态推理策略的额外开销未详细分析。"
         ],
-        "relevance": "与视觉-语言模型（VLM）和视频生成方向相关，因为事件流数据可用于增强低光照或高速场景下的视觉理解，但本文主要聚焦跟踪任务。",
-        "primary_area": "应用：CV/音频/语言等",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉理解",
         "sub_area": "视觉理解",
         "tags": [
-          "VLM",
-          "Video Generation"
+          "Event Camera",
+          "Visual Object Tracking",
+          "Mixture-of-Experts",
+          "Vision Transformer"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出动态稀疏感知MoE Transformer，利用多密度事件表示实现高效视觉目标跟踪。"
       }
     },
     {
@@ -1968,26 +2158,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06095",
       "pdf_url": "https://arxiv.org/pdf/2605.06095",
       "analysis": {
-        "one_sentence_summary": "本文发现现代预训练视觉Transformer存在视觉转喻现象，即每个部件编码了整个对象的信息，破坏了基于注意力的可解释性。",
-        "problem": "基于部件的注意力可解释性方法依赖于局部性假设，即对象部件的潜在表示主要编码对应图像区域的信息，但该假设在预训练视觉模型中可能不成立。",
-        "method": "通过使用基于部件属性标注的全面实验评估，测量视觉模型中的对象内信息泄漏，并建立了一种两阶段方法作为上界来防止泄漏。",
+        "tldr": "现代视觉Transformer中对象内部信息泄漏导致基于注意力的可解释性失效。",
+        "research_motivation": "基于部件的推理是提升计算机视觉模型可解释性的经典策略，但现有方法依赖局部性假设，即部件隐表示主要编码对应图像区域的信息。该假设是否成立缺乏验证，若被违反将严重损害可解释性。",
+        "problem": "验证视觉模型中是否存在对象内部信息泄漏（即部件编码了整体对象信息），并评估其对基于注意力的可解释性方法的影响。",
+        "phenomenon_analysis": "实验发现现代预训练视觉Transformer严重违反局部性假设，表现出强烈的对象内部泄漏，每个部件编码了来自整个对象的信息，这种视觉转喻现象导致基于注意力的可解释方法失效。",
+        "method": "通过部件级属性标注测量对象内部泄漏；提出一种两阶段方法（先提取解耦特征再发现部件）作为上界，从设计上防止泄漏。",
         "contributions": [
-          "揭示了现代预训练视觉Transformer违反局部性假设，存在强对象内信息泄漏（视觉转喻），损害了基于注意力的可解释性。",
-          "提出了一种两阶段方法作为上界，通过设计防止泄漏，并证明其能改善多种任务上的属性驱动部件发现。"
+          "首次系统验证了视觉Transformer中对象内部泄漏现象，揭示其对基于注意力的可解释性的危害。",
+          "提出两阶段方法作为上界，证明解耦特征提取能改善属性驱动的部件发现，并验证了泄漏的实际影响。"
         ],
-        "experiments": "摘要未提供具体实验结果。",
+        "experiments": "在多个部件属性标注数据集上进行综合实验，对比了现代预训练ViT与两阶段方法，显示泄漏普遍存在且两阶段方法有效。",
         "limitations": [
-          "可能仅针对特定类型的视觉Transformer进行了验证，泛化性有待进一步研究。",
-          "两阶段方法可能增加计算复杂度，实际部署时需权衡。"
+          "仅针对视觉Transformer，未覆盖其他架构（如CNN）。",
+          "两阶段方法可能增加计算开销，实际部署需权衡。"
         ],
-        "relevance": "该工作与视觉-语言模型（VLM）中的可解释性相关，因为VLM常依赖部件级表示进行推理。",
+        "primary_area_en": "interpretability and explainable AI",
         "primary_area": "可解释 AI",
-        "sub_area": "视觉模型可解释性",
+        "category": "其他",
+        "sub_area": "其他",
         "tags": [
-          "VLM",
-          "可解释性"
+          "可解释性",
+          "视觉Transformer",
+          "部件推理",
+          "信息泄漏"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "现代视觉Transformer中对象内部信息泄漏导致基于注意力的可解释性失效。"
       }
     },
     {
@@ -2014,29 +2210,33 @@
       "entry_url": "https://arxiv.org/abs/2605.06094",
       "pdf_url": "https://arxiv.org/pdf/2605.06094",
       "analysis": {
-        "one_sentence_summary": "VISD提出了一种结构化自蒸馏框架，通过多维度特权信号和方向-幅度解耦机制，提升视频推理的准确性和训练效率。",
-        "problem": "训练VideoLLMs进行复杂推理时，序列级奖励稀疏且缺乏细粒度信用分配，现有强化学习无法捕捉token级贡献，自蒸馏方法缺乏结构和诊断特异性。",
-        "method": "VISD框架：使用视频感知评判模型将推理质量分解为答案正确性、逻辑一致性和时空基础等多维度，生成结构化特权信号指导教师策略进行token级监督；通过方向-幅度解耦机制，用奖励计算的方向决定更新方向，结构化信号调节更新幅度，并结合课程调度和EMA教师稳定化。",
+        "tldr": "VISD通过结构化自蒸馏框架，利用视频感知裁判模型分解推理质量维度，结合方向-幅度解耦机制，提升VideoLLM的推理准确性和训练效率。",
+        "research_motivation": "视频大模型（VideoLLM）的复杂推理训练面临稀疏序列奖励和细粒度信用分配不足的问题，现有强化学习缺乏token级贡献，自蒸馏方法缺乏结构性和诊断特异性，且与强化学习结合不稳定。",
+        "problem": "如何为视频推理提供结构化的、诊断性的密集监督信号，并稳定地与强化学习结合，实现细粒度信用分配。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "提出VISD框架，包含视频感知裁判模型（分解推理质量为答案正确性、逻辑一致性、时空定位等维度）、教师策略生成token级监督、方向-幅度解耦机制（rollout优势决定方向，结构化信号调节幅度）、课程调度和EMA教师稳定化。",
         "contributions": [
-          "提出结构化自蒸馏框架VISD，引入诊断性特权信息用于视频推理。",
-          "设计方向-幅度解耦机制，稳定集成密集监督与强化学习。",
-          "实验表明VISD在准确性和时空基础质量上优于强基线，且收敛速度提升近2倍。"
+          "提出结构化自蒸馏框架VISD，利用多维诊断性特权信息指导视频推理训练。",
+          "引入方向-幅度解耦机制，稳定融合密集监督与强化学习，实现语义对齐的细粒度信用分配。",
+          "在多个基准上显著提升答案准确性和时空定位质量，收敛速度提升近2倍。"
         ],
-        "experiments": "摘要提到在多个基准上实验，VISD优于强基线，提升答案准确性和时空基础质量，收敛速度提升近2倍。但未提供具体数值。",
+        "experiments": "在多个基准上对比强基线，VISD在答案准确性和时空定位质量上持续领先，且优化步骤收敛速度提升近2倍。",
         "limitations": [
-          "可能依赖视频感知评判模型的质量，若评判模型不准确则影响蒸馏效果。",
-          "框架复杂度较高，需要多维度信号和课程调度，实现成本可能较高。"
+          "依赖视频感知裁判模型的质量，可能引入额外偏差。",
+          "框架复杂度较高，需要多维度分解和课程调度。"
         ],
-        "relevance": "与VLM训练、视频推理、强化学习与自蒸馏结合相关。",
+        "primary_area_en": "foundation or frontier models, including LLMs",
         "primary_area": "基础/前沿模型 (含LLM)",
-        "sub_area": "视觉-语言模型 (VLM/MLLM)",
+        "category": "推理与思维链",
+        "sub_area": "推理与思维链",
         "tags": [
-          "VLM",
-          "Video Reasoning",
+          "VideoLLM",
           "Self-Distillation",
-          "Reinforcement Learning"
+          "Reinforcement Learning",
+          "Reasoning"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "VISD通过结构化自蒸馏框架，利用视频感知裁判模型分解推理质量维度，结合方向-幅度解耦机制，提升VideoLLM的推理准确性和训练效率。"
       }
     },
     {
@@ -2061,28 +2261,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06092",
       "pdf_url": "https://arxiv.org/pdf/2605.06092",
       "analysis": {
-        "one_sentence_summary": "提出一种结合上下文提示和噪声学习的自监督跟踪框架，通过双模态上下文关联机制从无标签视频中学习鲁棒的跟踪表示。",
-        "problem": "现有自监督跟踪器缺乏有效的上下文建模，且基于非语义查询的上下文关联方法难以适应无标签跟踪场景，无法学习可靠的上下文线索。",
-        "method": "提出双模态上下文关联机制，早期训练将实例补丁令牌（提示）分配给前向和后向跟踪分支以获取跟踪知识，后期逐渐注入上下文噪声扰动特征，促使模型在更复杂特征空间中学习鲁棒表示。",
+        "tldr": "提出双模态上下文关联机制，结合语义提示和噪声学习提升自监督跟踪性能。",
+        "research_motivation": "自监督跟踪缺乏有效上下文建模，现有基于非语义查询的上下文关联方法难以适应无标注跟踪场景。",
+        "problem": "如何从无标注视频中学习鲁棒的上下文知识以提升自监督跟踪性能。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "提出双模态上下文关联机制，早期使用实例块标记（提示）促进跟踪知识获取，后期注入上下文噪声扰动特征，遵循由易到难学习原则。",
         "contributions": [
-          "提出一种新颖的自监督跟踪框架，结合语义提示和上下文噪声进行上下文关联。",
-          "设计两阶段训练策略，遵循由易到难的学习原则，提升跟踪表示质量。",
-          "仅在训练时应用该机制，保持推理高效性。"
+          "提出一种新颖的自监督跟踪框架，引入双模态上下文关联机制。",
+          "设计两阶段学习策略，结合语义提示和噪声学习提升跟踪鲁棒性。"
         ],
         "experiments": "摘要未提供具体实验结果。",
         "limitations": [
-          "可能对噪声注入的强度和时间调度敏感，需要仔细调参。",
-          "双模态关联机制可能增加训练复杂度。"
+          "可能依赖特定视频数据集特性。",
+          "噪声注入策略的通用性有待验证。"
         ],
-        "relevance": "与视频理解相关，可应用于视频生成中的时序建模或视觉-语言模型中的跟踪任务。",
-        "primary_area": "应用：CV/音频/语言等",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉理解",
         "sub_area": "视觉理解",
         "tags": [
-          "自监督学习",
-          "目标跟踪",
-          "上下文建模"
+          "Self-Supervised Learning",
+          "Visual Tracking",
+          "Context Modeling"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "提出双模态上下文关联机制，结合语义提示和噪声学习提升自监督跟踪性能。"
       }
     },
     {
@@ -2106,26 +2309,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06088",
       "pdf_url": "https://arxiv.org/pdf/2605.06088",
       "analysis": {
-        "one_sentence_summary": "OpenGaFF 提出基于高斯特征场和码本注意力的开放词汇3D场景理解框架，通过几何-语义耦合和结构化码本提升语义一致性与分割质量。",
-        "problem": "基于高斯的开放词汇3D场景理解中，多视角观测导致语义预测碎片化且空间不一致。",
-        "method": "构建高斯特征场，将语义建模为高斯几何和外观的连续函数；引入结构化码本作为共享语义基元，并通过码本引导的注意力机制检索语言特征。",
+        "tldr": "OpenGaFF 通过高斯特征场和码本注意力机制实现开放词汇 3D 场景理解，提升语义一致性和分割质量。",
+        "research_motivation": "基于高斯的开放词汇 3D 场景理解面临多视图语义预测碎片化和空间不一致的问题，现有方法缺乏几何与语义的强耦合。",
+        "problem": "如何在高斯表示中实现几何与语义的紧密耦合，并保证对象级语义一致性，以支持开放词汇 3D 场景理解。",
+        "phenomenon_analysis": "多视图观测下语义预测碎片化且空间不一致，几何与语义耦合弱导致相似结构语义不一致。",
+        "method": "构建高斯特征场，将语义建模为高斯几何和外观的连续函数；引入结构化码本作为共享语义基元，并通过码本引导注意力机制检索语言特征。",
         "contributions": [
-          "提出高斯特征场，显式将语义预测条件于几何结构，增强几何与语义的耦合，改善空间一致性。",
-          "引入结构化码本和码本引导注意力，实现鲁棒的开放词汇推理并降低对象内特征方差。"
+          "提出高斯特征场，显式将语义条件于几何结构，增强几何-语义耦合。",
+          "引入结构化码本和码本引导注意力，实现对象级语义一致性和开放词汇推理。"
         ],
-        "experiments": "在标准2D和3D开放词汇基准上，方法在分割质量、3D语义一致性和码本可解释性方面持续优于先前方法。",
+        "experiments": "在标准 2D 和 3D 开放词汇基准上实验，方法持续优于先前方法，实现更好的分割质量和 3D 语义一致性。",
         "limitations": [
-          "可能依赖高质量3D高斯初始化。",
-          "码本规模可能影响泛化能力。"
+          "可能依赖高质量 3D 高斯初始化。",
+          "码本大小和注意力机制的计算开销未讨论。"
         ],
-        "relevance": "与视觉-语言模型（VLM）相关，涉及开放词汇语义理解。",
-        "primary_area": "应用：CV/音频/语言等",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉-语言模型 (VLM/MLLM)",
         "sub_area": "视觉-语言模型 (VLM/MLLM)",
         "tags": [
-          "VLM",
-          "3D Scene Understanding"
+          "3D Scene Understanding",
+          "Open-Vocabulary",
+          "Gaussian Splatting",
+          "Codebook Attention"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "OpenGaFF 通过高斯特征场和码本注意力机制实现开放词汇 3D 场景理解，提升语义一致性和分割质量。"
       }
     },
     {
@@ -2146,27 +2355,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06086",
       "pdf_url": "https://arxiv.org/pdf/2605.06086",
       "analysis": {
-        "one_sentence_summary": "LARGO 提出一种低秩超网络，通过 CP 张量分解在权重空间处理缺失模态问题，在医学影像分割中取得领先性能。",
-        "problem": "多模态图像分析中缺失模态的处理需要复杂架构，且难以跨数据集迁移。",
-        "method": "使用 CP 张量分解建模卷积权重，将 2^N-1 个专用缺失模态模型压缩为单个超网络。",
+        "tldr": "提出低秩超网络LARGO，通过CP分解压缩缺失模态专用模型，在医学图像分割中取得SOTA。",
+        "research_motivation": "多模态图像分析中缺失模态是常见挑战，现有方法依赖复杂架构且难以跨数据集迁移，缺乏在权重空间处理缺失模态的通用方案。",
+        "problem": "如何在不修改架构或超参数的情况下，用一个统一网络处理所有可能的缺失模态组合。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "提出LARGO超网络，利用Canonical Polyadic (CP)张量分解将2^N-1个缺失模态专用模型的卷积权重压缩为单一网络。",
         "contributions": [
-          "提出在权重空间而非特征空间处理缺失模态的新思路",
-          "利用 CP 分解实现高效的多模态模型压缩与统一"
+          "首次在权重空间通过超网络和CP分解处理缺失模态，避免特征工程。",
+          "在BraTS 2018和ISLES 2022上52个配置中47个排名第一，平均Dice提升0.68%和2.53%。"
         ],
-        "experiments": "在 BraTS 2018（4模态，15场景）和 ISLES 2022（3模态，7场景）上，LARGO 在52个配置中47个排名第一，平均 Dice 提升 +0.68% 和 +2.53%；在 avMNIST 上验证了跨领域泛化性。",
+        "experiments": "在BraTS 2018（4模态，15场景）和ISLES 2022（3模态，7场景）上验证，与mmFormer、M³AE、ShaSpec、SimMLM对比，并在avMNIST上展示泛化性。",
         "limitations": [
-          "可能依赖特定张量分解结构，对非卷积网络适用性未知",
-          "超网络训练可能引入额外计算开销"
+          "仅验证了医学图像分割任务，其他模态和任务需进一步测试。",
+          "超网络可能增加训练复杂度，且CP分解的秩选择需要调参。"
         ],
-        "relevance": "与医学影像分析中的多模态学习相关，可应用于 VLM 中的多模态融合。",
-        "primary_area": "应用：CV/音频/语言等",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "医学图像",
         "sub_area": "医学图像",
         "tags": [
-          "医学图像",
-          "多模态学习",
-          "缺失模态"
+          "Missing Modalities",
+          "Hypernetwork",
+          "Medical Image Segmentation",
+          "Tensor Decomposition"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出低秩超网络LARGO，通过CP分解压缩缺失模态专用模型，在医学图像分割中取得SOTA。"
       }
     },
     {
@@ -2191,28 +2405,32 @@
       "entry_url": "https://arxiv.org/abs/2605.06084",
       "pdf_url": "https://arxiv.org/pdf/2605.06084",
       "analysis": {
-        "one_sentence_summary": "提出AMIEOD框架，通过多专家图像增强模块和检测引导损失函数，联合优化低光照图像增强与目标检测，显著提升检测精度。",
-        "problem": "低光照条件下拍摄的图像导致目标检测精度显著下降。",
-        "method": "提出AMIEOD框架，包含多专家图像增强模块（MEIEM）利用多种增强策略，检测引导回归损失（DGRL）利用检测结果决定回归目标，以及专家选择模块（ESM）通过检测引导交叉熵损失（DGCE）动态选择最优增强策略。",
+        "tldr": "提出一种面向低照度场景的检测导向多专家图像增强框架，通过联合优化增强与检测任务提升目标检测精度。",
+        "research_motivation": "低照度图像在多媒体应用中导致视觉感知任务精度下降，现有增强方法未与检测任务联合优化，难以最大化检测性能。",
+        "problem": "如何设计一种检测性能导向的图像增强方法，使其能自适应地选择最优增强策略并联合优化增强与检测任务，以提升低照度场景下的目标检测精度。",
+        "phenomenon_analysis": "摘要未提供具体现象分析。",
+        "method": "提出AMIEOD框架，包含多专家图像增强模块（MEIEM）生成多种增强策略，检测引导回归损失（DGRL）利用检测结果指导回归目标，以及专家选择模块（ESM）通过检测引导交叉熵损失（DGCE）动态选择最优增强策略。",
         "contributions": [
-          "提出多专家图像增强模块（MEIEM），融合多种增强策略以充分利用低光照图像信息。",
-          "提出检测引导回归损失（DGRL），使增强模块与检测任务对齐。",
-          "提出专家选择模块（ESM）及检测引导交叉熵损失（DGCE），实现推理时动态选择增强策略。"
+          "提出检测导向的多专家图像增强框架AMIEOD，联合优化增强与检测任务。",
+          "设计检测引导回归损失（DGRL）和检测引导交叉熵损失（DGCE），实现增强与检测的协同优化。",
+          "构建专家选择模块（ESM），在推理时动态选择最合适的增强策略。"
         ],
-        "experiments": "在多个数据集上进行了广泛实验，结果表明该方法显著提高了低光照条件下的目标检测精度。摘要未提供具体数值。",
+        "experiments": "在多个数据集上进行了大量实验，结果表明该方法显著提升了低照度条件下的目标检测精度。",
         "limitations": [
           "可能依赖特定检测算法，泛化性需进一步验证。",
-          "多专家模块可能增加计算开销。"
+          "多专家模块可能增加计算开销，实时性待评估。"
         ],
-        "relevance": "与视觉理解、低光照图像增强相关，可应用于视频监控、自动驾驶等场景。",
-        "primary_area": "应用：CV/音频/语言等",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉理解",
         "sub_area": "视觉理解",
         "tags": [
+          "低照度增强",
           "目标检测",
-          "低光照增强",
-          "多专家学习"
+          "多专家模型"
         ],
-        "reading_priority": "medium"
+        "reading_priority": "medium",
+        "one_sentence_summary": "提出一种面向低照度场景的检测导向多专家图像增强框架，通过联合优化增强与检测任务提升目标检测精度。"
       }
     },
     {
@@ -2241,28 +2459,31 @@
       "entry_url": "https://arxiv.org/abs/2605.06083",
       "pdf_url": "https://arxiv.org/pdf/2605.06083",
       "analysis": {
-        "one_sentence_summary": "提出层次化证据学习框架Holmes，通过显式建模不确定性解决部分相关视频检索中的语义模糊和时序监督稀疏问题。",
-        "problem": "部分相关视频检索中，文本查询与视频内容之间的不对称性导致不确定性，且稀疏的时序监督无法提供充分匹配证据。",
-        "method": "层次化证据学习框架Holmes：在视频间层面，将相似度分数解释为证据支持并通过狄利克雷分布建模，基于三原则进行查询自适应校准学习；在视频内层面，通过带自适应垃圾桶的柔性最优传输实现软查询-片段对齐，缓解稀疏监督并抑制虚假响应。",
+        "tldr": "提出层次化证据学习框架 Holmes，通过显式建模不确定性提升部分相关视频检索性能。",
+        "research_motivation": "部分相关视频检索中，简短查询与丰富视频内容之间的不对称性导致不确定性，现有方法缺乏对不确定性的显式建模。",
+        "problem": "解决部分相关视频检索中因查询模糊和时序监督稀疏导致的语义歧义和匹配证据不足问题。",
+        "phenomenon_analysis": "摘要指出模糊查询在视频间引入语义歧义，且稀疏的时序监督无法提供充分匹配证据。",
+        "method": "提出 Holmes 层次化证据学习框架：视频间层将相似度解释为证据支持并用狄利克雷分布建模，基于三原则进行细粒度查询识别和查询自适应校准学习；视频内层通过带自适应垃圾箱的柔性最优传输实现软查询-片段对齐，积累更密集证据并抑制虚假局部响应。",
         "contributions": [
-          "提出层次化证据学习框架显式建模部分相关视频检索中的不确定性",
-          "设计基于狄利克雷分布的跨视频证据建模与查询自适应校准学习",
-          "引入带自适应垃圾桶的柔性最优传输实现软查询-片段对齐"
+          "提出层次化证据学习框架 Holmes，显式建模部分相关视频检索中的不确定性。",
+          "设计视频间层的三原则查询识别和查询自适应校准学习，以及视频内层的软对齐机制。"
         ],
-        "experiments": "摘要未提供具体实验结果，仅提及广泛实验表明Holmes优于现有方法。",
+        "experiments": "摘要未提供具体实验结果，仅提及 Holmes 优于现有方法。",
         "limitations": [
-          "可能依赖预定义的三原则，泛化性需验证",
-          "最优传输计算复杂度较高，可能影响大规模应用"
+          "可能依赖预定义的三原则，泛化性需验证。",
+          "最优传输计算开销可能较大。"
         ],
-        "relevance": "与视觉-语言模型（VLM）中的跨模态检索和不确定性建模相关，可应用于视频理解与检索任务。",
-        "primary_area": "应用：CV/音频/语言等",
+        "primary_area_en": "applications to computer vision, audio, language, and other modalities",
+        "primary_area": "应用: CV/音频/语言等",
+        "category": "视觉-语言模型 (VLM/MLLM)",
         "sub_area": "视觉-语言模型 (VLM/MLLM)",
         "tags": [
-          "VLM",
           "Video Retrieval",
-          "Uncertainty"
+          "Uncertainty",
+          "Evidential Learning"
         ],
-        "reading_priority": "high"
+        "reading_priority": "high",
+        "one_sentence_summary": "提出层次化证据学习框架 Holmes，通过显式建模不确定性提升部分相关视频检索性能。"
       }
     }
   ]
