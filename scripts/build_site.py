@@ -101,6 +101,14 @@ def field_row(icon: str, label: str, content: str) -> str:
 """
 
 
+def analysis_text(analysis: dict[str, Any], *keys: str, default: str = "暂无") -> str:
+    for key in keys:
+        value = analysis.get(key)
+        if value:
+            return str(value)
+    return default
+
+
 def paper_card(paper: dict[str, Any]) -> str:
     analysis = paper.get("analysis") or {}
     tags = analysis.get("tags") or []
@@ -110,16 +118,20 @@ def paper_card(paper: dict[str, Any]) -> str:
     sub = sub_area(paper)
     authors = paper.get("authors") or []
     title = paper.get("title", "")
+    tldr = analysis_text(analysis, "tldr", "one_sentence_summary", default="暂无中文导读。")
+    motivation = analysis_text(analysis, "research_motivation", "motivation", "problem")
+    phenomenon = analysis_text(analysis, "phenomenon_analysis", "phenomena", default="摘要未提供明确现象分析。")
     search_blob = " ".join(
         [
             title,
             paper.get("abstract", ""),
-            analysis.get("one_sentence_summary", ""),
+            tldr,
+            motivation,
             analysis.get("problem", ""),
+            phenomenon,
             analysis.get("method", ""),
             " ".join(map(str, analysis.get("contributions") or [])),
             analysis.get("experiments", ""),
-            analysis.get("relevance", ""),
             area,
             sub,
             " ".join(map(str, tags)),
@@ -158,16 +170,16 @@ def paper_card(paper: dict[str, Any]) -> str:
     <a href="{h(paper.get('pdf_url'))}" target="_blank" rel="noopener">PDF</a>
     <span>{h(paper.get('primary_category'))}</span>
   </div>
-  <div class="paper-tldr"><b>TL;DR：</b>{h(analysis.get('one_sentence_summary', '暂无中文导读。'))}</div>
+  <div class="paper-tldr"><b>TL;DR：</b>{h(tldr)}</div>
   {error_html}
   <div class="analysis-grid">
-    {field_row("🎯", "一句话总结", f"<p>{h(analysis.get('one_sentence_summary', '暂无'))}</p>")}
+    {field_row("🎯", "研究动机", f"<p>{h(motivation)}</p>")}
     {field_row("❓", "解决问题", f"<p>{h(analysis.get('problem', '暂无'))}</p>")}
+    {field_row("🔎", "现象分析", f"<p>{h(phenomenon)}</p>")}
     {field_row("🛠️", "主要方法", f"<p>{h(analysis.get('method', '暂无'))}</p>")}
     {field_row("📊", "数据与实验", f"<p>{h(analysis.get('experiments', '摘要未提供具体实验结果'))}</p>")}
     {field_row("⭐", "主要贡献", list_items(analysis.get('contributions') or []))}
     {field_row("⚠️", "局限性", list_items(analysis.get('limitations') or []))}
-    {field_row("🔗", "相关性点评", f"<p>{h(analysis.get('relevance', '暂无'))}</p>")}
   </div>
   <details class="abstract-block">
     <summary>查看完整摘要 (Abstract)</summary>
@@ -334,7 +346,7 @@ def render_page(
     sections = render_sections(papers)
     intro = (
         "从 arXiv 自动抓取每日论文，基于标题与摘要生成中文导读；"
-        "每篇论文给出研究动机、解决问题、主要方法、实验信息、贡献、局限与相关性点评。"
+        "每篇论文给出 TL;DR、研究动机、解决问题、现象分析、主要方法、实验信息、贡献与局限。"
         "左侧可按日期、大类/小类、优先级与关键词快速筛选。"
     )
 
