@@ -4,13 +4,13 @@
 
 ## 功能
 
-- 从 arXiv Atom API 抓取指定日期、指定分类的论文 metadata。
+- 从 arXiv Atom API 抓取指定日期、指定分类的论文 metadata；未指定日期时自动回溯到最近一个有论文更新的日期。
 - 基于 `title + abstract` 调用 DeepSeek OpenAI-compatible API 生成中文导读。
 - 支持断点续跑，已分析论文不会重复请求 API。
 - 生成 `docs/` 静态网站，包含首页、历史日期页、日期索引和静态资源。
-- 前端支持实时搜索、tag 过滤、priority 过滤、分类过滤和折叠 abstract。
+- 前端支持实时搜索、大类/小类导航、日历日期切换、tag 过滤、priority 过滤、分类过滤和折叠 abstract。
 - 提供 mock 模式，无需 API key 即可预览页面。
-- 提供 GitHub Actions 定时任务，每天北京时间 08:00 运行。
+- 提供 GitHub Actions 定时任务，每天北京时间 04:00 运行。
 
 ## 目录结构
 
@@ -53,10 +53,14 @@ python scripts/run_daily.py --date 2026-05-10
 
 ```bash
 python scripts/run_daily.py --date 2026-05-10 --max-papers 30
+python scripts/run_daily.py --max-papers 30
 python scripts/fetch_arxiv.py --date 2026-05-10 --max-papers 30
+python scripts/fetch_arxiv.py --latest-with-papers --max-papers 30
 python scripts/analyze_deepseek.py --date 2026-05-10
 python scripts/build_site.py
 ```
+
+不传 `--date` 时，`run_daily.py` 会从当前日期向前回溯，选择最近一个有 arXiv 更新的日期；如果该日期的论文已经全部分析过，会跳过 DeepSeek 调用，只重新构建静态网站。
 
 ## Mock 模式
 
@@ -106,7 +110,7 @@ Folder: /docs
 
 workflow 位于 `.github/workflows/daily.yml`：
 
-- 每天北京时间 08:00 运行，cron 为 `0 0 * * *`。
+- 每天北京时间 04:00 运行，cron 为 `0 20 * * *`。
 - 支持 `workflow_dispatch` 手动触发。
 - 使用 Python 3.11。
 - 安装 `requirements.txt`。
@@ -144,7 +148,7 @@ Actions → Daily arXiv Guide → Run workflow
 
 **当天没有论文**
 
-`fetch_arxiv.py` 仍会写出合法 JSON，`papers` 为空；页面会显示空状态。
+`fetch_arxiv.py` 仍会写出合法 JSON，`papers` 为空；页面会显示空状态。无人值守运行时会自动向前回溯，寻找最近一个有论文更新的日期。
 
 **GitHub Pages 路径问题**
 
@@ -173,4 +177,3 @@ Actions → Daily arXiv Guide → Run workflow
 - RSS / 邮件推送。
 - 更复杂的论文筛选。
 - PDF 全文分析。
-

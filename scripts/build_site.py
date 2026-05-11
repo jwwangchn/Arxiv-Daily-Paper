@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
-from collections import Counter
+import calendar
+from datetime import date as Date
+from datetime import datetime
 import html
 import logging
 import re
@@ -34,16 +36,43 @@ def list_items(values: list[Any]) -> str:
     return "<ul>" + "".join(f"<li>{h(value)}</li>" for value in values) + "</ul>"
 
 
-def paper_topic(paper: dict[str, Any]) -> str:
+def paper_tags(paper: dict[str, Any]) -> list[str]:
     analysis = paper.get("analysis") or {}
-    tags = analysis.get("tags") or []
+    return [str(tag) for tag in analysis.get("tags", []) if tag]
+
+
+def primary_area(paper: dict[str, Any]) -> str:
+    analysis = paper.get("analysis") or {}
+    area = str(analysis.get("primary_area") or "").strip()
+    if area:
+        return area
+
+    tags = " ".join(paper_tags(paper)).lower()
+    categories = " ".join(paper.get("categories") or []).lower()
+    haystack = f"{paper.get('title', '')} {paper.get('abstract', '')} {tags} {categories}".lower()
+    if any(token in haystack for token in ["video generation", "text-to-video", "diffusion", "generative", "motion"]):
+        return "生成模型"
+    if any(token in haystack for token in ["vlm", "mllm", "vision-language", "multimodal", "cs.cv", "eess.iv"]):
+        return "应用：CV/音频/语言等"
+    if any(token in haystack for token in ["llm", "language model", "pretraining", "alignment", "instruction tuning"]):
+        return "基础/前沿模型 (含LLM)"
+    if any(token in haystack for token in ["medical", "radiology", "ct", "clinical"]):
+        return "医学与科学 AI"
+    if any(token in haystack for token in ["benchmark", "dataset", "evaluation"]):
+        return "数据集与基准"
+    return "其他 ML 主题"
+
+
+def sub_area(paper: dict[str, Any]) -> str:
+    analysis = paper.get("analysis") or {}
+    sub = str(analysis.get("sub_area") or "").strip()
+    if sub:
+        return sub
+
+    tags = paper_tags(paper)
     if tags:
-        return str(tags[0])
-    return str(paper.get("primary_category") or "未分类")
-
-
-def category_name(paper: dict[str, Any]) -> str:
-    return str(paper.get("primary_category") or (paper.get("categories") or ["未分类"])[0] or "未分类")
+        return tags[0]
+    return str(paper.get("primary_category") or (paper.get("categories") or ["其他"])[0] or "其他")
 
 
 def anchor(value: str) -> str:
@@ -54,8 +83,8 @@ def anchor(value: str) -> str:
 def group_papers(papers: list[dict[str, Any]]) -> dict[str, dict[str, list[dict[str, Any]]]]:
     groups: dict[str, dict[str, list[dict[str, Any]]]] = {}
     for paper in papers:
-        topic = paper_topic(paper)
-        category = category_name(paper)
+        topic = primary_area(paper)
+        category = sub_area(paper)
         groups.setdefault(topic, {}).setdefault(category, []).append(paper)
     return groups
 
@@ -74,6 +103,8 @@ def paper_card(paper: dict[str, Any]) -> str:
     tags = analysis.get("tags") or []
     priority = analysis.get("reading_priority") or "unknown"
     categories = paper.get("categories") or []
+    area = primary_area(paper)
+    sub = sub_area(paper)
     authors = paper.get("authors") or []
     title = paper.get("title", "")
     search_blob = " ".join(
@@ -86,9 +117,15 @@ def paper_card(paper: dict[str, Any]) -> str:
             " ".join(map(str, analysis.get("contributions") or [])),
             analysis.get("experiments", ""),
             analysis.get("relevance", ""),
+            area,
+            sub,
             " ".join(map(str, tags)),
         ]
     ).lower()
+    area_badges = (
+        f"<button class=\"topic-badge\" data-filter-area=\"{h(area)}\" type=\"button\">{h(area)}</button>"
+        f"<button class=\"topic-badge subarea-badge\" data-filter-subarea=\"{h(sub)}\" type=\"button\">{h(sub)}</button>"
+    )
     category_badges = "".join(
         f"<button class=\"topic-badge\" data-filter-category=\"{h(category)}\" type=\"button\">{h(category)}</button>"
         for category in categories
@@ -103,9 +140,10 @@ def paper_card(paper: dict[str, Any]) -> str:
         error_html = f"<div class=\"analysis-error\">分析失败：{h(paper.get('analysis_error'))}</div>"
 
     return f"""
-<article class="paper-card" data-priority="{h(priority)}" data-tags="{h('|'.join(tags))}" data-categories="{h('|'.join(categories))}" data-search="{h(search_blob)}">
+<article class="paper-card" data-priority="{h(priority)}" data-tags="{h('|'.join(tags))}" data-categories="{h('|'.join(categories))}" data-area="{h(area)}" data-subarea="{h(sub)}" data-search="{h(search_blob)}">
   <h3 class="paper-title"><a href="{h(paper.get('entry_url'))}" target="_blank" rel="noopener">{h(title)}</a></h3>
   <div class="paper-meta-line">
+    {area_badges}
     {category_badges}
     <span class="priority-pill priority-{h(priority)}">{priority_label}</span>
     <span class="paper-id">{h(paper.get('arxiv_id'))}</span>
@@ -120,7 +158,7 @@ def paper_card(paper: dict[str, Any]) -> str:
   <div class="paper-tldr"><b>TL;DR：</b>{h(analysis.get('one_sentence_summary', '暂无中文导读。'))}</div>
   {error_html}
   <div class="analysis-grid">
-    {field_row("🎯", "研究动机", f"<p>{h(analysis.get('problem', '暂无'))}</p>")}
+    {field_row("🎯", "一句话总结", f"<p>{h(analysis.get('one_sentence_summary', '暂无'))}</p>")}
     {field_row("❓", "解决问题", f"<p>{h(analysis.get('problem', '暂无'))}</p>")}
     {field_row("🛠️", "主要方法", f"<p>{h(analysis.get('method', '暂无'))}</p>")}
     {field_row("📊", "数据与实验", f"<p>{h(analysis.get('experiments', '摘要未提供具体实验结果'))}</p>")}
@@ -147,6 +185,65 @@ def collect_facets(papers: list[dict[str, Any]]) -> tuple[list[str], list[str], 
     return tags + categories, categories, priorities
 
 
+def parse_date_value(value: str) -> Date | None:
+    try:
+        return datetime.strptime(value, "%Y-%m-%d").date()
+    except ValueError:
+        return None
+
+
+def iter_months(start: Date, end: Date) -> list[tuple[int, int]]:
+    months: list[tuple[int, int]] = []
+    cursor = Date(start.year, start.month, 1)
+    last = Date(end.year, end.month, 1)
+    while cursor <= last:
+        months.append((cursor.year, cursor.month))
+        if cursor.month == 12:
+            cursor = Date(cursor.year + 1, 1, 1)
+        else:
+            cursor = Date(cursor.year, cursor.month + 1, 1)
+    return months
+
+
+def render_calendar(date_counts: dict[str, int], current_date: str, is_index: bool) -> str:
+    parsed_dates = [item for item in (parse_date_value(value) for value in date_counts) if item]
+    if not parsed_dates:
+        return "<div class=\"calendar-empty\">暂无历史日期</div>"
+
+    day_names = ["一", "二", "三", "四", "五", "六", "日"]
+    calendars: list[str] = []
+    for year, month in iter_months(min(parsed_dates), max(parsed_dates)):
+        weeks = calendar.Calendar(firstweekday=0).monthdatescalendar(year, month)
+        week_rows: list[str] = []
+        for week in weeks:
+            cells: list[str] = []
+            for day in week:
+                iso = day.isoformat()
+                count = date_counts.get(iso, 0)
+                classes = ["calendar-day"]
+                if day.month != month:
+                    classes.append("outside")
+                if iso == current_date:
+                    classes.append("active")
+                if count > 0 and day.month == month:
+                    href = f"daily/{iso}.html" if is_index else f"{iso}.html"
+                    cells.append(f"<a class=\"{' '.join(classes)}\" href=\"{href}\" title=\"{h(iso)} · {count} 篇\"><span>{day.day}</span><em>{count}</em></a>")
+                else:
+                    classes.append("disabled")
+                    cells.append(f"<span class=\"{' '.join(classes)}\" title=\"{h(iso)}\"><span>{day.day}</span></span>")
+            week_rows.append(f"<div class=\"calendar-week\">{''.join(cells)}</div>")
+        calendars.append(
+            f"""
+        <div class="calendar-month">
+          <div class="calendar-title">{year}-{month:02d}</div>
+          <div class="calendar-week calendar-head">{''.join(f'<b>{name}</b>' for name in day_names)}</div>
+          {''.join(week_rows)}
+        </div>
+"""
+        )
+    return "\n".join(calendars)
+
+
 def render_sections(papers: list[dict[str, Any]]) -> str:
     if not papers:
         return "<div class=\"empty-state\">暂无论文数据。可以先运行 mock 模式生成预览页面。</div>"
@@ -154,11 +251,11 @@ def render_sections(papers: list[dict[str, Any]]) -> str:
     sections: list[str] = []
     for topic_name, category_groups in group_papers(papers).items():
         topic_count = sum(len(items) for items in category_groups.values())
-        topic_id = "topic-" + anchor(topic_name)
+        topic_id = "area-" + anchor(topic_name)
         sub_sections: list[str] = []
         sorted_categories = sorted(category_groups.items(), key=lambda kv: (-len(kv[1]), kv[0]))
         for cat_name, cat_items in sorted_categories:
-            cat_id = f"cat-{anchor(topic_name)}-{anchor(cat_name)}"
+            cat_id = f"sub-{anchor(topic_name)}-{anchor(cat_name)}"
             cards = "\n".join(paper_card(paper) for paper in cat_items)
             sub_sections.append(
                 f"""
@@ -185,17 +282,17 @@ def render_topic_nav(papers: list[dict[str, Any]]) -> str:
     sorted_topics = sorted(groups.items(), key=lambda kv: (-sum(len(v) for v in kv[1].values()), kv[0]))
     for topic_name, category_groups in sorted_topics:
         topic_count = sum(len(items) for items in category_groups.values())
-        topic_id = "topic-" + anchor(topic_name)
+        topic_id = "area-" + anchor(topic_name)
         sub_links: list[str] = []
         sorted_categories = sorted(category_groups.items(), key=lambda kv: (-len(kv[1]), kv[0]))
         for cat_name, cat_items in sorted_categories:
-            cat_id = f"cat-{anchor(topic_name)}-{anchor(cat_name)}"
+            cat_id = f"sub-{anchor(topic_name)}-{anchor(cat_name)}"
             sub_links.append(
-                f"<button class=\"nav-sub-link\" data-filter-category=\"{h(cat_name)}\" data-target=\"{cat_id}\" type=\"button\"><span class=\"name\">{h(cat_name)}</span><span class=\"count\">({len(cat_items)})</span></button>"
+                f"<button class=\"nav-sub-link\" data-filter-subarea=\"{h(cat_name)}\" data-target=\"{cat_id}\" type=\"button\"><span class=\"name\">{h(cat_name)}</span><span class=\"count\">({len(cat_items)})</span></button>"
             )
         nav.append(
             f"""
-        <div id="nav-{topic_id}" class="nav-pri" data-topic="{h(topic_name)}">
+        <div id="nav-{topic_id}" class="nav-pri" data-area="{h(topic_name)}">
           <button class="nav-pri-head" type="button">
             <span class="nav-arrow">▶</span>
             <span class="name">{h(topic_name)}</span>
@@ -208,20 +305,20 @@ def render_topic_nav(papers: list[dict[str, Any]]) -> str:
     return "\n".join(nav)
 
 
-def render_page(bundle: dict[str, Any], all_dates: list[str], latest: str, is_index: bool, config: dict[str, Any]) -> str:
+def render_page(
+    bundle: dict[str, Any],
+    date_counts: dict[str, int],
+    is_index: bool,
+    config: dict[str, Any],
+) -> str:
     date = bundle.get("date", "暂无日期")
     papers = bundle.get("papers", [])
     site = config.get("site", {})
     asset_prefix = "assets" if is_index else "../assets"
-    daily_prefix = "daily/" if is_index else ""
     facets, _categories, priorities = collect_facets(papers)
     total_papers = len(papers)
-    active_dates = len(all_dates)
-
-    date_links = "\n".join(
-        f"<a class=\"date-link {'active' if item == date else ''}\" href=\"{daily_prefix + item + '.html'}\"><span>{h(item)}</span></a>"
-        for item in sorted(all_dates, reverse=True)
-    )
+    active_dates = sum(1 for value in date_counts.values() if value > 0)
+    calendar_html = render_calendar(date_counts, date, is_index)
     topic_nav = render_topic_nav(papers)
     tag_buttons = "\n".join(
         f"<button class=\"filter-chip\" data-filter-tag=\"{h(item)}\" type=\"button\">#{h(item)}</button>"
@@ -235,7 +332,7 @@ def render_page(bundle: dict[str, Any], all_dates: list[str], latest: str, is_in
     intro = (
         "从 arXiv 自动抓取每日论文，基于标题与摘要生成中文导读；"
         "每篇论文给出研究动机、解决问题、主要方法、实验信息、贡献、局限与相关性点评。"
-        "左侧可按日期、方向、分类、优先级与关键词快速筛选。"
+        "左侧可按日期、大类/小类、优先级与关键词快速筛选。"
     )
 
     return f"""<!DOCTYPE html>
@@ -256,16 +353,16 @@ def render_page(bundle: dict[str, Any], all_dates: list[str], latest: str, is_in
       <input id="searchInput" class="search-input" type="search" placeholder="🔍 搜索标题 / 关键词…">
       <div class="stat-grid">
         <div class="stat-box"><b>{total_papers}</b><span>论文总数</span></div>
-        <div class="stat-box"><b>{active_dates}</b><span>历史日期</span></div>
+        <div class="stat-box"><b>{active_dates}</b><span>有论文日期</span></div>
       </div>
       <button id="clearFilters" class="clear-button" type="button">📚 全部 {total_papers} 篇</button>
 
       <section class="nav-section">
         <h2>📅 历史日期</h2>
-        <div class="date-list">{date_links}</div>
+        <div class="calendar-wrap">{calendar_html}</div>
       </section>
       <section class="nav-section">
-        <h2>📁 按论文方向 → arXiv 分类浏览</h2>
+        <h2>📁 按大类 → 小类浏览</h2>
         <div class="nav-tree">{topic_nav or '<span class="muted">暂无方向</span>'}</div>
       </section>
       <section class="nav-section">
@@ -311,6 +408,7 @@ def build_site(use_mock: bool = False) -> None:
         bundles = [{"date": "暂无日期", "source": "empty", "papers": []}]
 
     dates = [bundle.get("date", "") for bundle in bundles if bundle.get("date")]
+    date_counts = {bundle.get("date", ""): len(bundle.get("papers", [])) for bundle in bundles if bundle.get("date")}
     non_empty_bundles = [bundle for bundle in bundles if bundle.get("papers")]
     latest_bundle = non_empty_bundles[-1] if non_empty_bundles else bundles[-1]
     latest = latest_bundle.get("date", dates[-1] if dates else "")
@@ -320,11 +418,11 @@ def build_site(use_mock: bool = False) -> None:
 
     for bundle in bundles:
         date = bundle.get("date", "empty")
-        html_text = render_page(bundle, dates, latest, is_index=False, config=config)
+        html_text = render_page(bundle, date_counts, is_index=False, config=config)
         (daily_dir / f"{date}.html").write_text(html_text, encoding="utf-8")
 
-    (docs_dir / "index.html").write_text(render_page(latest_bundle, dates, latest, is_index=True, config=config), encoding="utf-8")
-    write_json(docs_dir / "data" / "dates.json", {"latest": latest, "dates": dates})
+    (docs_dir / "index.html").write_text(render_page(latest_bundle, date_counts, is_index=True, config=config), encoding="utf-8")
+    write_json(docs_dir / "data" / "dates.json", {"latest": latest, "dates": dates, "counts": date_counts})
     LOGGER.info("Built site with %d date bundle(s)", len(bundles))
 
 

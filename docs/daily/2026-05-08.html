@@ -16,19 +16,22 @@
       <input id="searchInput" class="search-input" type="search" placeholder="🔍 搜索标题 / 关键词…">
       <div class="stat-grid">
         <div class="stat-box"><b>0</b><span>论文总数</span></div>
-        <div class="stat-box"><b>4</b><span>历史日期</span></div>
+        <div class="stat-box"><b>1</b><span>有论文日期</span></div>
       </div>
       <button id="clearFilters" class="clear-button" type="button">📚 全部 0 篇</button>
 
       <section class="nav-section">
         <h2>📅 历史日期</h2>
-        <div class="date-list"><a class="date-link " href="2026-05-10.html"><span>2026-05-10</span></a>
-<a class="date-link " href="2026-05-09.html"><span>2026-05-09</span></a>
-<a class="date-link active" href="2026-05-08.html"><span>2026-05-08</span></a>
-<a class="date-link " href="2026-05-07.html"><span>2026-05-07</span></a></div>
+        <div class="calendar-wrap">
+        <div class="calendar-month">
+          <div class="calendar-title">2026-05</div>
+          <div class="calendar-week calendar-head"><b>一</b><b>二</b><b>三</b><b>四</b><b>五</b><b>六</b><b>日</b></div>
+          <div class="calendar-week"><span class="calendar-day outside disabled" title="2026-04-27"><span>27</span></span><span class="calendar-day outside disabled" title="2026-04-28"><span>28</span></span><span class="calendar-day outside disabled" title="2026-04-29"><span>29</span></span><span class="calendar-day outside disabled" title="2026-04-30"><span>30</span></span><span class="calendar-day disabled" title="2026-05-01"><span>1</span></span><span class="calendar-day disabled" title="2026-05-02"><span>2</span></span><span class="calendar-day disabled" title="2026-05-03"><span>3</span></span></div><div class="calendar-week"><span class="calendar-day disabled" title="2026-05-04"><span>4</span></span><span class="calendar-day disabled" title="2026-05-05"><span>5</span></span><span class="calendar-day disabled" title="2026-05-06"><span>6</span></span><a class="calendar-day" href="2026-05-07.html" title="2026-05-07 · 5 篇"><span>7</span><em>5</em></a><span class="calendar-day active disabled" title="2026-05-08"><span>8</span></span><span class="calendar-day disabled" title="2026-05-09"><span>9</span></span><span class="calendar-day disabled" title="2026-05-10"><span>10</span></span></div><div class="calendar-week"><span class="calendar-day disabled" title="2026-05-11"><span>11</span></span><span class="calendar-day disabled" title="2026-05-12"><span>12</span></span><span class="calendar-day disabled" title="2026-05-13"><span>13</span></span><span class="calendar-day disabled" title="2026-05-14"><span>14</span></span><span class="calendar-day disabled" title="2026-05-15"><span>15</span></span><span class="calendar-day disabled" title="2026-05-16"><span>16</span></span><span class="calendar-day disabled" title="2026-05-17"><span>17</span></span></div><div class="calendar-week"><span class="calendar-day disabled" title="2026-05-18"><span>18</span></span><span class="calendar-day disabled" title="2026-05-19"><span>19</span></span><span class="calendar-day disabled" title="2026-05-20"><span>20</span></span><span class="calendar-day disabled" title="2026-05-21"><span>21</span></span><span class="calendar-day disabled" title="2026-05-22"><span>22</span></span><span class="calendar-day disabled" title="2026-05-23"><span>23</span></span><span class="calendar-day disabled" title="2026-05-24"><span>24</span></span></div><div class="calendar-week"><span class="calendar-day disabled" title="2026-05-25"><span>25</span></span><span class="calendar-day disabled" title="2026-05-26"><span>26</span></span><span class="calendar-day disabled" title="2026-05-27"><span>27</span></span><span class="calendar-day disabled" title="2026-05-28"><span>28</span></span><span class="calendar-day disabled" title="2026-05-29"><span>29</span></span><span class="calendar-day disabled" title="2026-05-30"><span>30</span></span><span class="calendar-day disabled" title="2026-05-31"><span>31</span></span></div>
+        </div>
+</div>
       </section>
       <section class="nav-section">
-        <h2>📁 按论文方向 → arXiv 分类浏览</h2>
+        <h2>📁 按大类 → 小类浏览</h2>
         <div class="nav-tree"><span class="muted">暂无方向</span></div>
       </section>
       <section class="nav-section">
@@ -46,7 +49,7 @@
       <header class="page-header">
         <div class="hero-copy">
           <h1>arXiv Daily Paper Guide · 中文导读</h1>
-          <p>从 arXiv 自动抓取每日论文，基于标题与摘要生成中文导读；每篇论文给出研究动机、解决问题、主要方法、实验信息、贡献、局限与相关性点评。左侧可按日期、方向、分类、优先级与关键词快速筛选。</p>
+          <p>从 arXiv 自动抓取每日论文，基于标题与摘要生成中文导读；每篇论文给出研究动机、解决问题、主要方法、实验信息、贡献、局限与相关性点评。左侧可按日期、大类/小类、优先级与关键词快速筛选。</p>
           <div class="hero-chips">
             <button class="hero-chip active" id="clearFiltersTop" type="button">📚 全部 <span>0</span> 篇</button>
             <button class="hero-chip hot" data-filter-priority="high" type="button">🔥 High <span>0</span> 篇</button>

@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import logging
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
@@ -94,8 +94,36 @@ def fetch_papers(target_date: str, categories: list[str], max_papers: int, retri
         except Exception as exc:
             last_error = exc
             LOGGER.warning("arXiv fetch attempt %d/%d failed: %s", attempt, retries, exc)
-            time.sleep(2 * attempt)
+            retry_after = None
+            response = getattr(exc, "response", None)
+            if response is not None:
+                retry_after = response.headers.get("Retry-After")
+            if retry_after and str(retry_after).isdigit():
+                delay = int(retry_after)
+            elif response is not None and response.status_code == 429:
+                delay = 15 * attempt
+            else:
+                delay = 2 * attempt
+            time.sleep(delay)
     raise RuntimeError(f"Failed to fetch arXiv papers after {retries} attempts: {last_error}")
+
+
+def find_latest_date_with_papers(
+    categories: list[str],
+    max_papers: int,
+    start_date: str | None = None,
+    lookback_days: int = 14,
+) -> tuple[str, list[dict[str, Any]]]:
+    """Walk backward from start_date until an arXiv issue with papers is found."""
+    cursor = datetime.strptime(parse_date(start_date), "%Y-%m-%d").date()
+    for offset in range(lookback_days + 1):
+        target_date = (cursor - timedelta(days=offset)).isoformat()
+        papers = fetch_papers(target_date, categories, max_papers)
+        if papers:
+            LOGGER.info("Selected latest non-empty arXiv date: %s (%d papers)", target_date, len(papers))
+            return target_date, papers
+        LOGGER.info("No papers found for %s; checking previous day", target_date)
+    raise RuntimeError(f"No arXiv papers found in the last {lookback_days + 1} days from {cursor.isoformat()}.")
 
 
 def save_raw(target_date: str, papers: list[dict[str, Any]]) -> Path:
@@ -111,6 +139,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--date", default=None, help="Target date in YYYY-MM-DD format.")
     parser.add_argument("--max-papers", type=int, default=config.get("arxiv", {}).get("max_papers", 30))
     parser.add_argument("--categories", nargs="+", default=config.get("arxiv", {}).get("categories", []))
+    parser.add_argument("--latest-with-papers", action="store_true", help="Walk backward and fetch the latest date with papers.")
+    parser.add_argument("--lookback-days", type=int, default=14, help="Maximum days to look back when --latest-with-papers is used.")
     return parser.parse_args()
 
 
@@ -118,8 +148,16 @@ def main() -> None:
     setup_logging()
     ensure_dirs()
     args = parse_args()
-    target_date = parse_date(args.date)
-    papers = fetch_papers(target_date, args.categories, args.max_papers)
+    if args.latest_with_papers:
+        target_date, papers = find_latest_date_with_papers(
+            args.categories,
+            args.max_papers,
+            start_date=args.date,
+            lookback_days=args.lookback_days,
+        )
+    else:
+        target_date = parse_date(args.date)
+        papers = fetch_papers(target_date, args.categories, args.max_papers)
     save_raw(target_date, papers)
 
 

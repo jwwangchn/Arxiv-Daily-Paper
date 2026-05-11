@@ -16,57 +16,50 @@
       <input id="searchInput" class="search-input" type="search" placeholder="🔍 搜索标题 / 关键词…">
       <div class="stat-grid">
         <div class="stat-box"><b>5</b><span>论文总数</span></div>
-        <div class="stat-box"><b>4</b><span>历史日期</span></div>
+        <div class="stat-box"><b>1</b><span>有论文日期</span></div>
       </div>
       <button id="clearFilters" class="clear-button" type="button">📚 全部 5 篇</button>
 
       <section class="nav-section">
         <h2>📅 历史日期</h2>
-        <div class="date-list"><a class="date-link " href="2026-05-10.html"><span>2026-05-10</span></a>
-<a class="date-link " href="2026-05-09.html"><span>2026-05-09</span></a>
-<a class="date-link " href="2026-05-08.html"><span>2026-05-08</span></a>
-<a class="date-link active" href="2026-05-07.html"><span>2026-05-07</span></a></div>
+        <div class="calendar-wrap">
+        <div class="calendar-month">
+          <div class="calendar-title">2026-05</div>
+          <div class="calendar-week calendar-head"><b>一</b><b>二</b><b>三</b><b>四</b><b>五</b><b>六</b><b>日</b></div>
+          <div class="calendar-week"><span class="calendar-day outside disabled" title="2026-04-27"><span>27</span></span><span class="calendar-day outside disabled" title="2026-04-28"><span>28</span></span><span class="calendar-day outside disabled" title="2026-04-29"><span>29</span></span><span class="calendar-day outside disabled" title="2026-04-30"><span>30</span></span><span class="calendar-day disabled" title="2026-05-01"><span>1</span></span><span class="calendar-day disabled" title="2026-05-02"><span>2</span></span><span class="calendar-day disabled" title="2026-05-03"><span>3</span></span></div><div class="calendar-week"><span class="calendar-day disabled" title="2026-05-04"><span>4</span></span><span class="calendar-day disabled" title="2026-05-05"><span>5</span></span><span class="calendar-day disabled" title="2026-05-06"><span>6</span></span><a class="calendar-day active" href="2026-05-07.html" title="2026-05-07 · 5 篇"><span>7</span><em>5</em></a><span class="calendar-day disabled" title="2026-05-08"><span>8</span></span><span class="calendar-day disabled" title="2026-05-09"><span>9</span></span><span class="calendar-day disabled" title="2026-05-10"><span>10</span></span></div><div class="calendar-week"><span class="calendar-day disabled" title="2026-05-11"><span>11</span></span><span class="calendar-day disabled" title="2026-05-12"><span>12</span></span><span class="calendar-day disabled" title="2026-05-13"><span>13</span></span><span class="calendar-day disabled" title="2026-05-14"><span>14</span></span><span class="calendar-day disabled" title="2026-05-15"><span>15</span></span><span class="calendar-day disabled" title="2026-05-16"><span>16</span></span><span class="calendar-day disabled" title="2026-05-17"><span>17</span></span></div><div class="calendar-week"><span class="calendar-day disabled" title="2026-05-18"><span>18</span></span><span class="calendar-day disabled" title="2026-05-19"><span>19</span></span><span class="calendar-day disabled" title="2026-05-20"><span>20</span></span><span class="calendar-day disabled" title="2026-05-21"><span>21</span></span><span class="calendar-day disabled" title="2026-05-22"><span>22</span></span><span class="calendar-day disabled" title="2026-05-23"><span>23</span></span><span class="calendar-day disabled" title="2026-05-24"><span>24</span></span></div><div class="calendar-week"><span class="calendar-day disabled" title="2026-05-25"><span>25</span></span><span class="calendar-day disabled" title="2026-05-26"><span>26</span></span><span class="calendar-day disabled" title="2026-05-27"><span>27</span></span><span class="calendar-day disabled" title="2026-05-28"><span>28</span></span><span class="calendar-day disabled" title="2026-05-29"><span>29</span></span><span class="calendar-day disabled" title="2026-05-30"><span>30</span></span><span class="calendar-day disabled" title="2026-05-31"><span>31</span></span></div>
+        </div>
+</div>
       </section>
       <section class="nav-section">
-        <h2>📁 按论文方向 → arXiv 分类浏览</h2>
+        <h2>📁 按大类 → 小类浏览</h2>
         <div class="nav-tree">
-        <div id="nav-topic-LLM" class="nav-pri" data-topic="LLM">
+        <div id="nav-area-基础-前沿模型-含LLM" class="nav-pri" data-area="基础/前沿模型 (含LLM)">
           <button class="nav-pri-head" type="button">
             <span class="nav-arrow">▶</span>
-            <span class="name">LLM</span>
-            <span class="count">2</span>
+            <span class="name">基础/前沿模型 (含LLM)</span>
+            <span class="count">3</span>
           </button>
-          <div class="nav-sub-list"><button class="nav-sub-link" data-filter-category="cs.CL" data-target="cat-LLM-cs-CL" type="button"><span class="name">cs.CL</span><span class="count">(1)</span></button><button class="nav-sub-link" data-filter-category="cs.LG" data-target="cat-LLM-cs-LG" type="button"><span class="name">cs.LG</span><span class="count">(1)</span></button></div>
+          <div class="nav-sub-list"><button class="nav-sub-link" data-filter-subarea="LLM" data-target="sub-基础-前沿模型-含LLM-LLM" type="button"><span class="name">LLM</span><span class="count">(2)</span></button><button class="nav-sub-link" data-filter-subarea="LLM Training" data-target="sub-基础-前沿模型-含LLM-LLM-Training" type="button"><span class="name">LLM Training</span><span class="count">(1)</span></button></div>
         </div>
 
 
-        <div id="nav-topic-LLM-Training" class="nav-pri" data-topic="LLM Training">
+        <div id="nav-area-应用-CV-音频-语言等" class="nav-pri" data-area="应用：CV/音频/语言等">
           <button class="nav-pri-head" type="button">
             <span class="nav-arrow">▶</span>
-            <span class="name">LLM Training</span>
+            <span class="name">应用：CV/音频/语言等</span>
             <span class="count">1</span>
           </button>
-          <div class="nav-sub-list"><button class="nav-sub-link" data-filter-category="cs.LG" data-target="cat-LLM-Training-cs-LG" type="button"><span class="name">cs.LG</span><span class="count">(1)</span></button></div>
+          <div class="nav-sub-list"><button class="nav-sub-link" data-filter-subarea="VLM" data-target="sub-应用-CV-音频-语言等-VLM" type="button"><span class="name">VLM</span><span class="count">(1)</span></button></div>
         </div>
 
 
-        <div id="nav-topic-VLM" class="nav-pri" data-topic="VLM">
+        <div id="nav-area-生成模型" class="nav-pri" data-area="生成模型">
           <button class="nav-pri-head" type="button">
             <span class="nav-arrow">▶</span>
-            <span class="name">VLM</span>
+            <span class="name">生成模型</span>
             <span class="count">1</span>
           </button>
-          <div class="nav-sub-list"><button class="nav-sub-link" data-filter-category="cs.CV" data-target="cat-VLM-cs-CV" type="button"><span class="name">cs.CV</span><span class="count">(1)</span></button></div>
-        </div>
-
-
-        <div id="nav-topic-Video-Generation" class="nav-pri" data-topic="Video Generation">
-          <button class="nav-pri-head" type="button">
-            <span class="nav-arrow">▶</span>
-            <span class="name">Video Generation</span>
-            <span class="count">1</span>
-          </button>
-          <div class="nav-sub-list"><button class="nav-sub-link" data-filter-category="cs.CV" data-target="cat-Video-Generation-cs-CV" type="button"><span class="name">cs.CV</span><span class="count">(1)</span></button></div>
+          <div class="nav-sub-list"><button class="nav-sub-link" data-filter-subarea="Video Generation" data-target="sub-生成模型-Video-Generation" type="button"><span class="name">Video Generation</span><span class="count">(1)</span></button></div>
         </div>
 </div>
       </section>
@@ -100,7 +93,7 @@
       <header class="page-header">
         <div class="hero-copy">
           <h1>arXiv Daily Paper Guide · 中文导读</h1>
-          <p>从 arXiv 自动抓取每日论文，基于标题与摘要生成中文导读；每篇论文给出研究动机、解决问题、主要方法、实验信息、贡献、局限与相关性点评。左侧可按日期、方向、分类、优先级与关键词快速筛选。</p>
+          <p>从 arXiv 自动抓取每日论文，基于标题与摘要生成中文导读；每篇论文给出研究动机、解决问题、主要方法、实验信息、贡献、局限与相关性点评。左侧可按日期、大类/小类、优先级与关键词快速筛选。</p>
           <div class="hero-chips">
             <button class="hero-chip active" id="clearFiltersTop" type="button">📚 全部 <span>5</span> 篇</button>
             <button class="hero-chip hot" data-filter-priority="high" type="button">🔥 High <span>5</span> 篇</button>
@@ -111,15 +104,16 @@
       <div class="count-line"><span id="visibleCount">5</span> / 5 篇论文可见 <span id="activeFilters"></span></div>
       <div id="paperList">
         
-      <section id="topic-Video-Generation" class="paper-section pri-sec" data-section>
-        <h2 class="group-title">Video Generation <small>1 篇 · 1 个细分</small></h2>
+      <section id="area-生成模型" class="paper-section pri-sec" data-section>
+        <h2 class="group-title">生成模型 <small>1 篇 · 1 个细分</small></h2>
         
-        <section id="cat-Video-Generation-cs-CV" class="sub-sec">
-          <h3 class="sub-title">cs.CV <small>1 篇</small></h3>
+        <section id="sub-生成模型-Video-Generation" class="sub-sec">
+          <h3 class="sub-title">Video Generation <small>1 篇</small></h3>
           <div class="paper-list">
-<article class="paper-card" data-priority="high" data-tags="Video Generation|Zero-Shot|Camera Control|Motion Transfer" data-categories="cs.CV|cs.AI|cs.LG" data-search="actcam: zero-shot joint camera and 3d motion control for video generation for artistic applications, video generation requires fine-grained control over both performance and cinematography, i.e., the actor&#x27;s motion and the camera trajectory. we present actcam, a zero-shot method for video generation that jointly transfers character motion from a driving video into a new scene and enables per-frame control of intrinsic and extrinsic camera parameters. actcam builds on any pretrained image-to-video diffusion model that accepts conditioning in terms of scene depth and character pose. given a source video with a moving character and a target camera motion, actcam generates pose and depth conditions that remain geometrically consistent across frames. we then run a single sampling process with a two-phase conditioning schedule: early denoising steps condition on both pose and sparse depth to enforce scene structure, after which depth is dropped and pose-only guidance refines high-frequency details without over-constraining the generation. we evaluate actcam on multiple benchmarks spanning diverse character motions and challenging viewpoint changes. we find that, compared to pose-only control and other pose and camera methods, actcam improves camera adherence and motion fidelity, and is preferred in human evaluations, especially under large viewpoint changes. our results highlight that careful camera-consistent conditioning and staged guidance can enable strong joint camera and motion control without training. project page: https://elkhomar.github.io/actcam/. actcam 是一种零样本方法，通过联合控制角色运动和相机参数，从驱动视频中迁移运动并实现逐帧相机控制，无需额外训练。 现有视频生成方法难以同时精细控制角色运动和相机轨迹，尤其是面对大视角变化时。 基于预训练的图像到视频扩散模型，通过两阶段条件调度：早期去噪步骤同时使用姿态和稀疏深度条件以保持几何一致性，后期仅使用姿态条件以细化高频细节。 提出零样本联合相机与运动控制方法，无需训练即可实现逐帧相机参数控制。 设计两阶段条件调度策略，平衡场景结构保持与细节生成。 在多个基准上评估，涵盖多样角色运动和大视角变化。与仅姿态控制及其他方法相比，actcam 在相机遵循度和运动保真度上更优，并在人类评估中更受青睐，尤其在大视角变化下。 与视频生成方向紧密相关，特别是可控视频生成和零样本方法。 video generation zero-shot camera control motion transfer">
+<article class="paper-card" data-priority="high" data-tags="Video Generation|Zero-Shot|Camera Control|Motion Transfer" data-categories="cs.CV|cs.AI|cs.LG" data-area="生成模型" data-subarea="Video Generation" data-search="actcam: zero-shot joint camera and 3d motion control for video generation for artistic applications, video generation requires fine-grained control over both performance and cinematography, i.e., the actor&#x27;s motion and the camera trajectory. we present actcam, a zero-shot method for video generation that jointly transfers character motion from a driving video into a new scene and enables per-frame control of intrinsic and extrinsic camera parameters. actcam builds on any pretrained image-to-video diffusion model that accepts conditioning in terms of scene depth and character pose. given a source video with a moving character and a target camera motion, actcam generates pose and depth conditions that remain geometrically consistent across frames. we then run a single sampling process with a two-phase conditioning schedule: early denoising steps condition on both pose and sparse depth to enforce scene structure, after which depth is dropped and pose-only guidance refines high-frequency details without over-constraining the generation. we evaluate actcam on multiple benchmarks spanning diverse character motions and challenging viewpoint changes. we find that, compared to pose-only control and other pose and camera methods, actcam improves camera adherence and motion fidelity, and is preferred in human evaluations, especially under large viewpoint changes. our results highlight that careful camera-consistent conditioning and staged guidance can enable strong joint camera and motion control without training. project page: https://elkhomar.github.io/actcam/. actcam 是一种零样本方法，通过联合控制角色运动和相机参数，从驱动视频中迁移运动并实现逐帧相机控制，无需额外训练。 现有视频生成方法难以同时精细控制角色运动和相机轨迹，尤其是面对大视角变化时。 基于预训练的图像到视频扩散模型，通过两阶段条件调度：早期去噪步骤同时使用姿态和稀疏深度条件以保持几何一致性，后期仅使用姿态条件以细化高频细节。 提出零样本联合相机与运动控制方法，无需训练即可实现逐帧相机参数控制。 设计两阶段条件调度策略，平衡场景结构保持与细节生成。 在多个基准上评估，涵盖多样角色运动和大视角变化。与仅姿态控制及其他方法相比，actcam 在相机遵循度和运动保真度上更优，并在人类评估中更受青睐，尤其在大视角变化下。 与视频生成方向紧密相关，特别是可控视频生成和零样本方法。 生成模型 video generation video generation zero-shot camera control motion transfer">
   <h3 class="paper-title"><a href="http://arxiv.org/abs/2605.06667v1" target="_blank" rel="noopener">ActCam: Zero-Shot Joint Camera and 3D Motion Control for Video Generation</a></h3>
   <div class="paper-meta-line">
+    <button class="topic-badge" data-filter-area="生成模型" type="button">生成模型</button><button class="topic-badge subarea-badge" data-filter-subarea="Video Generation" type="button">Video Generation</button>
     <button class="topic-badge" data-filter-category="cs.CV" type="button">cs.CV</button><button class="topic-badge" data-filter-category="cs.AI" type="button">cs.AI</button><button class="topic-badge" data-filter-category="cs.LG" type="button">cs.LG</button>
     <span class="priority-pill priority-high">High</span>
     <span class="paper-id">2605.06667</span>
@@ -136,8 +130,8 @@
   <div class="analysis-grid">
     
     <div class="analysis-row">
-      <div class="analysis-label"><span>🎯</span>研究动机</div>
-      <div class="analysis-content"><p>现有视频生成方法难以同时精细控制角色运动和相机轨迹，尤其是面对大视角变化时。</p></div>
+      <div class="analysis-label"><span>🎯</span>一句话总结</div>
+      <div class="analysis-content"><p>ActCam 是一种零样本方法，通过联合控制角色运动和相机参数，从驱动视频中迁移运动并实现逐帧相机控制，无需额外训练。</p></div>
     </div>
 
     
@@ -188,15 +182,84 @@
       </section>
 
 
-      <section id="topic-LLM" class="paper-section pri-sec" data-section>
-        <h2 class="group-title">LLM <small>2 篇 · 2 个细分</small></h2>
+      <section id="area-基础-前沿模型-含LLM" class="paper-section pri-sec" data-section>
+        <h2 class="group-title">基础/前沿模型 (含LLM) <small>3 篇 · 2 个细分</small></h2>
         
-        <section id="cat-LLM-cs-CL" class="sub-sec">
-          <h3 class="sub-title">cs.CL <small>1 篇</small></h3>
+        <section id="sub-基础-前沿模型-含LLM-LLM" class="sub-sec">
+          <h3 class="sub-title">LLM <small>2 篇</small></h3>
           <div class="paper-list">
-<article class="paper-card" data-priority="high" data-tags="LLM|Mixture of Experts|Modularity" data-categories="cs.CL" data-search="emo: pretraining mixture of experts for emergent modularity large language models are typically deployed as monolithic systems, requiring the full model even when applications need only a narrow subset of capabilities, e.g., code, math, or domain-specific knowledge. mixture-of-experts (moes) seemingly offer a potential alternative by activating only a subset of experts per input, but in practice, restricting inference to a subset of experts for a given domain leads to severe performance degradation. this limits their practicality in memory-constrained settings, especially as models grow larger and sparser. we introduce emo, an moe designed for modularity-the independent use and composition of expert subsets-without requiring human-defined priors. our key idea is to encourage tokens from similar domains to rely on similar experts. since tokens within a document often share a domain, emo restricts them to select experts from a shared pool, while allowing different documents to use different pools. this simple constraint enables coherent expert groupings to emerge during pretraining using document boundaries alone. we pretrain a 1b-active, 14b-total emo on 1t tokens. as a full model, it matches standard moe performance. crucially, it enables selective expert use: retaining only 25% (12.5%) of experts incurs just a 1% (3%) absolute drop, whereas standard moes break under the same setting. we further find that expert subsets in emo specialize at semantic levels (e.g., domains such as math or code), in contrast to the low-level syntactic specialization observed in standard moes. altogether, our results demonstrate a path toward modular, memory-efficient deployment of large, sparse models and open new opportunities for composable architectures. emo通过文档级共享专家池约束，在预训练中自然涌现模块化专家分组，实现稀疏moe模型的可选子集部署，在保持性能的同时大幅降低内存需求。 大型语言模型作为整体部署，即使应用只需要部分能力（如代码、数学）也必须加载全部参数，而传统moe在限制专家子集时性能严重下降，无法实现模块化使用。 提出emo方法，在预训练中强制同一文档内的token从共享的专家池中选择专家，不同文档可使用不同池，从而利用文档边界自然形成语义相关的专家分组，无需人工先验。 提出一种简单有效的约束，使moe在预训练中自动涌现模块化专家分组，支持独立使用和组合专家子集。 实验表明，保留25%专家仅损失1%绝对性能，12.5%专家损失3%，而标准moe在相同设置下完全失效。 发现emo的专家子集在语义层面（如数学、代码）特化，而非标准moe的低级句法特化。 在1t token上预训练1b激活/14b总参数的emo模型，与标准moe对比，并测试不同专家子集保留比例的性能。摘要未提供具体实验结果数值。 该方法可应用于llm训练，提升模型模块化和部署效率；对vlm和视频生成等需要多模态专家组合的场景有潜在价值。 llm mixture of experts modularity">
+<article class="paper-card" data-priority="high" data-tags="LLM|MoE" data-categories="cs.LG|cs.AI" data-area="基础/前沿模型 (含LLM)" data-subarea="LLM" data-search="unipool: a globally shared expert pool for mixture-of-experts modern mixture-of-experts (moe) architectures allocate expert capacity through a rigid per-layer rule: each transformer layer owns a separate expert set. this convention couples depth scaling with linear expert-parameter growth and assumes that every layer needs isolated expert capacity. however, recent analyses and our routing probe challenge this allocation rule: replacing a deeper layer&#x27;s learned top-k router with uniform random routing drops downstream accuracy by only 1.0-1.6 points across multiple production moe models. motivated by this redundancy, we propose unipool, an moe architecture that treats expert capacity as a global architectural budget by replacing per-layer expert ownership with a single shared pool accessed by independent per-layer routers. to enable stable and balanced training under sharing, we introduce a pool-level auxiliary loss that balances expert utilization across the entire pool, and adopt normrouter to provide sparse and scale-stable routing into the shared expert pool. across five llama-architecture model scales (182m, 469m, 650m, 830m, and 978m parameters) trained on 30b tokens from the pile, unipool consistently improves validation loss and perplexity over the matched vanilla moe baselines. across these scales, unipool reduces validation loss by up to 0.0386 relative to vanilla moe. beyond raw loss improvement, our results identify pool size as an explicit depth-scaling hyperparameter: reduced-pool unipool variants using only 41.6%-66.7% of the vanilla expert-parameter budget match or outperform layer-wise moe at the tested scales. this shows that, under a shared-pool design, expert parameters need not grow linearly with depth; they can grow sublinearly while remaining more efficient and effective than vanilla moe. further analysis shows that unipool&#x27;s benefits compose with finer-grained expert decomposition. unipool提出全局共享专家池替代逐层专家分配，在多个llama规模模型上降低验证损失并证明专家参数可亚线性增长。 传统moe架构中每层独立拥有专家集，导致专家参数随深度线性增长，且存在冗余。 将每层独立的专家集替换为全局共享的专家池，每层路由器独立访问该池；引入池级辅助损失平衡专家利用率，并采用normrouter实现稀疏且尺度稳定的路由。 提出unipool架构，通过全局共享专家池打破专家参数与深度线性增长的关系。 引入池级辅助损失和normrouter，实现共享池下的稳定训练和高效路由。 实验证明在多个模型规模下unipool优于传统moe，且减少专家参数仍能匹配或超越基线。 在五个llama架构模型（182m至978m参数）上使用pile数据集训练30b tokens，unipool持续改善验证损失和困惑度，相对基线降低验证损失最多0.0386。 该工作优化了moe架构，可应用于大规模语言模型（llm）训练，降低参数开销并提升效率。 基础/前沿模型 (含llm) llm llm moe">
+  <h3 class="paper-title"><a href="http://arxiv.org/abs/2605.06665v1" target="_blank" rel="noopener">UniPool: A Globally Shared Expert Pool for Mixture-of-Experts</a></h3>
+  <div class="paper-meta-line">
+    <button class="topic-badge" data-filter-area="基础/前沿模型 (含LLM)" type="button">基础/前沿模型 (含LLM)</button><button class="topic-badge subarea-badge" data-filter-subarea="LLM" type="button">LLM</button>
+    <button class="topic-badge" data-filter-category="cs.LG" type="button">cs.LG</button><button class="topic-badge" data-filter-category="cs.AI" type="button">cs.AI</button>
+    <span class="priority-pill priority-high">High</span>
+    <span class="paper-id">2605.06665</span>
+    <button class="hash-tag" data-filter-tag="LLM" type="button">#LLM</button><button class="hash-tag" data-filter-tag="MoE" type="button">#MoE</button>
+  </div>
+  <div class="paper-authors" title="Minbin Huang, Han Shi, Chuanyang Zheng, Yimeng Wu, Guoxuan Chen, Xintong Yu, Yichun Yin, Hong Cheng">Minbin Huang, Han Shi, Chuanyang Zheng, Yimeng Wu, Guoxuan Chen, Xintong Yu, Yichun Yin, Hong Cheng</div>
+  <div class="paper-links">
+    <a href="http://arxiv.org/abs/2605.06665v1" target="_blank" rel="noopener">arXiv</a>
+    <a href="https://arxiv.org/pdf/2605.06665v1" target="_blank" rel="noopener">PDF</a>
+    <span>cs.LG</span>
+  </div>
+  <div class="paper-tldr"><b>TL;DR：</b>UniPool提出全局共享专家池替代逐层专家分配，在多个LLaMA规模模型上降低验证损失并证明专家参数可亚线性增长。</div>
+  
+  <div class="analysis-grid">
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>🎯</span>一句话总结</div>
+      <div class="analysis-content"><p>UniPool提出全局共享专家池替代逐层专家分配，在多个LLaMA规模模型上降低验证损失并证明专家参数可亚线性增长。</p></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>❓</span>解决问题</div>
+      <div class="analysis-content"><p>传统MoE架构中每层独立拥有专家集，导致专家参数随深度线性增长，且存在冗余。</p></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>🛠️</span>主要方法</div>
+      <div class="analysis-content"><p>将每层独立的专家集替换为全局共享的专家池，每层路由器独立访问该池；引入池级辅助损失平衡专家利用率，并采用NormRouter实现稀疏且尺度稳定的路由。</p></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>📊</span>数据与实验</div>
+      <div class="analysis-content"><p>在五个LLaMA架构模型（182M至978M参数）上使用Pile数据集训练30B tokens，UniPool持续改善验证损失和困惑度，相对基线降低验证损失最多0.0386。</p></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>⭐</span>主要贡献</div>
+      <div class="analysis-content"><ul><li>提出UniPool架构，通过全局共享专家池打破专家参数与深度线性增长的关系。</li><li>引入池级辅助损失和NormRouter，实现共享池下的稳定训练和高效路由。</li><li>实验证明在多个模型规模下UniPool优于传统MoE，且减少专家参数仍能匹配或超越基线。</li></ul></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>⚠️</span>局限性</div>
+      <div class="analysis-content"><ul><li>实验仅在LLaMA架构和特定规模下进行，泛化性需进一步验证。</li><li>共享池设计可能增加路由冲突或专家负载不均的风险。</li></ul></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>🔗</span>相关性点评</div>
+      <div class="analysis-content"><p>该工作优化了MoE架构，可应用于大规模语言模型（LLM）训练，降低参数开销并提升效率。</p></div>
+    </div>
+
+  </div>
+  <details class="abstract-block">
+    <summary>查看完整摘要 (Abstract)</summary>
+    <p>Modern Mixture-of-Experts (MoE) architectures allocate expert capacity through a rigid per-layer rule: each transformer layer owns a separate expert set. This convention couples depth scaling with linear expert-parameter growth and assumes that every layer needs isolated expert capacity. However, recent analyses and our routing probe challenge this allocation rule: replacing a deeper layer&#x27;s learned top-k router with uniform random routing drops downstream accuracy by only 1.0-1.6 points across multiple production MoE models. Motivated by this redundancy, we propose UniPool, an MoE architecture that treats expert capacity as a global architectural budget by replacing per-layer expert ownership with a single shared pool accessed by independent per-layer routers. To enable stable and balanced training under sharing, we introduce a pool-level auxiliary loss that balances expert utilization across the entire pool, and adopt NormRouter to provide sparse and scale-stable routing into the shared expert pool. Across five LLaMA-architecture model scales (182M, 469M, 650M, 830M, and 978M parameters) trained on 30B tokens from the Pile, UniPool consistently improves validation loss and perplexity over the matched vanilla MoE baselines. Across these scales, UniPool reduces validation loss by up to 0.0386 relative to vanilla MoE. Beyond raw loss improvement, our results identify pool size as an explicit depth-scaling hyperparameter: reduced-pool UniPool variants using only 41.6%-66.7% of the vanilla expert-parameter budget match or outperform layer-wise MoE at the tested scales. This shows that, under a shared-pool design, expert parameters need not grow linearly with depth; they can grow sublinearly while remaining more efficient and effective than vanilla MoE. Further analysis shows that UniPool&#x27;s benefits compose with finer-grained expert decomposition.</p>
+  </details>
+</article>
+
+
+<article class="paper-card" data-priority="high" data-tags="LLM|Mixture of Experts|Modularity" data-categories="cs.CL" data-area="基础/前沿模型 (含LLM)" data-subarea="LLM" data-search="emo: pretraining mixture of experts for emergent modularity large language models are typically deployed as monolithic systems, requiring the full model even when applications need only a narrow subset of capabilities, e.g., code, math, or domain-specific knowledge. mixture-of-experts (moes) seemingly offer a potential alternative by activating only a subset of experts per input, but in practice, restricting inference to a subset of experts for a given domain leads to severe performance degradation. this limits their practicality in memory-constrained settings, especially as models grow larger and sparser. we introduce emo, an moe designed for modularity-the independent use and composition of expert subsets-without requiring human-defined priors. our key idea is to encourage tokens from similar domains to rely on similar experts. since tokens within a document often share a domain, emo restricts them to select experts from a shared pool, while allowing different documents to use different pools. this simple constraint enables coherent expert groupings to emerge during pretraining using document boundaries alone. we pretrain a 1b-active, 14b-total emo on 1t tokens. as a full model, it matches standard moe performance. crucially, it enables selective expert use: retaining only 25% (12.5%) of experts incurs just a 1% (3%) absolute drop, whereas standard moes break under the same setting. we further find that expert subsets in emo specialize at semantic levels (e.g., domains such as math or code), in contrast to the low-level syntactic specialization observed in standard moes. altogether, our results demonstrate a path toward modular, memory-efficient deployment of large, sparse models and open new opportunities for composable architectures. emo通过文档级共享专家池约束，在预训练中自然涌现模块化专家分组，实现稀疏moe模型的可选子集部署，在保持性能的同时大幅降低内存需求。 大型语言模型作为整体部署，即使应用只需要部分能力（如代码、数学）也必须加载全部参数，而传统moe在限制专家子集时性能严重下降，无法实现模块化使用。 提出emo方法，在预训练中强制同一文档内的token从共享的专家池中选择专家，不同文档可使用不同池，从而利用文档边界自然形成语义相关的专家分组，无需人工先验。 提出一种简单有效的约束，使moe在预训练中自动涌现模块化专家分组，支持独立使用和组合专家子集。 实验表明，保留25%专家仅损失1%绝对性能，12.5%专家损失3%，而标准moe在相同设置下完全失效。 发现emo的专家子集在语义层面（如数学、代码）特化，而非标准moe的低级句法特化。 在1t token上预训练1b激活/14b总参数的emo模型，与标准moe对比，并测试不同专家子集保留比例的性能。摘要未提供具体实验结果数值。 该方法可应用于llm训练，提升模型模块化和部署效率；对vlm和视频生成等需要多模态专家组合的场景有潜在价值。 基础/前沿模型 (含llm) llm llm mixture of experts modularity">
   <h3 class="paper-title"><a href="http://arxiv.org/abs/2605.06663v1" target="_blank" rel="noopener">EMO: Pretraining Mixture of Experts for Emergent Modularity</a></h3>
   <div class="paper-meta-line">
+    <button class="topic-badge" data-filter-area="基础/前沿模型 (含LLM)" type="button">基础/前沿模型 (含LLM)</button><button class="topic-badge subarea-badge" data-filter-subarea="LLM" type="button">LLM</button>
     <button class="topic-badge" data-filter-category="cs.CL" type="button">cs.CL</button>
     <span class="priority-pill priority-high">High</span>
     <span class="paper-id">2605.06663</span>
@@ -213,8 +276,8 @@
   <div class="analysis-grid">
     
     <div class="analysis-row">
-      <div class="analysis-label"><span>🎯</span>研究动机</div>
-      <div class="analysis-content"><p>大型语言模型作为整体部署，即使应用只需要部分能力（如代码、数学）也必须加载全部参数，而传统MoE在限制专家子集时性能严重下降，无法实现模块化使用。</p></div>
+      <div class="analysis-label"><span>🎯</span>一句话总结</div>
+      <div class="analysis-content"><p>EMO通过文档级共享专家池约束，在预训练中自然涌现模块化专家分组，实现稀疏MoE模型的可选子集部署，在保持性能的同时大幅降低内存需求。</p></div>
     </div>
 
     
@@ -262,166 +325,13 @@
 </div>
         </section>
 
-        <section id="cat-LLM-cs-LG" class="sub-sec">
-          <h3 class="sub-title">cs.LG <small>1 篇</small></h3>
+        <section id="sub-基础-前沿模型-含LLM-LLM-Training" class="sub-sec">
+          <h3 class="sub-title">LLM Training <small>1 篇</small></h3>
           <div class="paper-list">
-<article class="paper-card" data-priority="high" data-tags="LLM|MoE" data-categories="cs.LG|cs.AI" data-search="unipool: a globally shared expert pool for mixture-of-experts modern mixture-of-experts (moe) architectures allocate expert capacity through a rigid per-layer rule: each transformer layer owns a separate expert set. this convention couples depth scaling with linear expert-parameter growth and assumes that every layer needs isolated expert capacity. however, recent analyses and our routing probe challenge this allocation rule: replacing a deeper layer&#x27;s learned top-k router with uniform random routing drops downstream accuracy by only 1.0-1.6 points across multiple production moe models. motivated by this redundancy, we propose unipool, an moe architecture that treats expert capacity as a global architectural budget by replacing per-layer expert ownership with a single shared pool accessed by independent per-layer routers. to enable stable and balanced training under sharing, we introduce a pool-level auxiliary loss that balances expert utilization across the entire pool, and adopt normrouter to provide sparse and scale-stable routing into the shared expert pool. across five llama-architecture model scales (182m, 469m, 650m, 830m, and 978m parameters) trained on 30b tokens from the pile, unipool consistently improves validation loss and perplexity over the matched vanilla moe baselines. across these scales, unipool reduces validation loss by up to 0.0386 relative to vanilla moe. beyond raw loss improvement, our results identify pool size as an explicit depth-scaling hyperparameter: reduced-pool unipool variants using only 41.6%-66.7% of the vanilla expert-parameter budget match or outperform layer-wise moe at the tested scales. this shows that, under a shared-pool design, expert parameters need not grow linearly with depth; they can grow sublinearly while remaining more efficient and effective than vanilla moe. further analysis shows that unipool&#x27;s benefits compose with finer-grained expert decomposition. unipool提出全局共享专家池替代逐层专家分配，在多个llama规模模型上降低验证损失并证明专家参数可亚线性增长。 传统moe架构中每层独立拥有专家集，导致专家参数随深度线性增长，且存在冗余。 将每层独立的专家集替换为全局共享的专家池，每层路由器独立访问该池；引入池级辅助损失平衡专家利用率，并采用normrouter实现稀疏且尺度稳定的路由。 提出unipool架构，通过全局共享专家池打破专家参数与深度线性增长的关系。 引入池级辅助损失和normrouter，实现共享池下的稳定训练和高效路由。 实验证明在多个模型规模下unipool优于传统moe，且减少专家参数仍能匹配或超越基线。 在五个llama架构模型（182m至978m参数）上使用pile数据集训练30b tokens，unipool持续改善验证损失和困惑度，相对基线降低验证损失最多0.0386。 该工作优化了moe架构，可应用于大规模语言模型（llm）训练，降低参数开销并提升效率。 llm moe">
-  <h3 class="paper-title"><a href="http://arxiv.org/abs/2605.06665v1" target="_blank" rel="noopener">UniPool: A Globally Shared Expert Pool for Mixture-of-Experts</a></h3>
-  <div class="paper-meta-line">
-    <button class="topic-badge" data-filter-category="cs.LG" type="button">cs.LG</button><button class="topic-badge" data-filter-category="cs.AI" type="button">cs.AI</button>
-    <span class="priority-pill priority-high">High</span>
-    <span class="paper-id">2605.06665</span>
-    <button class="hash-tag" data-filter-tag="LLM" type="button">#LLM</button><button class="hash-tag" data-filter-tag="MoE" type="button">#MoE</button>
-  </div>
-  <div class="paper-authors" title="Minbin Huang, Han Shi, Chuanyang Zheng, Yimeng Wu, Guoxuan Chen, Xintong Yu, Yichun Yin, Hong Cheng">Minbin Huang, Han Shi, Chuanyang Zheng, Yimeng Wu, Guoxuan Chen, Xintong Yu, Yichun Yin, Hong Cheng</div>
-  <div class="paper-links">
-    <a href="http://arxiv.org/abs/2605.06665v1" target="_blank" rel="noopener">arXiv</a>
-    <a href="https://arxiv.org/pdf/2605.06665v1" target="_blank" rel="noopener">PDF</a>
-    <span>cs.LG</span>
-  </div>
-  <div class="paper-tldr"><b>TL;DR：</b>UniPool提出全局共享专家池替代逐层专家分配，在多个LLaMA规模模型上降低验证损失并证明专家参数可亚线性增长。</div>
-  
-  <div class="analysis-grid">
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>🎯</span>研究动机</div>
-      <div class="analysis-content"><p>传统MoE架构中每层独立拥有专家集，导致专家参数随深度线性增长，且存在冗余。</p></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>❓</span>解决问题</div>
-      <div class="analysis-content"><p>传统MoE架构中每层独立拥有专家集，导致专家参数随深度线性增长，且存在冗余。</p></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>🛠️</span>主要方法</div>
-      <div class="analysis-content"><p>将每层独立的专家集替换为全局共享的专家池，每层路由器独立访问该池；引入池级辅助损失平衡专家利用率，并采用NormRouter实现稀疏且尺度稳定的路由。</p></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>📊</span>数据与实验</div>
-      <div class="analysis-content"><p>在五个LLaMA架构模型（182M至978M参数）上使用Pile数据集训练30B tokens，UniPool持续改善验证损失和困惑度，相对基线降低验证损失最多0.0386。</p></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>⭐</span>主要贡献</div>
-      <div class="analysis-content"><ul><li>提出UniPool架构，通过全局共享专家池打破专家参数与深度线性增长的关系。</li><li>引入池级辅助损失和NormRouter，实现共享池下的稳定训练和高效路由。</li><li>实验证明在多个模型规模下UniPool优于传统MoE，且减少专家参数仍能匹配或超越基线。</li></ul></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>⚠️</span>局限性</div>
-      <div class="analysis-content"><ul><li>实验仅在LLaMA架构和特定规模下进行，泛化性需进一步验证。</li><li>共享池设计可能增加路由冲突或专家负载不均的风险。</li></ul></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>🔗</span>相关性点评</div>
-      <div class="analysis-content"><p>该工作优化了MoE架构，可应用于大规模语言模型（LLM）训练，降低参数开销并提升效率。</p></div>
-    </div>
-
-  </div>
-  <details class="abstract-block">
-    <summary>查看完整摘要 (Abstract)</summary>
-    <p>Modern Mixture-of-Experts (MoE) architectures allocate expert capacity through a rigid per-layer rule: each transformer layer owns a separate expert set. This convention couples depth scaling with linear expert-parameter growth and assumes that every layer needs isolated expert capacity. However, recent analyses and our routing probe challenge this allocation rule: replacing a deeper layer&#x27;s learned top-k router with uniform random routing drops downstream accuracy by only 1.0-1.6 points across multiple production MoE models. Motivated by this redundancy, we propose UniPool, an MoE architecture that treats expert capacity as a global architectural budget by replacing per-layer expert ownership with a single shared pool accessed by independent per-layer routers. To enable stable and balanced training under sharing, we introduce a pool-level auxiliary loss that balances expert utilization across the entire pool, and adopt NormRouter to provide sparse and scale-stable routing into the shared expert pool. Across five LLaMA-architecture model scales (182M, 469M, 650M, 830M, and 978M parameters) trained on 30B tokens from the Pile, UniPool consistently improves validation loss and perplexity over the matched vanilla MoE baselines. Across these scales, UniPool reduces validation loss by up to 0.0386 relative to vanilla MoE. Beyond raw loss improvement, our results identify pool size as an explicit depth-scaling hyperparameter: reduced-pool UniPool variants using only 41.6%-66.7% of the vanilla expert-parameter budget match or outperform layer-wise MoE at the tested scales. This shows that, under a shared-pool design, expert parameters need not grow linearly with depth; they can grow sublinearly while remaining more efficient and effective than vanilla MoE. Further analysis shows that UniPool&#x27;s benefits compose with finer-grained expert decomposition.</p>
-  </details>
-</article>
-</div>
-        </section>
-
-      </section>
-
-
-      <section id="topic-VLM" class="paper-section pri-sec" data-section>
-        <h2 class="group-title">VLM <small>1 篇 · 1 个细分</small></h2>
-        
-        <section id="cat-VLM-cs-CV" class="sub-sec">
-          <h3 class="sub-title">cs.CV <small>1 篇</small></h3>
-          <div class="paper-list">
-<article class="paper-card" data-priority="high" data-tags="VLM" data-categories="cs.CV|cs.AI" data-search="bami: training-free bias mitigation in gui grounding gui grounding is a critical capability for enabling gui agents to execute tasks such as clicking and dragging. however, in complex scenarios like the screenspot-pro benchmark, existing models often suffer from suboptimal performance. utilizing the proposed \textbf{masked prediction distribution (mpd)} attribution method, we identify that the primary sources of errors are twofold: high image resolution (leading to precision bias) and intricate interface elements (resulting in ambiguity bias). to address these challenges, we introduce \textbf{bias-aware manipulation inference (bami)}, which incorporates two key manipulations, coarse-to-fine focus and candidate selection, to effectively mitigate these biases. our extensive experimental results demonstrate that bami significantly enhances the accuracy of various gui grounding models in a training-free setting. for instance, applying our method to the tianxi-action-7b model boosts its accuracy on the screenspot-pro benchmark from 51.9\% to 57.8\%. furthermore, ablation studies confirm the robustness of the bami approach across diverse parameter configurations, highlighting its stability and effectiveness. code is available at https://github.com/neur-io/bami. 提出无需训练的偏差感知操作推理方法bami，通过粗到细聚焦和候选选择缓解gui grounding中的精度偏差和模糊偏差，显著提升模型在screenspot-pro基准上的准确率。 gui grounding在复杂场景下性能不佳，主要源于高分辨率导致的精度偏差和复杂界面元素导致的模糊偏差。 利用掩码预测分布归因方法识别偏差来源，提出bami方法，包含粗到细聚焦和候选选择两种操作，无需训练即可缓解偏差。 提出掩码预测分布归因方法，识别gui grounding中精度偏差和模糊偏差的根源 提出无需训练的bami方法，通过粗到细聚焦和候选选择有效缓解两种偏差 在screenspot-pro基准上验证bami能显著提升多种gui grounding模型的准确率 在screenspot-pro基准上测试，tianxi-action-7b模型准确率从51.9%提升至57.8%；消融实验验证了bami在不同参数配置下的鲁棒性。 与vlm方向相关，因为gui grounding是vlm在gui代理中的重要应用，且方法无需训练，可即插即用。 vlm">
-  <h3 class="paper-title"><a href="http://arxiv.org/abs/2605.06664v1" target="_blank" rel="noopener">BAMI: Training-Free Bias Mitigation in GUI Grounding</a></h3>
-  <div class="paper-meta-line">
-    <button class="topic-badge" data-filter-category="cs.CV" type="button">cs.CV</button><button class="topic-badge" data-filter-category="cs.AI" type="button">cs.AI</button>
-    <span class="priority-pill priority-high">High</span>
-    <span class="paper-id">2605.06664</span>
-    <button class="hash-tag" data-filter-tag="VLM" type="button">#VLM</button>
-  </div>
-  <div class="paper-authors" title="Borui Zhang, Bo Zhang, Bo Wang, Wenzhao Zheng, Yuhao Cheng, Liang Tang, Yiqiang Yan, Jie Zhou, Jiwen Lu">Borui Zhang, Bo Zhang, Bo Wang, Wenzhao Zheng, Yuhao Cheng, Liang Tang, Yiqiang Yan, Jie Zhou et al.</div>
-  <div class="paper-links">
-    <a href="http://arxiv.org/abs/2605.06664v1" target="_blank" rel="noopener">arXiv</a>
-    <a href="https://arxiv.org/pdf/2605.06664v1" target="_blank" rel="noopener">PDF</a>
-    <span>cs.CV</span>
-  </div>
-  <div class="paper-tldr"><b>TL;DR：</b>提出无需训练的偏差感知操作推理方法BAMI，通过粗到细聚焦和候选选择缓解GUI grounding中的精度偏差和模糊偏差，显著提升模型在ScreenSpot-Pro基准上的准确率。</div>
-  
-  <div class="analysis-grid">
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>🎯</span>研究动机</div>
-      <div class="analysis-content"><p>GUI grounding在复杂场景下性能不佳，主要源于高分辨率导致的精度偏差和复杂界面元素导致的模糊偏差。</p></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>❓</span>解决问题</div>
-      <div class="analysis-content"><p>GUI grounding在复杂场景下性能不佳，主要源于高分辨率导致的精度偏差和复杂界面元素导致的模糊偏差。</p></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>🛠️</span>主要方法</div>
-      <div class="analysis-content"><p>利用掩码预测分布归因方法识别偏差来源，提出BAMI方法，包含粗到细聚焦和候选选择两种操作，无需训练即可缓解偏差。</p></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>📊</span>数据与实验</div>
-      <div class="analysis-content"><p>在ScreenSpot-Pro基准上测试，TianXi-Action-7B模型准确率从51.9%提升至57.8%；消融实验验证了BAMI在不同参数配置下的鲁棒性。</p></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>⭐</span>主要贡献</div>
-      <div class="analysis-content"><ul><li>提出掩码预测分布归因方法，识别GUI grounding中精度偏差和模糊偏差的根源</li><li>提出无需训练的BAMI方法，通过粗到细聚焦和候选选择有效缓解两种偏差</li><li>在ScreenSpot-Pro基准上验证BAMI能显著提升多种GUI grounding模型的准确率</li></ul></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>⚠️</span>局限性</div>
-      <div class="analysis-content"><ul><li>方法仅在GUI grounding任务上验证，可能不直接适用于其他视觉任务</li><li>依赖预定义的操作策略，可能无法适应所有复杂场景</li></ul></div>
-    </div>
-
-    
-    <div class="analysis-row">
-      <div class="analysis-label"><span>🔗</span>相关性点评</div>
-      <div class="analysis-content"><p>与VLM方向相关，因为GUI grounding是VLM在GUI代理中的重要应用，且方法无需训练，可即插即用。</p></div>
-    </div>
-
-  </div>
-  <details class="abstract-block">
-    <summary>查看完整摘要 (Abstract)</summary>
-    <p>GUI grounding is a critical capability for enabling GUI agents to execute tasks such as clicking and dragging. However, in complex scenarios like the ScreenSpot-Pro benchmark, existing models often suffer from suboptimal performance. Utilizing the proposed \textbf{Masked Prediction Distribution (MPD)} attribution method, we identify that the primary sources of errors are twofold: high image resolution (leading to precision bias) and intricate interface elements (resulting in ambiguity bias). To address these challenges, we introduce \textbf{Bias-Aware Manipulation Inference (BAMI)}, which incorporates two key manipulations, coarse-to-fine focus and candidate selection, to effectively mitigate these biases. Our extensive experimental results demonstrate that BAMI significantly enhances the accuracy of various GUI grounding models in a training-free setting. For instance, applying our method to the TianXi-Action-7B model boosts its accuracy on the ScreenSpot-Pro benchmark from 51.9\% to 57.8\%. Furthermore, ablation studies confirm the robustness of the BAMI approach across diverse parameter configurations, highlighting its stability and effectiveness. Code is available at https://github.com/Neur-IO/BAMI.</p>
-  </details>
-</article>
-</div>
-        </section>
-
-      </section>
-
-
-      <section id="topic-LLM-Training" class="paper-section pri-sec" data-section>
-        <h2 class="group-title">LLM Training <small>1 篇 · 1 个细分</small></h2>
-        
-        <section id="cat-LLM-Training-cs-LG" class="sub-sec">
-          <h3 class="sub-title">cs.LG <small>1 篇</small></h3>
-          <div class="paper-list">
-<article class="paper-card" data-priority="high" data-tags="LLM Training|Mathematical Reasoning|Problem Generation" data-categories="cs.LG|cs.AI|cs.CL" data-search="verifier-backed hard problem generation for mathematical reasoning large language models (llms) demonstrate strong capabilities for solving scientific and mathematical problems, yet they struggle to produce valid, challenging, and novel problems - an essential component for advancing llm training and enabling autonomous scientific research. existing problem generation approaches either depend on expensive human expert involvement or adopt naive self-play paradigms, which frequently yield invalid problems due to reward hacking. this work introduces vhg, a verifier-enhanced hard problem generation framework built upon three-party self-play. by integrating an independent verifier into the conventional setter-solver duality, our design constrains the setter&#x27;s reward to be jointly determined by problem validity (evaluated by the verifier) and difficulty (assessed by the solver). we instantiate two verifier variants: a hard symbolic verifier and a soft llm-based verifier, with evaluations conducted on indefinite integral tasks and general mathematical reasoning tasks. experimental results show that vhg substantially outperforms all baseline methods by a clear margin. 提出一种基于验证器的硬问题生成框架vhg，通过三方自博弈生成有效且困难的问题，在数学推理任务上显著优于基线方法。 现有问题生成方法依赖昂贵的人工专家或采用朴素自博弈，常因奖励破解生成无效问题。 vhg框架引入独立验证器，将设定者的奖励由问题有效性（验证器评估）和难度（求解器评估）共同决定，实例化硬符号验证器和软llm验证器两种变体。 提出验证器增强的硬问题生成框架vhg，基于三方自博弈。 设计两种验证器变体：硬符号验证器和软llm验证器。 在不定积分和一般数学推理任务上验证有效性，显著优于基线方法。 在不定积分任务和一般数学推理任务上评估，vhg明显优于所有基线方法。 与llm训练相关，可提升llm生成高质量问题的能力，间接支持vlm等领域的训练数据生成。 llm training mathematical reasoning problem generation">
+<article class="paper-card" data-priority="high" data-tags="LLM Training|Mathematical Reasoning|Problem Generation" data-categories="cs.LG|cs.AI|cs.CL" data-area="基础/前沿模型 (含LLM)" data-subarea="LLM Training" data-search="verifier-backed hard problem generation for mathematical reasoning large language models (llms) demonstrate strong capabilities for solving scientific and mathematical problems, yet they struggle to produce valid, challenging, and novel problems - an essential component for advancing llm training and enabling autonomous scientific research. existing problem generation approaches either depend on expensive human expert involvement or adopt naive self-play paradigms, which frequently yield invalid problems due to reward hacking. this work introduces vhg, a verifier-enhanced hard problem generation framework built upon three-party self-play. by integrating an independent verifier into the conventional setter-solver duality, our design constrains the setter&#x27;s reward to be jointly determined by problem validity (evaluated by the verifier) and difficulty (assessed by the solver). we instantiate two verifier variants: a hard symbolic verifier and a soft llm-based verifier, with evaluations conducted on indefinite integral tasks and general mathematical reasoning tasks. experimental results show that vhg substantially outperforms all baseline methods by a clear margin. 提出一种基于验证器的硬问题生成框架vhg，通过三方自博弈生成有效且困难的问题，在数学推理任务上显著优于基线方法。 现有问题生成方法依赖昂贵的人工专家或采用朴素自博弈，常因奖励破解生成无效问题。 vhg框架引入独立验证器，将设定者的奖励由问题有效性（验证器评估）和难度（求解器评估）共同决定，实例化硬符号验证器和软llm验证器两种变体。 提出验证器增强的硬问题生成框架vhg，基于三方自博弈。 设计两种验证器变体：硬符号验证器和软llm验证器。 在不定积分和一般数学推理任务上验证有效性，显著优于基线方法。 在不定积分任务和一般数学推理任务上评估，vhg明显优于所有基线方法。 与llm训练相关，可提升llm生成高质量问题的能力，间接支持vlm等领域的训练数据生成。 基础/前沿模型 (含llm) llm training llm training mathematical reasoning problem generation">
   <h3 class="paper-title"><a href="http://arxiv.org/abs/2605.06660v1" target="_blank" rel="noopener">Verifier-Backed Hard Problem Generation for Mathematical Reasoning</a></h3>
   <div class="paper-meta-line">
+    <button class="topic-badge" data-filter-area="基础/前沿模型 (含LLM)" type="button">基础/前沿模型 (含LLM)</button><button class="topic-badge subarea-badge" data-filter-subarea="LLM Training" type="button">LLM Training</button>
     <button class="topic-badge" data-filter-category="cs.LG" type="button">cs.LG</button><button class="topic-badge" data-filter-category="cs.AI" type="button">cs.AI</button><button class="topic-badge" data-filter-category="cs.CL" type="button">cs.CL</button>
     <span class="priority-pill priority-high">High</span>
     <span class="paper-id">2605.06660</span>
@@ -438,8 +348,8 @@
   <div class="analysis-grid">
     
     <div class="analysis-row">
-      <div class="analysis-label"><span>🎯</span>研究动机</div>
-      <div class="analysis-content"><p>现有问题生成方法依赖昂贵的人工专家或采用朴素自博弈，常因奖励破解生成无效问题。</p></div>
+      <div class="analysis-label"><span>🎯</span>一句话总结</div>
+      <div class="analysis-content"><p>提出一种基于验证器的硬问题生成框架VHG，通过三方自博弈生成有效且困难的问题，在数学推理任务上显著优于基线方法。</p></div>
     </div>
 
     
@@ -482,6 +392,84 @@
   <details class="abstract-block">
     <summary>查看完整摘要 (Abstract)</summary>
     <p>Large Language Models (LLMs) demonstrate strong capabilities for solving scientific and mathematical problems, yet they struggle to produce valid, challenging, and novel problems - an essential component for advancing LLM training and enabling autonomous scientific research. Existing problem generation approaches either depend on expensive human expert involvement or adopt naive self-play paradigms, which frequently yield invalid problems due to reward hacking. This work introduces VHG, a verifier-enhanced hard problem generation framework built upon three-party self-play. By integrating an independent verifier into the conventional setter-solver duality, our design constrains the setter&#x27;s reward to be jointly determined by problem validity (evaluated by the verifier) and difficulty (assessed by the solver). We instantiate two verifier variants: a Hard symbolic verifier and a Soft LLM-based verifier, with evaluations conducted on indefinite integral tasks and general mathematical reasoning tasks. Experimental results show that VHG substantially outperforms all baseline methods by a clear margin.</p>
+  </details>
+</article>
+</div>
+        </section>
+
+      </section>
+
+
+      <section id="area-应用-CV-音频-语言等" class="paper-section pri-sec" data-section>
+        <h2 class="group-title">应用：CV/音频/语言等 <small>1 篇 · 1 个细分</small></h2>
+        
+        <section id="sub-应用-CV-音频-语言等-VLM" class="sub-sec">
+          <h3 class="sub-title">VLM <small>1 篇</small></h3>
+          <div class="paper-list">
+<article class="paper-card" data-priority="high" data-tags="VLM" data-categories="cs.CV|cs.AI" data-area="应用：CV/音频/语言等" data-subarea="VLM" data-search="bami: training-free bias mitigation in gui grounding gui grounding is a critical capability for enabling gui agents to execute tasks such as clicking and dragging. however, in complex scenarios like the screenspot-pro benchmark, existing models often suffer from suboptimal performance. utilizing the proposed \textbf{masked prediction distribution (mpd)} attribution method, we identify that the primary sources of errors are twofold: high image resolution (leading to precision bias) and intricate interface elements (resulting in ambiguity bias). to address these challenges, we introduce \textbf{bias-aware manipulation inference (bami)}, which incorporates two key manipulations, coarse-to-fine focus and candidate selection, to effectively mitigate these biases. our extensive experimental results demonstrate that bami significantly enhances the accuracy of various gui grounding models in a training-free setting. for instance, applying our method to the tianxi-action-7b model boosts its accuracy on the screenspot-pro benchmark from 51.9\% to 57.8\%. furthermore, ablation studies confirm the robustness of the bami approach across diverse parameter configurations, highlighting its stability and effectiveness. code is available at https://github.com/neur-io/bami. 提出无需训练的偏差感知操作推理方法bami，通过粗到细聚焦和候选选择缓解gui grounding中的精度偏差和模糊偏差，显著提升模型在screenspot-pro基准上的准确率。 gui grounding在复杂场景下性能不佳，主要源于高分辨率导致的精度偏差和复杂界面元素导致的模糊偏差。 利用掩码预测分布归因方法识别偏差来源，提出bami方法，包含粗到细聚焦和候选选择两种操作，无需训练即可缓解偏差。 提出掩码预测分布归因方法，识别gui grounding中精度偏差和模糊偏差的根源 提出无需训练的bami方法，通过粗到细聚焦和候选选择有效缓解两种偏差 在screenspot-pro基准上验证bami能显著提升多种gui grounding模型的准确率 在screenspot-pro基准上测试，tianxi-action-7b模型准确率从51.9%提升至57.8%；消融实验验证了bami在不同参数配置下的鲁棒性。 与vlm方向相关，因为gui grounding是vlm在gui代理中的重要应用，且方法无需训练，可即插即用。 应用：cv/音频/语言等 vlm vlm">
+  <h3 class="paper-title"><a href="http://arxiv.org/abs/2605.06664v1" target="_blank" rel="noopener">BAMI: Training-Free Bias Mitigation in GUI Grounding</a></h3>
+  <div class="paper-meta-line">
+    <button class="topic-badge" data-filter-area="应用：CV/音频/语言等" type="button">应用：CV/音频/语言等</button><button class="topic-badge subarea-badge" data-filter-subarea="VLM" type="button">VLM</button>
+    <button class="topic-badge" data-filter-category="cs.CV" type="button">cs.CV</button><button class="topic-badge" data-filter-category="cs.AI" type="button">cs.AI</button>
+    <span class="priority-pill priority-high">High</span>
+    <span class="paper-id">2605.06664</span>
+    <button class="hash-tag" data-filter-tag="VLM" type="button">#VLM</button>
+  </div>
+  <div class="paper-authors" title="Borui Zhang, Bo Zhang, Bo Wang, Wenzhao Zheng, Yuhao Cheng, Liang Tang, Yiqiang Yan, Jie Zhou, Jiwen Lu">Borui Zhang, Bo Zhang, Bo Wang, Wenzhao Zheng, Yuhao Cheng, Liang Tang, Yiqiang Yan, Jie Zhou et al.</div>
+  <div class="paper-links">
+    <a href="http://arxiv.org/abs/2605.06664v1" target="_blank" rel="noopener">arXiv</a>
+    <a href="https://arxiv.org/pdf/2605.06664v1" target="_blank" rel="noopener">PDF</a>
+    <span>cs.CV</span>
+  </div>
+  <div class="paper-tldr"><b>TL;DR：</b>提出无需训练的偏差感知操作推理方法BAMI，通过粗到细聚焦和候选选择缓解GUI grounding中的精度偏差和模糊偏差，显著提升模型在ScreenSpot-Pro基准上的准确率。</div>
+  
+  <div class="analysis-grid">
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>🎯</span>一句话总结</div>
+      <div class="analysis-content"><p>提出无需训练的偏差感知操作推理方法BAMI，通过粗到细聚焦和候选选择缓解GUI grounding中的精度偏差和模糊偏差，显著提升模型在ScreenSpot-Pro基准上的准确率。</p></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>❓</span>解决问题</div>
+      <div class="analysis-content"><p>GUI grounding在复杂场景下性能不佳，主要源于高分辨率导致的精度偏差和复杂界面元素导致的模糊偏差。</p></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>🛠️</span>主要方法</div>
+      <div class="analysis-content"><p>利用掩码预测分布归因方法识别偏差来源，提出BAMI方法，包含粗到细聚焦和候选选择两种操作，无需训练即可缓解偏差。</p></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>📊</span>数据与实验</div>
+      <div class="analysis-content"><p>在ScreenSpot-Pro基准上测试，TianXi-Action-7B模型准确率从51.9%提升至57.8%；消融实验验证了BAMI在不同参数配置下的鲁棒性。</p></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>⭐</span>主要贡献</div>
+      <div class="analysis-content"><ul><li>提出掩码预测分布归因方法，识别GUI grounding中精度偏差和模糊偏差的根源</li><li>提出无需训练的BAMI方法，通过粗到细聚焦和候选选择有效缓解两种偏差</li><li>在ScreenSpot-Pro基准上验证BAMI能显著提升多种GUI grounding模型的准确率</li></ul></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>⚠️</span>局限性</div>
+      <div class="analysis-content"><ul><li>方法仅在GUI grounding任务上验证，可能不直接适用于其他视觉任务</li><li>依赖预定义的操作策略，可能无法适应所有复杂场景</li></ul></div>
+    </div>
+
+    
+    <div class="analysis-row">
+      <div class="analysis-label"><span>🔗</span>相关性点评</div>
+      <div class="analysis-content"><p>与VLM方向相关，因为GUI grounding是VLM在GUI代理中的重要应用，且方法无需训练，可即插即用。</p></div>
+    </div>
+
+  </div>
+  <details class="abstract-block">
+    <summary>查看完整摘要 (Abstract)</summary>
+    <p>GUI grounding is a critical capability for enabling GUI agents to execute tasks such as clicking and dragging. However, in complex scenarios like the ScreenSpot-Pro benchmark, existing models often suffer from suboptimal performance. Utilizing the proposed \textbf{Masked Prediction Distribution (MPD)} attribution method, we identify that the primary sources of errors are twofold: high image resolution (leading to precision bias) and intricate interface elements (resulting in ambiguity bias). To address these challenges, we introduce \textbf{Bias-Aware Manipulation Inference (BAMI)}, which incorporates two key manipulations, coarse-to-fine focus and candidate selection, to effectively mitigate these biases. Our extensive experimental results demonstrate that BAMI significantly enhances the accuracy of various GUI grounding models in a training-free setting. For instance, applying our method to the TianXi-Action-7B model boosts its accuracy on the ScreenSpot-Pro benchmark from 51.9\% to 57.8\%. Furthermore, ablation studies confirm the robustness of the BAMI approach across diverse parameter configurations, highlighting its stability and effectiveness. Code is available at https://github.com/Neur-IO/BAMI.</p>
   </details>
 </article>
 </div>
