@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import html as html_lib
 import logging
+import re
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -16,6 +18,7 @@ from utils import ensure_dirs, load_config, normalize_space, parse_date, setup_l
 
 LOGGER = logging.getLogger("fetch_arxiv")
 ARXIV_API_URL = "https://export.arxiv.org/api/query"
+ARXIV_BASE_URL = "https://arxiv.org"
 ARXIV_USER_AGENT = "ArxivDailyPaperGuide/0.1 (https://github.com/jwwangchn/Arxiv-Daily-Paper)"
 ATOM = {"atom": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
 
@@ -61,7 +64,112 @@ def parse_entry(entry: ET.Element) -> dict[str, Any]:
     }
 
 
-def fetch_papers(target_date: str, categories: list[str], max_papers: int, retries: int = 5) -> list[dict[str, Any]]:
+def strip_html(fragment: str) -> str:
+    fragment = re.sub(r"<span[^>]*class=[\"']descriptor[\"'][^>]*>.*?</span>", " ", fragment, flags=re.S)
+    fragment = re.sub(r"<[^>]+>", " ", fragment)
+    return normalize_space(html_lib.unescape(fragment))
+
+
+def browse_header_for_date(target_date: str) -> str:
+    value = datetime.strptime(target_date, "%Y-%m-%d")
+    return f"{value:%a}, {value.day} {value:%b} {value.year}"
+
+
+def parse_abs_page(arxiv_id: str, session: requests.Session) -> dict[str, Any]:
+    url = f"{ARXIV_BASE_URL}/abs/{arxiv_id}"
+    response = session.get(url, headers={"User-Agent": ARXIV_USER_AGENT}, timeout=30)
+    response.raise_for_status()
+    text = response.text
+
+    title_match = re.search(r"<h1 class=\"title mathjax\">(.*?)</h1>", text, re.S)
+    authors_match = re.search(r"<div class=\"authors\">(.*?)</div>", text, re.S)
+    abstract_match = re.search(r"<blockquote class=\"abstract mathjax\">\s*(.*?)\s*</blockquote>", text, re.S)
+    subjects_match = re.search(r"<td class=\"tablecell subjects\">\s*(.*?)</td>", text, re.S)
+    dateline_match = re.search(r"\[Submitted on ([^\]]+)\]", text)
+
+    subjects_text = strip_html(subjects_match.group(1)) if subjects_match else ""
+    categories = re.findall(r"\(([a-z.-]+\.[A-Z0-9-]+)\)", subjects_text)
+    primary_match = re.search(r"<span class=\"primary-subject\">.*?\(([a-z.-]+\.[A-Z0-9-]+)\).*?</span>", subjects_match.group(1), re.S) if subjects_match else None
+    primary_category = primary_match.group(1) if primary_match else (categories[0] if categories else "")
+
+    published = ""
+    if dateline_match:
+        try:
+            published_date = datetime.strptime(dateline_match.group(1), "%d %b %Y").date().isoformat()
+            published = f"{published_date}T00:00:00Z"
+        except ValueError:
+            published = ""
+
+    return {
+        "title": strip_html(title_match.group(1)) if title_match else "",
+        "authors": [author.strip() for author in strip_html(authors_match.group(1)).split(",") if author.strip()] if authors_match else [],
+        "abstract": strip_html(abstract_match.group(1)) if abstract_match else "",
+        "categories": categories,
+        "primary_category": primary_category,
+        "published": published,
+        "updated": published,
+    }
+
+
+def fetch_browse_fallback(target_date: str, categories: list[str], max_papers: int) -> list[dict[str, Any]]:
+    LOGGER.info("Falling back to arXiv browse pages for %s", target_date)
+    session = requests.Session()
+    header = browse_header_for_date(target_date)
+    seen: set[str] = set()
+    papers: list[dict[str, Any]] = []
+
+    for category in categories:
+        if len(papers) >= max_papers:
+            break
+        url = f"{ARXIV_BASE_URL}/list/{category}/recent?show=1000"
+        response = session.get(url, headers={"User-Agent": ARXIV_USER_AGENT}, timeout=30)
+        response.raise_for_status()
+        section_match = re.search(rf"<h3>\s*{re.escape(header)}.*?</h3>(.*?)(?=<h3>|</main>)", response.text, re.S)
+        if not section_match:
+            LOGGER.info("No browse section for %s in %s", target_date, category)
+            continue
+
+        entries = re.finditer(r"<dt>(.*?)</dt>\s*<dd>(.*?)</dd>", section_match.group(1), re.S)
+        for entry in entries:
+            if len(papers) >= max_papers:
+                break
+            id_match = re.search(r"/abs/([0-9]{4}\.[0-9]{4,5})(?:v[0-9]+)?", entry.group(1))
+            if not id_match:
+                continue
+            arxiv_id = id_match.group(1)
+            if arxiv_id in seen:
+                continue
+
+            try:
+                time.sleep(1)
+                metadata = parse_abs_page(arxiv_id, session)
+            except Exception as exc:
+                LOGGER.warning("Failed to parse arXiv abs page for %s: %s", arxiv_id, exc)
+                metadata = {}
+
+            seen.add(arxiv_id)
+            published = metadata.get("published") or f"{target_date}T00:00:00Z"
+            paper_categories = metadata.get("categories") or [category]
+            papers.append(
+                {
+                    "arxiv_id": arxiv_id,
+                    "title": metadata.get("title") or "",
+                    "authors": metadata.get("authors") or [],
+                    "abstract": metadata.get("abstract") or "",
+                    "categories": paper_categories,
+                    "primary_category": metadata.get("primary_category") or category,
+                    "published": published,
+                    "updated": metadata.get("updated") or published,
+                    "entry_url": f"{ARXIV_BASE_URL}/abs/{arxiv_id}",
+                    "pdf_url": f"{ARXIV_BASE_URL}/pdf/{arxiv_id}",
+                }
+            )
+
+    LOGGER.info("Fetched %d papers via arXiv browse fallback", len(papers))
+    return papers
+
+
+def fetch_papers(target_date: str, categories: list[str], max_papers: int, retries: int = 2) -> list[dict[str, Any]]:
     query = build_query(categories, target_date)
     LOGGER.info("Fetching arXiv papers for %s from %s", target_date, ", ".join(categories))
     params = {
@@ -106,6 +214,10 @@ def fetch_papers(target_date: str, categories: list[str], max_papers: int, retri
             else:
                 delay = 2 * attempt
             time.sleep(delay)
+    try:
+        return fetch_browse_fallback(target_date, categories, max_papers)
+    except Exception as exc:
+        LOGGER.warning("arXiv browse fallback failed: %s", exc)
     raise RuntimeError(f"Failed to fetch arXiv papers after {retries} attempts: {last_error}")
 
 

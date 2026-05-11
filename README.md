@@ -5,6 +5,7 @@
 ## 功能
 
 - 从 arXiv Atom API 抓取指定日期、指定分类的论文 metadata；未指定日期时自动回溯到最近一个有论文更新的日期。
+- arXiv API 临时限流时，会退回到官方 browse 页面读取同一天条目，并从 abs 页面补充摘要。
 - 基于 `title + abstract` 调用 DeepSeek OpenAI-compatible API 生成中文导读。
 - 支持断点续跑，已分析论文不会重复请求 API。
 - 生成 `docs/` 静态网站，包含首页、历史日期页、日期索引和静态资源。
