@@ -16,6 +16,7 @@ from utils import ensure_dirs, load_config, normalize_space, parse_date, setup_l
 
 LOGGER = logging.getLogger("fetch_arxiv")
 ARXIV_API_URL = "https://export.arxiv.org/api/query"
+ARXIV_USER_AGENT = "ArxivDailyPaperGuide/0.1 (https://github.com/jwwangchn/Arxiv-Daily-Paper)"
 ATOM = {"atom": "http://www.w3.org/2005/Atom", "arxiv": "http://arxiv.org/schemas/atom"}
 
 
@@ -60,7 +61,7 @@ def parse_entry(entry: ET.Element) -> dict[str, Any]:
     }
 
 
-def fetch_papers(target_date: str, categories: list[str], max_papers: int, retries: int = 3) -> list[dict[str, Any]]:
+def fetch_papers(target_date: str, categories: list[str], max_papers: int, retries: int = 5) -> list[dict[str, Any]]:
     query = build_query(categories, target_date)
     LOGGER.info("Fetching arXiv papers for %s from %s", target_date, ", ".join(categories))
     params = {
@@ -76,7 +77,7 @@ def fetch_papers(target_date: str, categories: list[str], max_papers: int, retri
     for attempt in range(1, retries + 1):
         try:
             time.sleep(3)
-            response = requests.get(url, timeout=30)
+            response = requests.get(url, headers={"User-Agent": ARXIV_USER_AGENT}, timeout=30)
             response.raise_for_status()
             root = ET.fromstring(response.text)
             seen: set[str] = set()
@@ -101,7 +102,7 @@ def fetch_papers(target_date: str, categories: list[str], max_papers: int, retri
             if retry_after and str(retry_after).isdigit():
                 delay = int(retry_after)
             elif response is not None and response.status_code == 429:
-                delay = 15 * attempt
+                delay = 30 * attempt
             else:
                 delay = 2 * attempt
             time.sleep(delay)

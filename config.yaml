@@ -5,10 +5,7 @@ site:
 arxiv:
   categories:
     - cs.CV
-    - cs.CL
     - cs.AI
-    - cs.LG
-    - eess.IV
   max_papers: 30
 
 topics:
@@ -45,4 +42,3 @@ topics:
       - alignment
       - reinforcement learning
       - instruction tuning
-

@@ -132,7 +132,7 @@ Actions → Daily arXiv Guide → Run workflow
 
 - `site.title`：页面标题。
 - `site.subtitle`：页面副标题。
-- `arxiv.categories`：默认抓取分类，例如 `cs.CV`、`cs.CL`。
+- `arxiv.categories`：默认抓取分类，目前聚焦 `cs.CV`、`cs.AI`。
 - `arxiv.max_papers`：默认每日最多论文数。
 - `topics`：用于后续筛选、prompt 优化和 tags 对齐的主题关键词配置。
 
