@@ -481,6 +481,14 @@ a.calendar-day:hover {
   margin-bottom: 46px;
 }
 
+.sub-sec {
+  margin-top: 34px;
+}
+
+.group-title + .sub-sec {
+  margin-top: 0;
+}
+
 .group-title {
   border-bottom: 2px solid var(--blue);
   color: var(--blue);
@@ -506,9 +514,9 @@ a.calendar-day:hover {
   color: #24292f;
   font-size: 20px;
   font-weight: 850;
-  margin: 0 0 16px;
+  margin: 0 0 22px;
   min-height: 42px;
-  padding: 4px 0 4px 14px;
+  padding: 8px 0 8px 14px;
 }
 
 .sub-title small {
