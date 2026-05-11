@@ -60,18 +60,6 @@
       const visibleCards = section.querySelectorAll(".paper-card:not(.hidden)").length;
       section.classList.toggle("hidden", visibleCards === 0);
     });
-    document.querySelectorAll(".nav-pri").forEach((nav) => {
-      const area = nav.dataset.area || "";
-      const visibleCards = cards.filter((card) => {
-        return !card.classList.contains("hidden") && card.dataset.area === area;
-      }).length;
-      const count = nav.querySelector(".nav-pri-head .count");
-      if (count) count.textContent = String(visibleCards);
-      nav.classList.toggle("hidden", visibleCards === 0 && (state.query || state.priority || state.tag || state.category || state.area || state.subarea));
-      if (state.query || state.priority || state.tag || state.category || state.area || state.subarea) {
-        nav.classList.toggle("expanded", visibleCards > 0);
-      }
-    });
   }
 
   function applyFilters() {
