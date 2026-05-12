@@ -3,10 +3,11 @@ from __future__ import annotations
 import argparse
 import logging
 from pathlib import Path
+from datetime import datetime, timedelta
 
 from analyze_deepseek import analyze_date
 from build_site import build_site
-from fetch_arxiv import fetch_papers, find_latest_date_with_papers, save_raw
+from fetch_arxiv import fetch_papers, save_raw
 from utils import PROJECT_ROOT, ensure_dirs, load_config, parse_date, read_json, setup_logging
 
 
@@ -40,6 +41,40 @@ def is_fully_analyzed(target_date: str, papers: list[dict]) -> bool:
     return True
 
 
+def load_existing_papers(target_date: str) -> tuple[list[dict], str]:
+    for folder in ["raw", "analyzed"]:
+        path = PROJECT_ROOT / "data" / folder / f"{target_date}.json"
+        if not path.exists():
+            continue
+        bundle = read_json(path)
+        papers = bundle.get("papers", [])
+        if papers:
+            LOGGER.info("Reusing existing %s data for %s (%d papers).", folder, target_date, len(papers))
+            return papers, folder
+    return [], ""
+
+
+def find_latest_existing_or_fetch(
+    categories: list[str],
+    max_papers: int,
+    lookback_days: int,
+    start_date: str | None = None,
+) -> tuple[str, list[dict], str]:
+    cursor = datetime.strptime(parse_date(start_date), "%Y-%m-%d").date()
+    for offset in range(lookback_days + 1):
+        target_date = (cursor - timedelta(days=offset)).isoformat()
+        existing, source = load_existing_papers(target_date)
+        if existing:
+            return target_date, existing, source
+
+        papers = fetch_papers(target_date, categories, max_papers)
+        if papers:
+            LOGGER.info("Selected latest non-empty arXiv date: %s (%d papers)", target_date, len(papers))
+            return target_date, papers, "fetched"
+        LOGGER.info("No papers found for %s; checking previous day", target_date)
+    raise RuntimeError(f"No arXiv papers found in the last {lookback_days + 1} days from {cursor.isoformat()}.")
+
+
 def main() -> None:
     setup_logging()
     ensure_dirs()
@@ -52,16 +87,22 @@ def main() -> None:
 
     if args.date:
         target_date = parse_date(args.date)
-        papers = fetch_papers(target_date, args.categories, args.max_papers)
+        papers, source = load_existing_papers(target_date)
+        if not papers:
+            papers = fetch_papers(target_date, args.categories, args.max_papers)
+            source = "fetched"
     else:
-        target_date, papers = find_latest_date_with_papers(
+        target_date, papers, source = find_latest_existing_or_fetch(
             args.categories,
             args.max_papers,
             lookback_days=args.lookback_days,
         )
 
     LOGGER.info("Starting daily pipeline for %s", target_date)
-    save_raw(target_date, papers)
+    if source in {"fetched", "raw"}:
+        save_raw(target_date, papers)
+    else:
+        LOGGER.info("Using existing analyzed data for %s; raw save is not needed.", target_date)
 
     analysis_failed = False
     if is_fully_analyzed(target_date, papers):

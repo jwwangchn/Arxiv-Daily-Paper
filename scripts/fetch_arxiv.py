@@ -195,7 +195,9 @@ def fetch_papers(target_date: str, categories: list[str], max_papers: int, retri
             if len(papers) >= max_papers:
                 break
         LOGGER.info("Fetched %d unique papers via arxiv.py", len(papers))
-        return papers
+        if papers:
+            return papers
+        LOGGER.info("arxiv.py returned 0 papers for %s; trying browse fallback before looking back.", target_date)
     except Exception as exc:
         last_error = exc
         LOGGER.warning("arxiv.py fetch failed: %s", exc)
