@@ -20,6 +20,12 @@
   padding: 0;
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -49,6 +55,8 @@ button {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .sidebar {
@@ -393,6 +401,8 @@ a.calendar-day:hover {
 
 .content {
   min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
   padding: 40px 46px 56px;
 }
 
@@ -479,10 +489,14 @@ a.calendar-day:hover {
 
 .paper-section {
   margin-bottom: 46px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .sub-sec {
   margin-top: 34px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .group-title + .sub-sec {
@@ -529,6 +543,8 @@ a.calendar-day:hover {
 .paper-list {
   display: grid;
   gap: 16px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .paper-card {
@@ -536,6 +552,9 @@ a.calendar-day:hover {
   border-radius: 8px;
   background: var(--panel);
   box-shadow: var(--shadow);
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: 21px 24px 22px;
 }
 
@@ -564,6 +583,8 @@ a.calendar-day:hover {
   flex-wrap: wrap;
   align-items: center;
   gap: 7px;
+  min-width: 0;
+  max-width: 100%;
   margin-bottom: 7px;
 }
 
@@ -578,7 +599,10 @@ a.calendar-day:hover {
   cursor: pointer;
   font-size: 12px;
   font-weight: 800;
+  max-width: 100%;
   min-height: 24px;
+  overflow-wrap: anywhere;
+  white-space: normal;
   padding: 2px 10px;
 }
 
@@ -626,7 +650,11 @@ a.calendar-day:hover {
   cursor: pointer;
   font-size: 12px;
   font-weight: 700;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: 0 2px;
+  text-align: left;
+  white-space: normal;
 }
 
 .hash-tag:hover,
@@ -650,6 +678,11 @@ a.calendar-day:hover {
   color: var(--muted);
   font-size: 12px;
   margin: 4px 0 12px;
+}
+
+.paper-links a,
+.paper-links span {
+  overflow-wrap: anywhere;
 }
 
 .paper-tldr {
@@ -699,6 +732,7 @@ a.calendar-day:hover {
 .analysis-content {
   color: #24292f;
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .analysis-content p,
@@ -727,6 +761,7 @@ a.calendar-day:hover {
   font-size: 13px;
   line-height: 1.75;
   margin-top: 9px;
+  overflow-wrap: anywhere;
   padding: 10px 13px;
 }
 
