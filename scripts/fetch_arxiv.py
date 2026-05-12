@@ -96,9 +96,9 @@ def browse_header_for_date(target_date: str) -> str:
 
 
 def browse_month_for_date(target_date: str) -> str:
-    """arXiv listing archive URLs use YYMM, e.g. 2026-05 -> 2605."""
+    """arXiv listing archive URLs use YYYY-MM, e.g. 2026-05."""
     value = datetime.strptime(target_date, "%Y-%m-%d")
-    return value.strftime("%y%m")
+    return value.strftime("%Y-%m")
 
 
 def parse_abs_page(arxiv_id: str, session: requests.Session) -> dict[str, Any]:
@@ -182,15 +182,25 @@ def extract_browse_headings(html: str) -> list[str]:
 
 def find_browse_section(html: str, header: str) -> str | None:
     """
-    Find the section under a date heading, e.g.:
-    <h3>Thu, 7 May 2026</h3>
-    ...
-    until the next <h3> or the end of the page.
+    Find the section under a date heading.
+
+    arXiv headings may look like:
+      <h3>Thu, 7 May 2026 (showing 116 of 116 entries )</h3>
+
+    So do not require an exact heading match.
     """
-    pattern = rf"<h3[^>]*>\s*{re.escape(header)}\s*</h3>(.*?)(?=<h3[^>]*>|</main>|$)"
+    pattern = (
+        rf"<h3[^>]*>\s*"
+        rf"{re.escape(header)}"
+        rf"(?:\s*\([^<]*entries\s*\))?"
+        rf"\s*</h3>"
+        rf"(.*?)(?=<h3[^>]*>|</main>|$)"
+    )
+
     match = re.search(pattern, html, re.S)
     if match:
         return match.group(1)
+
     return None
 
 
@@ -353,12 +363,11 @@ def fetch_papers(
         sort_order=arxiv.SortOrder.Descending,
     )
 
+    seen: set[str] = set()
+    papers: list[dict[str, Any]] = []
     last_error: Exception | None = None
 
     try:
-        seen: set[str] = set()
-        papers: list[dict[str, Any]] = []
-
         results = client.results(search)
 
         for result in progress_bar(
@@ -383,17 +392,45 @@ def fetch_papers(
         if papers:
             return papers
 
-        LOGGER.info("arxiv.py returned 0 papers for %s; trying browse fallback before looking back.", target_date)
+        LOGGER.info("arxiv.py returned 0 papers for %s; trying browse fallback.", target_date)
 
     except Exception as exc:
         last_error = exc
-        LOGGER.warning("arxiv.py fetch failed: %s", exc)
+        LOGGER.warning(
+            "arxiv.py fetch failed after collecting %d paper(s): %s",
+            len(papers),
+            exc,
+        )
 
     try:
-        return fetch_browse_fallback(target_date, categories, max_papers)
+        fallback_papers = fetch_browse_fallback(target_date, categories, max_papers)
+
+        if fallback_papers:
+            LOGGER.info("Using %d papers from arXiv browse fallback", len(fallback_papers))
+            return fallback_papers
+
+        if papers:
+            LOGGER.warning(
+                "Browse fallback returned 0 papers; using %d partial paper(s) collected from arxiv.py",
+                len(papers),
+            )
+            return papers
+
+        return fallback_papers
+
     except Exception as exc:
         LOGGER.warning("arXiv browse fallback failed: %s", exc)
-        raise RuntimeError(f"Failed to fetch arXiv papers after {retries} attempts: {last_error}") from exc
+
+        if papers:
+            LOGGER.warning(
+                "Using %d partial paper(s) collected from arxiv.py despite fallback failure",
+                len(papers),
+            )
+            return papers
+
+        raise RuntimeError(
+            f"Failed to fetch arXiv papers after {retries} attempts: {last_error}"
+        ) from exc
 
 
 def find_latest_date_with_papers(
