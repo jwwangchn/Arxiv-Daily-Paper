@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import calendar
+from collections import Counter
 from datetime import date as Date
 from datetime import datetime
 import html
@@ -267,15 +268,21 @@ def paper_card(paper: dict[str, Any]) -> str:
 """
 
 
-def collect_facets(papers: list[dict[str, Any]]) -> tuple[list[str], list[str], dict[str, int]]:
-    tags = sorted({tag for paper in papers for tag in (paper.get("analysis") or {}).get("tags", [])})
+def collect_facets(papers: list[dict[str, Any]]) -> tuple[list[tuple[str, int]], list[str], dict[str, int]]:
+    tag_counts = Counter(
+        str(tag)
+        for paper in papers
+        for tag in (paper.get("analysis") or {}).get("tags", [])
+        if tag
+    )
+    top_tags = sorted(tag_counts.items(), key=lambda item: (-item[1], item[0]))[:20]
     categories = sorted({category for paper in papers for category in paper.get("categories", [])})
     priorities: dict[str, int] = {"high": 0, "medium": 0, "low": 0}
     for paper in papers:
         priority = (paper.get("analysis") or {}).get("reading_priority")
         if priority in priorities:
             priorities[priority] += 1
-    return tags + categories, categories, priorities
+    return top_tags, categories, priorities
 
 
 def parse_date_value(value: str) -> Date | None:
@@ -408,14 +415,14 @@ def render_page(
     papers = bundle.get("papers", [])
     site = config.get("site", {})
     asset_prefix = "assets" if is_index else "../assets"
-    facets, _categories, priorities = collect_facets(papers)
+    top_tags, _categories, priorities = collect_facets(papers)
     total_papers = len(papers)
     active_dates = sum(1 for value in date_counts.values() if value > 0)
     calendar_html = render_calendar(date_counts, date, is_index)
     topic_nav = render_topic_nav(papers)
     tag_buttons = "\n".join(
-        f"<button class=\"filter-chip\" data-filter-tag=\"{h(item)}\" type=\"button\">#{h(item)}</button>"
-        for item in facets[:28]
+        f"<button class=\"filter-chip\" data-filter-tag=\"{h(tag)}\" type=\"button\">#{h(tag)} <b>{count}</b></button>"
+        for tag, count in top_tags
     )
     priority_buttons = "\n".join(
         f"<button class=\"filter-chip priority-filter\" data-filter-priority=\"{name}\" type=\"button\">{name} <b>{count}</b></button>"
