@@ -166,6 +166,49 @@ def group_papers(papers: list[dict[str, Any]]) -> dict[str, dict[str, list[dict[
     return groups
 
 
+def priority_rank(paper: dict[str, Any]) -> int:
+    priority = str((paper.get("analysis") or {}).get("reading_priority") or "").lower()
+    return {"high": 0, "medium": 1, "low": 2}.get(priority, 3)
+
+
+def paper_time_rank(paper: dict[str, Any]) -> float:
+    value = str(paper.get("updated") or paper.get("published") or "")
+    if value:
+        try:
+            return -datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+        except ValueError:
+            pass
+    arxiv_id = str(paper.get("arxiv_id") or "")
+    numeric_id = re.sub(r"[^0-9.]", "", arxiv_id)
+    try:
+        return -float(numeric_id)
+    except ValueError:
+        return 0.0
+
+
+def sorted_topic_groups(
+    groups: dict[str, dict[str, list[dict[str, Any]]]],
+) -> list[tuple[str, dict[str, list[dict[str, Any]]]]]:
+    return sorted(groups.items(), key=lambda kv: (-sum(len(v) for v in kv[1].values()), kv[0]))
+
+
+def sorted_category_groups(
+    category_groups: dict[str, list[dict[str, Any]]],
+) -> list[tuple[str, list[dict[str, Any]]]]:
+    return sorted(category_groups.items(), key=lambda kv: (-len(kv[1]), kv[0]))
+
+
+def sorted_papers(papers: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(
+        papers,
+        key=lambda paper: (
+            priority_rank(paper),
+            paper_time_rank(paper),
+            str(paper.get("arxiv_id") or ""),
+        ),
+    )
+
+
 def field_row(icon: str, label: str, content: str) -> str:
     return f"""
     <div class="analysis-row">
@@ -349,14 +392,13 @@ def render_sections(papers: list[dict[str, Any]]) -> str:
         return "<div class=\"empty-state\">暂无论文数据。可以先运行 mock 模式生成预览页面。</div>"
 
     sections: list[str] = []
-    for topic_name, category_groups in group_papers(papers).items():
+    for topic_name, category_groups in sorted_topic_groups(group_papers(papers)):
         topic_count = sum(len(items) for items in category_groups.values())
         topic_id = "area-" + anchor(topic_name)
         sub_sections: list[str] = []
-        sorted_categories = sorted(category_groups.items(), key=lambda kv: (-len(kv[1]), kv[0]))
-        for cat_name, cat_items in sorted_categories:
+        for cat_name, cat_items in sorted_category_groups(category_groups):
             cat_id = f"sub-{anchor(topic_name)}-{anchor(cat_name)}"
-            cards = "\n".join(paper_card(paper) for paper in cat_items)
+            cards = "\n".join(paper_card(paper) for paper in sorted_papers(cat_items))
             sub_sections.append(
                 f"""
         <section id="{cat_id}" class="sub-sec">
@@ -379,13 +421,11 @@ def render_sections(papers: list[dict[str, Any]]) -> str:
 def render_topic_nav(papers: list[dict[str, Any]]) -> str:
     nav: list[str] = []
     groups = group_papers(papers)
-    sorted_topics = sorted(groups.items(), key=lambda kv: (-sum(len(v) for v in kv[1].values()), kv[0]))
-    for topic_name, category_groups in sorted_topics:
+    for topic_name, category_groups in sorted_topic_groups(groups):
         topic_count = sum(len(items) for items in category_groups.values())
         topic_id = "area-" + anchor(topic_name)
         sub_links: list[str] = []
-        sorted_categories = sorted(category_groups.items(), key=lambda kv: (-len(kv[1]), kv[0]))
-        for cat_name, cat_items in sorted_categories:
+        for cat_name, cat_items in sorted_category_groups(category_groups):
             cat_id = f"sub-{anchor(topic_name)}-{anchor(cat_name)}"
             sub_links.append(
                 f"<button class=\"nav-sub-link\" data-filter-subarea=\"{h(cat_name)}\" data-target=\"{cat_id}\" type=\"button\"><span class=\"name\">{h(cat_name)}</span><span class=\"count\">({len(cat_items)})</span></button>"
