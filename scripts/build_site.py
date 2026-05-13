@@ -10,6 +10,7 @@ import logging
 import re
 from typing import Any
 
+from archive_store import available_dates, paper_id, paper_source_date, read_jsonl
 from utils import PROJECT_ROOT, ensure_dirs, load_config, read_json, setup_logging, write_json
 
 
@@ -42,6 +43,130 @@ def load_analyzed_data(use_mock: bool = False) -> list[dict[str, Any]]:
             LOGGER.info("Using mock analyzed data from %s", mock_path)
             return [read_json(mock_path)]
     return [read_json(path) for path in files]
+
+
+def load_legacy_analysis_by_id() -> dict[str, dict[str, Any]]:
+    legacy: dict[str, dict[str, Any]] = {}
+    for path in sorted((PROJECT_ROOT / "data" / "analyzed").glob("*.json")):
+        bundle = read_json(path)
+        for paper in bundle.get("papers", []):
+            arxiv_id = paper_id(paper)
+            if arxiv_id and paper.get("analysis"):
+                legacy[arxiv_id] = paper
+    return legacy
+
+
+def legacy_priority_for_site(analysis: dict[str, Any]) -> str:
+    priority = str(analysis.get("reading_priority") or "").lower()
+    aliases = {
+        "must_read": "high",
+        "recommended": "medium",
+        "skim": "medium",
+        "low_priority": "low",
+        "skip": "low",
+    }
+    return aliases.get(priority, priority if priority in {"high", "medium", "low"} else "medium")
+
+
+def paper_for_site(paper: dict[str, Any], legacy_by_id: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    item = dict(paper)
+    if not item.get("analysis"):
+        legacy = legacy_by_id.get(paper_id(item))
+        if legacy and legacy.get("analysis"):
+            item["analysis"] = dict(legacy["analysis"])
+    if item.get("analysis"):
+        item["analysis"]["reading_priority"] = legacy_priority_for_site(item["analysis"])
+    return item
+
+
+def archive_bundles(use_mock: bool = False) -> list[dict[str, Any]]:
+    if use_mock:
+        return load_analyzed_data(use_mock=True)
+
+    dates = available_dates()
+    if not dates:
+        return load_analyzed_data(use_mock=False)
+
+    legacy_by_id = load_legacy_analysis_by_id()
+    papers_by_date: dict[str, list[dict[str, Any]]] = {date: [] for date in dates}
+    for paper in read_jsonl(PROJECT_ROOT / "data" / "archive" / "papers.jsonl"):
+        source_date = paper_source_date(paper)
+        if source_date in papers_by_date:
+            papers_by_date[source_date].append(paper_for_site(paper, legacy_by_id))
+
+    return [
+        {"date": date, "source": "archive", "papers": sorted_papers_for_export(papers)}
+        for date, papers in sorted(papers_by_date.items())
+    ]
+
+
+def score_value(paper: dict[str, Any], key: str) -> float:
+    try:
+        return float((paper.get("analysis") or {}).get(key) or 0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def sorted_papers_for_export(papers: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(
+        papers,
+        key=lambda paper: (
+            -score_value(paper, "score"),
+            -score_value(paper, "relevance"),
+            -score_value(paper, "novelty"),
+            paper_time_rank(paper),
+            str(paper.get("arxiv_id") or ""),
+        ),
+    )
+
+
+def month_key(source_date: str) -> str:
+    return source_date[:7]
+
+
+def export_site_data(bundles: list[dict[str, Any]]) -> dict[str, Any]:
+    docs_data = PROJECT_ROOT / "docs" / "data"
+    by_month_dir = docs_data / "by-month"
+    by_month_dir.mkdir(parents=True, exist_ok=True)
+
+    expected_month_files: set[str] = set()
+    months: dict[str, dict[str, list[dict[str, Any]]]] = {}
+    date_entries: list[dict[str, Any]] = []
+
+    for bundle in bundles:
+        source_date = str(bundle.get("date") or "")
+        if not source_date:
+            continue
+        papers = bundle.get("papers", [])
+        month = month_key(source_date)
+        months.setdefault(month, {})[source_date] = papers
+        analyzed_count = sum(1 for paper in papers if paper.get("analysis"))
+        date_entries.append(
+            {
+                "date": source_date,
+                "month": month,
+                "count": len(papers),
+                "analyzed_count": analyzed_count,
+            }
+        )
+
+    date_entries = sorted(date_entries, key=lambda item: item["date"], reverse=True)
+    latest = next((item["date"] for item in date_entries if item["count"] > 0), date_entries[0]["date"] if date_entries else "")
+
+    for month, dates in sorted(months.items()):
+        expected_month_files.add(f"{month}.json")
+        write_json(
+            by_month_dir / f"{month}.json",
+            {"month": month, "dates": {date: dates[date] for date in sorted(dates, reverse=True)}},
+        )
+
+    for stale_file in by_month_dir.glob("*.json"):
+        if stale_file.name not in expected_month_files:
+            stale_file.unlink()
+
+    payload = {"latest": latest, "dates": date_entries}
+    write_json(docs_data / "dates.json", payload)
+    return payload
 
 
 def list_items(values: list[Any]) -> str:
@@ -539,19 +664,98 @@ def render_page(
 """
 
 
+def render_spa_page(config: dict[str, Any]) -> str:
+    site = config.get("site", {})
+    title = site.get("title", "arXiv Daily Paper Guide")
+    subtitle = site.get("subtitle", "自动生成的每日论文中文导读")
+    return f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{h(title)}</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1><span class="book-mark">AP</span>{h(title)}</h1>
+        <p>{h(subtitle)}</p>
+      </div>
+      <input id="searchInput" class="search-input" type="search" placeholder="搜索标题 / 摘要 / 标签">
+      <div class="stat-grid">
+        <div class="stat-box"><b id="totalCount">0</b><span>当天论文</span></div>
+        <div class="stat-box"><b id="dateCount">0</b><span>有论文日期</span></div>
+      </div>
+      <button id="clearFilters" class="clear-button" type="button">全部论文</button>
+
+      <section class="nav-section">
+        <h2>日期</h2>
+        <div id="dateNav" class="date-nav"></div>
+      </section>
+      <section class="nav-section">
+        <h2>方向</h2>
+        <div id="topicNav" class="nav-tree"></div>
+      </section>
+      <section class="nav-section">
+        <h2>Priority</h2>
+        <div id="priorityFilters" class="chip-list"></div>
+      </section>
+      <section class="nav-section">
+        <h2>Tags</h2>
+        <div id="tagFilters" class="chip-list"></div>
+      </section>
+    </aside>
+    <main class="content">
+      <header class="page-header">
+        <div class="hero-copy">
+          <h1>{h(title)} · 中文导读</h1>
+          <p>按日期懒加载月份数据，基于标题与摘要展示论文导读、评分、分类和阅读优先级。</p>
+          <div class="hero-chips">
+            <button class="hero-chip active" id="clearFiltersTop" type="button">全部 <span id="heroTotal">0</span> 篇</button>
+            <span class="hero-chip soft" id="currentDateLabel">加载中</span>
+          </div>
+        </div>
+      </header>
+      <div class="count-line"><span id="visibleCount">0</span> / <span id="paperTotalInline">0</span> 篇论文可见 <span id="activeFilters"></span></div>
+      <div id="paperList"></div>
+      <div id="noResults" class="empty-state hidden">没有匹配当前筛选条件的论文。</div>
+      <div id="loadingState" class="empty-state">正在加载论文数据...</div>
+    </main>
+  </div>
+  <script src="assets/app.js"></script>
+</body>
+</html>
+"""
+
+
+def render_daily_redirect(source_date: str) -> str:
+    target = f"../index.html?date={h(source_date)}"
+    return f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="0; url={target}">
+  <title>arXiv Daily Paper · {h(source_date)}</title>
+</head>
+<body>
+  <p><a href="{target}">打开 {h(source_date)} 的论文列表</a></p>
+</body>
+</html>
+"""
+
+
 def build_site(use_mock: bool = False) -> None:
     ensure_dirs()
     config = load_config()
-    bundles = load_analyzed_data(use_mock)
+    bundles = archive_bundles(use_mock)
     bundles = sorted(bundles, key=lambda item: item.get("date", ""))
     if not bundles:
         bundles = [{"date": "暂无日期", "source": "empty", "papers": []}]
 
     dates = [bundle.get("date", "") for bundle in bundles if bundle.get("date")]
-    date_counts = {bundle.get("date", ""): len(bundle.get("papers", [])) for bundle in bundles if bundle.get("date")}
-    non_empty_bundles = [bundle for bundle in bundles if bundle.get("papers")]
-    latest_bundle = non_empty_bundles[-1] if non_empty_bundles else bundles[-1]
-    latest = latest_bundle.get("date", dates[-1] if dates else "")
     docs_dir = PROJECT_ROOT / "docs"
     daily_dir = docs_dir / "daily"
     daily_dir.mkdir(parents=True, exist_ok=True)
@@ -560,14 +764,12 @@ def build_site(use_mock: bool = False) -> None:
         if stale_page.name not in expected_daily_files:
             stale_page.unlink()
 
-    for bundle in bundles:
-        date = bundle.get("date", "empty")
-        html_text = render_page(bundle, date_counts, is_index=False, config=config)
-        (daily_dir / f"{date}.html").write_text(html_text, encoding="utf-8")
+    data_index = export_site_data(bundles)
+    for date in dates:
+        (daily_dir / f"{date}.html").write_text(render_daily_redirect(date), encoding="utf-8")
 
-    (docs_dir / "index.html").write_text(render_page(latest_bundle, date_counts, is_index=True, config=config), encoding="utf-8")
-    write_json(docs_dir / "data" / "dates.json", {"latest": latest, "dates": dates, "counts": date_counts})
-    LOGGER.info("Built site with %d date bundle(s)", len(bundles))
+    (docs_dir / "index.html").write_text(render_spa_page(config), encoding="utf-8")
+    LOGGER.info("Built site with %d date bundle(s), latest=%s", len(bundles), data_index.get("latest"))
 
 
 def parse_args() -> argparse.Namespace:

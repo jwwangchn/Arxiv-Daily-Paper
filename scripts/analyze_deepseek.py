@@ -10,6 +10,13 @@ from typing import Any
 
 from openai import OpenAI
 
+from archive_store import (
+    append_new_analyses,
+    load_analysis_index,
+    paper_id,
+    papers_for_date,
+    utc_now_iso,
+)
 from progress import progress_bar
 from utils import PROJECT_ROOT, ensure_dirs, parse_date, read_json, setup_logging, write_json
 
@@ -17,6 +24,7 @@ from utils import PROJECT_ROOT, ensure_dirs, parse_date, read_json, setup_loggin
 LOGGER = logging.getLogger("analyze_deepseek")
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 DEFAULT_DEEPSEEK_MODEL = "deepseek-v4-flash"
+DEFAULT_ANALYSIS_VERSION = "v2_score_2026_05"
 DEFAULT_DEEPSEEK_CONCURRENCY = 2
 MAX_DEEPSEEK_CONCURRENCY = 4
 TAXONOMY_PATH = PROJECT_ROOT / "data" / "iclr_taxonomy.json"
@@ -42,7 +50,15 @@ SYSTEM_PROMPT_TEMPLATE = """你是一个严谨的机器学习论文导读助手�
   "category": "taxonomy 中该一级分类下的中文二级分类",
   "sub_area": "必须与 category 完全相同，用于兼容旧页面字段",
   "tags": ["VLM", "Video Generation"],
-  "reading_priority": "high|medium|low"
+  "novelty": 1,
+  "technical_depth": 1,
+  "impact": 1,
+  "relevance": 1,
+  "score_raw": 3.8,
+  "score": 4,
+  "reason": "推荐或跳过的简短理由",
+  "recommended_action": "read_deeply|read_abstract|save_for_later|skip",
+  "reading_priority": "must_read|recommended|skim|low_priority|skip"
 }}
 
 分类要求：
@@ -58,11 +74,20 @@ SYSTEM_PROMPT_TEMPLATE = """你是一个严谨的机器学习论文导读助手�
 - problem 写“具体要解决什么问题”：论文直接攻克的任务、误差来源、约束或目标。
 - research_motivation 和 problem 不要原句重复；如果摘要信息不足，也要从不同角度简短表述。
 
+评分要求：
+- novelty、technical_depth、impact、relevance 都必须是 1 到 5 的整数，5 代表很强，1 代表很弱。
+- score_raw 必须按公式计算：0.30 * novelty + 0.25 * technical_depth + 0.25 * impact + 0.20 * relevance。
+- score 必须是 1 到 5 的整数，可基于 score_raw 四舍五入，但不确定时偏保守。
+- reason 用 1 句中文解释分数和推荐动作，不要夸大摘要中没有的信息。
+- recommended_action 必须只选 read_deeply、read_abstract、save_for_later、skip。
+
 reading_priority 判定标准：
-- high：必须满足至少一条：1) 与 VLM/MLLM、视频生成/图像生成、CT 报告生成、LLM 训练/对齐/推理/Agent 这些重点方向强相关，且摘要显示有明确方法创新、系统性实验或显著应用价值；2) 属于基础/前沿模型、生成模型、应用：CV/音频/语言等、数据集与基准，并且看起来值得优先精读；3) 摘要中出现强实证信号，如多个 benchmark、SOTA、显著效率提升、开源数据/代码或真实临床/工业场景验证。
-- medium：满足至少一条：1) 与重点方向中等相关，但贡献偏增量、实验信息有限或应用范围较窄；2) 方法可能有价值但摘要没有给出足够实验细节；3) 属于相关大类，但不是当前最核心关注点。
-- low：满足至少一条：1) 与重点方向弱相关或主要是边缘应用；2) 摘要信息不足，难以判断贡献；3) 主要是小规模工程改进、特定数据集技巧或与当前关注方向距离较远。
-- 如果 high 和 medium 都可解释，优先选择 medium，避免过度标 high。只有明显值得优先阅读的论文才标 high。
+- must_read：必须满足至少一条：1) 与 VLM/MLLM、视频生成/图像生成、CT 报告生成、LLM 训练/对齐/推理/Agent 这些重点方向强相关，且摘要显示有明确方法创新、系统性实验或显著应用价值；2) 属于基础/前沿模型、生成模型、应用：CV/音频/语言等、数据集与基准，并且看起来值得优先精读；3) 摘要中出现强实证信号，如多个 benchmark、SOTA、显著效率提升、开源数据/代码或真实临床/工业场景验证。
+- recommended：与重点方向中等相关，但贡献偏增量、实验信息有限或应用范围较窄；或者方法可能有价值但摘要没有给出足够实验细节。
+- skim：属于相关大类，但不是当前最核心关注点，适合快速浏览。
+- low_priority：与重点方向弱相关、主要是边缘应用、小规模工程改进或特定数据集技巧。
+- skip：摘要信息不足且与当前关注方向距离较远。
+- 如果 must_read 和 recommended 都可解释，优先选择 recommended，避免过度标 must_read。只有明显值得优先阅读的论文才标 must_read。
 """
 
 PAPER_PROMPT_TEMPLATE = """论文标题：
@@ -122,6 +147,22 @@ SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE.format(taxonomy=load_taxonomy_prompt())
 AREA_INDEX, CATEGORY_INDEX, CATEGORY_AREA_INDEX, AREA_CATEGORIES = taxonomy_indexes()
 
 
+def clamp_int(value: Any, *, default: int = 3, minimum: int = 1, maximum: int = 5) -> int:
+    try:
+        parsed = int(round(float(value)))
+    except (TypeError, ValueError):
+        parsed = default
+    return max(minimum, min(maximum, parsed))
+
+
+def legacy_priority(priority: str, score: int) -> str:
+    if priority == "must_read" or score >= 4:
+        return "high"
+    if priority in {"recommended", "skim"} or score >= 3:
+        return "medium"
+    return "low"
+
+
 def get_client() -> OpenAI:
     api_key = os.environ.get("DEEPSEEK_API_KEY")
     if not api_key:
@@ -147,10 +188,37 @@ def normalize_analysis(analysis: dict[str, Any]) -> dict[str, Any]:
         analysis["tldr"] = tldr
         analysis["one_sentence_summary"] = tldr
 
+    novelty = clamp_int(analysis.get("novelty"))
+    technical_depth = clamp_int(analysis.get("technical_depth"))
+    impact = clamp_int(analysis.get("impact"))
+    relevance = clamp_int(analysis.get("relevance"))
+    score_raw = round(0.30 * novelty + 0.25 * technical_depth + 0.25 * impact + 0.20 * relevance, 2)
+    score = clamp_int(analysis.get("score", round(score_raw)))
+    analysis["novelty"] = novelty
+    analysis["technical_depth"] = technical_depth
+    analysis["impact"] = impact
+    analysis["relevance"] = relevance
+    analysis["score_raw"] = score_raw
+    analysis["score"] = score
+
     priority = str(analysis.get("reading_priority", "")).strip().lower()
-    if priority not in {"high", "medium", "low"}:
-        priority = "medium"
+    legacy_priority_aliases = {"high": "must_read", "medium": "recommended", "low": "low_priority"}
+    priority = legacy_priority_aliases.get(priority, priority)
+    if priority not in {"must_read", "recommended", "skim", "low_priority", "skip"}:
+        priority = "recommended"
+    action = str(analysis.get("recommended_action", "")).strip().lower()
+    if action not in {"read_deeply", "read_abstract", "save_for_later", "skip"}:
+        action = {
+            "must_read": "read_deeply",
+            "recommended": "read_abstract",
+            "skim": "read_abstract",
+            "low_priority": "save_for_later",
+            "skip": "skip",
+        }[priority]
     analysis["reading_priority"] = priority
+    analysis["legacy_reading_priority"] = legacy_priority(priority, score)
+    analysis["recommended_action"] = action
+    analysis["reason"] = str(analysis.get("reason") or "").strip()
 
     category = str(analysis.get("category") or analysis.get("sub_area") or "").strip()
     category_area = CATEGORY_AREA_INDEX.get(normalize_label(category))
@@ -176,6 +244,16 @@ def normalize_analysis(analysis: dict[str, Any]) -> dict[str, Any]:
     analysis["category"] = canonical_category
     analysis["sub_area"] = canonical_category
     return analysis
+
+
+def legacy_analysis_for_site(analysis: dict[str, Any]) -> dict[str, Any]:
+    legacy = dict(analysis)
+    legacy["archive_reading_priority"] = analysis.get("reading_priority")
+    legacy["reading_priority"] = analysis.get("legacy_reading_priority") or legacy_priority(
+        str(analysis.get("reading_priority") or ""),
+        clamp_int(analysis.get("score")),
+    )
+    return legacy
 
 
 def analyze_paper(client: OpenAI, paper: dict[str, Any], model: str) -> dict[str, Any]:
@@ -230,6 +308,46 @@ def analyze_one_paper(client: OpenAI, paper: dict[str, Any], model: str) -> dict
     return enriched
 
 
+def archive_analysis_record(
+    enriched_paper: dict[str, Any],
+    *,
+    analysis_version: str,
+    model: str,
+) -> dict[str, Any]:
+    record: dict[str, Any] = {
+        "arxiv_id": enriched_paper.get("arxiv_id"),
+        "analysis_version": analysis_version,
+        "model": model,
+        "analyzed_at": utc_now_iso(),
+    }
+    record["analysis"] = enriched_paper["analysis"]
+    return record
+
+
+def paper_with_analysis_record(paper: dict[str, Any], record: dict[str, Any]) -> dict[str, Any]:
+    enriched = dict(paper)
+    if "analysis" in record:
+        enriched["analysis"] = legacy_analysis_for_site(record["analysis"])
+    if "analysis_error" in record:
+        enriched["analysis_error"] = record["analysis_error"]
+    if "raw_response" in record:
+        enriched["raw_response"] = record["raw_response"]
+    return enriched
+
+
+def load_raw_papers(target_date: str) -> tuple[list[dict[str, Any]], str]:
+    archive_papers = papers_for_date(target_date)
+    if archive_papers:
+        LOGGER.info("Loaded %d paper(s) for %s from archive.", len(archive_papers), target_date)
+        return archive_papers, "archive"
+
+    raw_path = PROJECT_ROOT / "data" / "raw" / f"{target_date}.json"
+    if not raw_path.exists():
+        raise FileNotFoundError(f"Archive and raw data not found for {target_date}: {raw_path}")
+    raw = read_json(raw_path)
+    return raw.get("papers", []), raw.get("source", "arxiv")
+
+
 def load_existing(output_path: Path) -> dict[str, dict[str, Any]]:
     if not output_path.exists():
         return {}
@@ -242,39 +360,60 @@ def write_analyzed(output_path: Path, target_date: str, source: str, papers: lis
     write_json(output_path, {"date": target_date, "source": source, "papers": completed})
 
 
-def analyze_date(target_date: str, concurrency: int | str | None = None) -> Path:
+def analyze_date(
+    target_date: str,
+    concurrency: int | str | None = None,
+    analysis_version: str = DEFAULT_ANALYSIS_VERSION,
+    cache_only: bool = False,
+) -> Path:
     ensure_dirs()
-    raw_path = PROJECT_ROOT / "data" / "raw" / f"{target_date}.json"
-    if not raw_path.exists():
-        raise FileNotFoundError(f"Raw data not found: {raw_path}")
-
-    raw = read_json(raw_path)
+    raw_papers, source = load_raw_papers(target_date)
     output_path = PROJECT_ROOT / "data" / "analyzed" / f"{target_date}.json"
     existing_by_id = load_existing(output_path)
+    archive_analysis_index = load_analysis_index()
 
-    if not raw.get("papers", []):
-        write_json(output_path, {"date": target_date, "source": raw.get("source", "arxiv"), "papers": []})
+    if not raw_papers:
+        write_json(output_path, {"date": target_date, "source": source, "papers": []})
         LOGGER.info("No papers to analyze for %s; wrote empty analyzed JSON.", target_date)
         return output_path
 
-    client = get_client()
     model = os.environ.get("DEEPSEEK_MODEL", DEFAULT_DEEPSEEK_MODEL)
     worker_count = parse_concurrency(concurrency if concurrency is not None else os.environ.get("DEEPSEEK_CONCURRENCY"))
-    raw_papers = raw.get("papers", [])
-    source = raw.get("source", "arxiv")
     analyzed_papers: list[dict[str, Any] | None] = [None] * len(raw_papers)
     pending: list[tuple[int, dict[str, Any]]] = []
 
     for index, paper in enumerate(raw_papers):
-        arxiv_id = paper.get("arxiv_id")
-        existing = existing_by_id.get(arxiv_id)
-        if existing and ("analysis" in existing or "analysis_error" in existing):
-            LOGGER.info("Skipping already analyzed paper %s", arxiv_id)
-            analyzed_papers[index] = existing
+        arxiv_id = paper_id(paper)
+        archive_existing = archive_analysis_index.get((arxiv_id, analysis_version))
+        if archive_existing:
+            LOGGER.info("Skipping archive-analyzed paper %s", arxiv_id)
+            analyzed_papers[index] = paper_with_analysis_record(paper, archive_existing)
             continue
+
+        existing = existing_by_id.get(arxiv_id)
+        if existing and "analysis" in existing:
+            LOGGER.info("Backfilling legacy analyzed paper %s into archive", arxiv_id)
+            archived = dict(existing)
+            archived["analysis"] = normalize_analysis(dict(archived["analysis"]))
+            append_new_analyses(
+                [archive_analysis_record(archived, analysis_version=analysis_version, model=model)],
+                existing_index=archive_analysis_index,
+            )
+            analyzed_papers[index] = paper_with_analysis_record(paper, archive_analysis_index[(arxiv_id, analysis_version)])
+            continue
+        if existing and "analysis_error" in existing:
+            LOGGER.info("Legacy analysis for %s has only an error; retrying instead of archiving it.", arxiv_id)
         pending.append((index, paper))
 
     if pending:
+        if cache_only:
+            LOGGER.info("Cache-only mode: %d paper(s) are missing analysis and will not call DeepSeek.", len(pending))
+            if any(paper is not None for paper in analyzed_papers):
+                write_analyzed(output_path, target_date, source, analyzed_papers)
+            else:
+                LOGGER.info("Cache-only mode found no completed papers for %s; leaving legacy analyzed JSON untouched.", target_date)
+            return output_path
+        client = get_client()
         LOGGER.info("Analyzing %d pending paper(s) with concurrency=%d.", len(pending), worker_count)
         with ThreadPoolExecutor(max_workers=worker_count) as executor:
             futures = {}
@@ -287,7 +426,18 @@ def analyze_date(target_date: str, concurrency: int | str | None = None) -> Path
                 start=1,
             ):
                 index = futures[future]
-                analyzed_papers[index] = future.result()
+                enriched = future.result()
+                if "analysis" in enriched:
+                    append_new_analyses(
+                        [archive_analysis_record(enriched, analysis_version=analysis_version, model=model)],
+                        existing_index=archive_analysis_index,
+                    )
+                    analyzed_papers[index] = paper_with_analysis_record(
+                        enriched,
+                        archive_analysis_index[(paper_id(enriched), analysis_version)],
+                    )
+                else:
+                    analyzed_papers[index] = enriched
                 LOGGER.info("Completed pending analysis %d/%d.", completed_count, len(pending))
                 write_analyzed(output_path, target_date, source, analyzed_papers)
 
@@ -305,13 +455,24 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help=f"Concurrent DeepSeek requests. Defaults to {DEFAULT_DEEPSEEK_CONCURRENCY}; capped at {MAX_DEEPSEEK_CONCURRENCY}.",
     )
+    parser.add_argument("--analysis-version", default=DEFAULT_ANALYSIS_VERSION)
+    parser.add_argument(
+        "--cache-only",
+        action="store_true",
+        help="Only use archive or legacy analyzed cache; do not call DeepSeek for missing papers.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     setup_logging()
     args = parse_args()
-    analyze_date(parse_date(args.date), concurrency=args.concurrency)
+    analyze_date(
+        parse_date(args.date),
+        concurrency=args.concurrency,
+        analysis_version=args.analysis_version,
+        cache_only=args.cache_only,
+    )
 
 
 if __name__ == "__main__":

@@ -25,6 +25,7 @@ def ensure_dirs() -> None:
     for path in [
         PROJECT_ROOT / "data" / "raw",
         PROJECT_ROOT / "data" / "analyzed",
+        PROJECT_ROOT / "data" / "archive",
         PROJECT_ROOT / "data" / "mock",
         PROJECT_ROOT / "docs" / "daily",
         PROJECT_ROOT / "docs" / "data",
@@ -74,4 +75,3 @@ def paper_matches_topics(paper: dict[str, Any], topics: dict[str, Any]) -> list[
         if name and any(str(keyword).lower() in haystack for keyword in keywords):
             matched.append(str(name))
     return matched
-
