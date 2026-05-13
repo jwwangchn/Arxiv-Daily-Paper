@@ -53,7 +53,7 @@ jobs:
           if [ -n "$REQUESTED_CONCURRENCY" ]; then
             args+=(--concurrency "$REQUESTED_CONCURRENCY")
           fi
-          python scripts/run_daily.py "${args[@]}"
+          python scripts/01_daily.py "${args[@]}"
 
       - name: Commit generated files
         run: |
