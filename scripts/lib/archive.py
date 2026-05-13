@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from utils import PROJECT_ROOT
+from lib.config import PROJECT_ROOT
 
 
 ARCHIVE_DIR = PROJECT_ROOT / "data" / "archive"

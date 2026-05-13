@@ -1,21 +1,30 @@
+"""Build the static GitHub Pages site."""
+
 from __future__ import annotations
 
 import argparse
 import calendar
-from collections import Counter
-from datetime import date as Date
-from datetime import datetime
 import html
 import logging
 import re
+from collections import Counter
+from datetime import date as Date
+from datetime import datetime
 from typing import Any
 
-from archive_store import available_dates, paper_id, paper_source_date, read_jsonl
-from utils import PROJECT_ROOT, ensure_dirs, load_config, read_json, setup_logging, write_json
+from lib.archive import available_dates, paper_id, paper_source_date, read_jsonl
+from lib.config import PROJECT_ROOT, ensure_dirs, load_config, read_json, setup_logging, write_json
+from lib.taxonomy import (
+    TAXONOMY_PATH,
+    load_taxonomy,
+    normalize_label_for_site,
+    taxonomy_area_categories_map,
+    taxonomy_area_map,
+    taxonomy_category_area_map,
+    taxonomy_category_map,
+)
 
-
-LOGGER = logging.getLogger("build_site")
-TAXONOMY_PATH = PROJECT_ROOT / "data" / "iclr_taxonomy.json"
+LOGGER = logging.getLogger("commands.build")
 
 
 def h(value: Any) -> str:
@@ -25,8 +34,8 @@ def h(value: Any) -> str:
 def cjk_spacing(value: Any) -> str:
     text = str(value or "")
     ascii_token = r"A-Za-z0-9@#&%/+=\\-"
-    text = re.sub(rf"([\u4e00-\u9fff])([{ascii_token}])", r"\1 \2", text)
-    text = re.sub(rf"([{ascii_token}])([\u4e00-\u9fff])", r"\1 \2", text)
+    text = re.sub(rf"([一-鿿])([{ascii_token}])", r"\1 \2", text)
+    text = re.sub(rf"([{ascii_token}])([一-鿿])", r"\1 \2", text)
     return text
 
 
@@ -36,7 +45,14 @@ def ht(value: Any) -> str:
 
 def load_analyzed_data(use_mock: bool = False) -> list[dict[str, Any]]:
     ensure_dirs()
-    files = sorted((PROJECT_ROOT / "data" / "analyzed").glob("*.json"))
+    files: list[Path] = []
+    month_dir = PROJECT_ROOT / "data" / "analyzed"
+    if month_dir.is_dir():
+        for sub in sorted(month_dir.iterdir()):
+            if sub.is_dir() and sub.name.count("-") == 1:
+                files.extend(sorted(sub.glob("*.json")))
+    if not files:
+        files = sorted((PROJECT_ROOT / "data" / "analyzed").glob("*.json"))
     if use_mock or not files:
         mock_path = PROJECT_ROOT / "data" / "mock" / "analyzed_sample.json"
         if mock_path.exists():
@@ -47,12 +63,20 @@ def load_analyzed_data(use_mock: bool = False) -> list[dict[str, Any]]:
 
 def load_legacy_analysis_by_id() -> dict[str, dict[str, Any]]:
     legacy: dict[str, dict[str, Any]] = {}
-    for path in sorted((PROJECT_ROOT / "data" / "analyzed").glob("*.json")):
+    month_dir = PROJECT_ROOT / "data" / "analyzed"
+    paths: list[Path] = []
+    if month_dir.is_dir():
+        for sub in sorted(month_dir.iterdir()):
+            if sub.is_dir() and sub.name.count("-") == 1:
+                paths.extend(sorted(sub.glob("*.json")))
+    if not paths:
+        paths = sorted((PROJECT_ROOT / "data" / "analyzed").glob("*.json"))
+    for path in paths:
         bundle = read_json(path)
         for paper in bundle.get("papers", []):
-            arxiv_id = paper_id(paper)
-            if arxiv_id and paper.get("analysis"):
-                legacy[arxiv_id] = paper
+            aid = paper_id(paper)
+            if aid and paper.get("analysis"):
+                legacy[aid] = paper
     return legacy
 
 
@@ -68,6 +92,11 @@ def legacy_priority_for_site(analysis: dict[str, Any]) -> str:
     return aliases.get(priority, priority if priority in {"high", "medium", "low"} else "medium")
 
 
+def remove_score_fields(analysis: dict[str, Any]) -> None:
+    for key in ("novelty", "technical_depth", "impact", "relevance", "score_raw", "score", "reason"):
+        analysis.pop(key, None)
+
+
 def paper_for_site(paper: dict[str, Any], legacy_by_id: dict[str, dict[str, Any]]) -> dict[str, Any]:
     item = dict(paper)
     if not item.get("analysis"):
@@ -76,6 +105,7 @@ def paper_for_site(paper: dict[str, Any], legacy_by_id: dict[str, dict[str, Any]
             item["analysis"] = dict(legacy["analysis"])
     if item.get("analysis"):
         item["analysis"]["reading_priority"] = legacy_priority_for_site(item["analysis"])
+        remove_score_fields(item["analysis"])
     return item
 
 
@@ -100,20 +130,11 @@ def archive_bundles(use_mock: bool = False) -> list[dict[str, Any]]:
     ]
 
 
-def score_value(paper: dict[str, Any], key: str) -> float:
-    try:
-        return float((paper.get("analysis") or {}).get(key) or 0)
-    except (TypeError, ValueError):
-        return 0.0
-
-
 def sorted_papers_for_export(papers: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(
         papers,
         key=lambda paper: (
-            -score_value(paper, "score"),
-            -score_value(paper, "relevance"),
-            -score_value(paper, "novelty"),
+            priority_rank(paper),
             paper_time_rank(paper),
             str(paper.get("arxiv_id") or ""),
         ),
@@ -184,76 +205,32 @@ def normalize_label(value: str) -> str:
     return re.sub(r"\s+", "", value.replace("：", ":").strip().lower())
 
 
-def load_taxonomy() -> dict[str, Any]:
-    if not TAXONOMY_PATH.exists():
-        return {"areas": []}
-    return read_json(TAXONOMY_PATH)
-
-
-def taxonomy_area_map() -> dict[str, str]:
-    mapping: dict[str, str] = {}
-    for area in load_taxonomy().get("areas", []):
-        primary = str(area.get("primary_area") or "").strip()
-        if primary:
-            mapping[normalize_label(primary)] = primary
-    return mapping
-
-
-def taxonomy_category_map() -> dict[str, str]:
-    mapping: dict[str, str] = {}
-    for area in load_taxonomy().get("areas", []):
-        for category in area.get("categories", []):
-            category_name = str(category).strip()
-            if category_name:
-                mapping[normalize_label(category_name)] = category_name
-    return mapping
-
-
-def taxonomy_category_area_map() -> dict[str, str]:
-    candidates: dict[str, set[str]] = {}
-    for area in load_taxonomy().get("areas", []):
-        primary = str(area.get("primary_area") or "").strip()
-        for category in area.get("categories", []):
-            candidates.setdefault(normalize_label(str(category)), set()).add(primary)
-    return {category: next(iter(areas)) for category, areas in candidates.items() if len(areas) == 1}
-
-
-def taxonomy_area_categories_map() -> dict[str, set[str]]:
-    mapping: dict[str, set[str]] = {}
-    for area in load_taxonomy().get("areas", []):
-        primary = str(area.get("primary_area") or "").strip()
-        if not primary:
-            continue
-        mapping[primary] = {normalize_label(str(category)) for category in area.get("categories", [])}
-    return mapping
-
-
 AREA_MAP = taxonomy_area_map()
 CATEGORY_MAP = taxonomy_category_map()
 CATEGORY_AREA_MAP = taxonomy_category_area_map()
 AREA_CATEGORIES_MAP = taxonomy_area_categories_map()
-DEFAULT_AREA = AREA_MAP.get(normalize_label("其他 ML 主题"), "其他 ML 主题")
-DEFAULT_CATEGORY = CATEGORY_MAP.get(normalize_label("其他"), "其他")
+DEFAULT_AREA = AREA_MAP.get(normalize_label_for_site("其他 ML 主题"), "其他 ML 主题")
+DEFAULT_CATEGORY = CATEGORY_MAP.get(normalize_label_for_site("其他"), "其他")
 
 
 def canonical_area(value: str) -> str:
     cleaned = str(value or "").strip()
     if not cleaned:
         return ""
-    direct = AREA_MAP.get(normalize_label(cleaned))
+    direct = AREA_MAP.get(normalize_label_for_site(cleaned))
     if direct:
         return direct
     legacy_aliases = {
-        normalize_label("医学与科学AI"): "应用: CV/音频/语言等",
-        normalize_label("医学与科学 AI"): "应用: CV/音频/语言等",
+        normalize_label_for_site("医学与科学AI"): "应用: CV/音频/语言等",
+        normalize_label_for_site("医学与科学 AI"): "应用: CV/音频/语言等",
     }
-    alias = legacy_aliases.get(normalize_label(cleaned))
-    return AREA_MAP.get(normalize_label(alias), alias) if alias else ""
+    alias = legacy_aliases.get(normalize_label_for_site(cleaned))
+    return AREA_MAP.get(normalize_label_for_site(alias), alias) if alias else ""
 
 
 def canonical_category(value: str, area: str) -> str:
-    category = CATEGORY_MAP.get(normalize_label(value))
-    if category and (not area or normalize_label(category) in AREA_CATEGORIES_MAP.get(area, set())):
+    category = CATEGORY_MAP.get(normalize_label_for_site(value))
+    if category and (not area or normalize_label_for_site(category) in AREA_CATEGORIES_MAP.get(area, set())):
         return category
     return DEFAULT_CATEGORY
 
@@ -261,7 +238,7 @@ def canonical_category(value: str, area: str) -> str:
 def primary_area(paper: dict[str, Any]) -> str:
     analysis = paper.get("analysis") or {}
     category = str(analysis.get("category") or analysis.get("sub_area") or "").strip()
-    category_area = CATEGORY_AREA_MAP.get(normalize_label(category))
+    category_area = CATEGORY_AREA_MAP.get(normalize_label_for_site(category))
     if category_area:
         return category_area
     area = canonical_area(str(analysis.get("primary_area") or ""))
@@ -278,7 +255,7 @@ def sub_area(paper: dict[str, Any]) -> str:
 
 
 def anchor(value: str) -> str:
-    slug = re.sub(r"[^a-zA-Z0-9\u4e00-\u9fff]+", "-", value.strip()).strip("-")
+    slug = re.sub(r"[^a-zA-Z0-9一-鿿]+", "-", value.strip()).strip("-")
     return slug or "section"
 
 
@@ -386,7 +363,7 @@ def paper_card(paper: dict[str, Any]) -> str:
     ).lower()
     area_badges = (
         f"<button class=\"topic-badge\" data-filter-area=\"{h(area)}\" type=\"button\">{h(area)}</button>"
-        f"<button class=\"topic-badge subarea-badge\" data-filter-subarea=\"{h(sub)}\" type=\"button\">{h(sub)}</button>"
+        f"<button class=\"topic-badge subarea-badge\" data-filter-subarea=\"{h(sub)}\" data-filter-parent-area=\"{h(area)}\" type=\"button\">{h(sub)}</button>"
     )
     category_badges = "".join(
         f"<button class=\"topic-badge\" data-filter-category=\"{h(category)}\" type=\"button\">{h(category)}</button>"
@@ -523,11 +500,11 @@ def render_sections(papers: list[dict[str, Any]]) -> str:
         sub_sections: list[str] = []
         for cat_name, cat_items in sorted_category_groups(category_groups):
             cat_id = f"sub-{anchor(topic_name)}-{anchor(cat_name)}"
-            cards = "\n".join(paper_card(paper) for paper in sorted_papers(cat_items))
+            cards = "\n".join(paper_card(paper) for paper in sorted_papers(catitems))
             sub_sections.append(
                 f"""
         <section id="{cat_id}" class="sub-sec">
-          <h3 class="sub-title">{h(cat_name)} <small>{len(cat_items)} 篇</small></h3>
+          <h3 class="sub-title">{h(cat_name)} <small>{len(catitems)} 篇</small></h3>
           <div class="paper-list">{cards}</div>
         </section>
 """
@@ -550,10 +527,10 @@ def render_topic_nav(papers: list[dict[str, Any]]) -> str:
         topic_count = sum(len(items) for items in category_groups.values())
         topic_id = "area-" + anchor(topic_name)
         sub_links: list[str] = []
-        for cat_name, cat_items in sorted_category_groups(category_groups):
+        for cat_name, catitems in sorted_category_groups(category_groups):
             cat_id = f"sub-{anchor(topic_name)}-{anchor(cat_name)}"
             sub_links.append(
-                f"<button class=\"nav-sub-link\" data-filter-subarea=\"{h(cat_name)}\" data-target=\"{cat_id}\" type=\"button\"><span class=\"name\">{h(cat_name)}</span><span class=\"count\">({len(cat_items)})</span></button>"
+                f"<button class=\"nav-sub-link\" data-filter-subarea=\"{h(cat_name)}\" data-filter-parent-area=\"{h(topic_name)}\" data-target=\"{cat_id}\" type=\"button\"><span class=\"name\">{h(cat_name)}</span><span class=\"count\">({len(catitems)})</span></button>"
             )
         nav.append(
             f"""
@@ -656,6 +633,7 @@ def render_page(
         {sections}
       </div>
       <div id="noResults" class="empty-state hidden">没有匹配当前筛选条件的论文。</div>
+      <button id="backToTop" class="back-to-top" type="button" aria-label="回到顶部">&uarr; 顶部</button>
     </main>
   </div>
   <script src="{asset_prefix}/app.js"></script>
@@ -680,22 +658,22 @@ def render_spa_page(config: dict[str, Any]) -> str:
   <div class="shell">
     <aside class="sidebar">
       <div class="brand">
-        <h1><span class="book-mark">AP</span>{h(title)}</h1>
+        <h1><span class="book-mark">📚</span>{h(title)}</h1>
         <p>{h(subtitle)}</p>
       </div>
-      <input id="searchInput" class="search-input" type="search" placeholder="搜索标题 / 摘要 / 标签">
+      <input id="searchInput" class="search-input" type="search" placeholder="🔍 搜索标题 / 关键词...">
       <div class="stat-grid">
-        <div class="stat-box"><b id="totalCount">0</b><span>当天论文</span></div>
+        <div class="stat-box"><b id="totalCount">0</b><span>论文总数</span></div>
         <div class="stat-box"><b id="dateCount">0</b><span>有论文日期</span></div>
       </div>
-      <button id="clearFilters" class="clear-button" type="button">全部论文</button>
+      <button id="clearFilters" class="clear-button" type="button">📚 全部论文</button>
 
       <section class="nav-section">
-        <h2>日期</h2>
+        <h2>📅 历史日期</h2>
         <div id="dateNav" class="date-nav"></div>
       </section>
       <section class="nav-section">
-        <h2>方向</h2>
+        <h2>📂 按大类 -> 小类浏览</h2>
         <div id="topicNav" class="nav-tree"></div>
       </section>
       <section class="nav-section">
@@ -711,9 +689,10 @@ def render_spa_page(config: dict[str, Any]) -> str:
       <header class="page-header">
         <div class="hero-copy">
           <h1>{h(title)} · 中文导读</h1>
-          <p>按日期懒加载月份数据，基于标题与摘要展示论文导读、评分、分类和阅读优先级。</p>
+          <p>从 arXiv 自动抓取每日论文，基于标题与摘要生成中文导读；每篇论文给出 TL;DR、研究动机、解决问题、现象分析、主要方法、实验信息、贡献与局限。支持搜索、标签、分类和阅读优先级快速筛选。</p>
           <div class="hero-chips">
-            <button class="hero-chip active" id="clearFiltersTop" type="button">全部 <span id="heroTotal">0</span> 篇</button>
+            <button class="hero-chip active" id="clearFiltersTop" type="button">📚 全部<span id="heroTotal">0</span>篇</button>
+            <button class="hero-chip hot" id="heroHigh" data-priority="high" type="button">🔥 High<span id="heroHighCount">0</span>篇</button>
             <span class="hero-chip soft" id="currentDateLabel">加载中</span>
           </div>
         </div>
@@ -722,6 +701,7 @@ def render_spa_page(config: dict[str, Any]) -> str:
       <div id="paperList"></div>
       <div id="noResults" class="empty-state hidden">没有匹配当前筛选条件的论文。</div>
       <div id="loadingState" class="empty-state">正在加载论文数据...</div>
+      <button id="backToTop" class="back-to-top" type="button" aria-label="回到顶部">&uarr; 顶部</button>
     </main>
   </div>
   <script src="assets/app.js"></script>
@@ -758,15 +738,27 @@ def build_site(use_mock: bool = False) -> None:
     dates = [bundle.get("date", "") for bundle in bundles if bundle.get("date")]
     docs_dir = PROJECT_ROOT / "docs"
     daily_dir = docs_dir / "daily"
-    daily_dir.mkdir(parents=True, exist_ok=True)
-    expected_daily_files = {f"{date}.html" for date in dates}
-    for stale_page in daily_dir.glob("*.html"):
-        if stale_page.name not in expected_daily_files:
-            stale_page.unlink()
+
+    expected_daily_files: set[tuple[str, Path]] = set()
+    for date in dates:
+        month = date[:7]
+        sub_dir = daily_dir / month
+        sub_dir.mkdir(parents=True, exist_ok=True)
+        expected_daily_files.add((f"{date}.html", sub_dir))
+    for date in dates:
+        expected_daily_files.add((f"{date}.html", daily_dir))
+
+    for candidate_dir in [daily_dir] + sorted(daily_dir.iterdir()):
+        if not candidate_dir.is_dir():
+            continue
+        for stale_page in candidate_dir.glob("*.html"):
+            if (stale_page.name, candidate_dir) not in expected_daily_files:
+                stale_page.unlink()
 
     data_index = export_site_data(bundles)
     for date in dates:
-        (daily_dir / f"{date}.html").write_text(render_daily_redirect(date), encoding="utf-8")
+        month = date[:7]
+        (daily_dir / month / f"{date}.html").write_text(render_daily_redirect(date), encoding="utf-8")
 
     (docs_dir / "index.html").write_text(render_spa_page(config), encoding="utf-8")
     LOGGER.info("Built site with %d date bundle(s), latest=%s", len(bundles), data_index.get("latest"))

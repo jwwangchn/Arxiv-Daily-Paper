@@ -1,16 +1,17 @@
+"""Analyze archived arXiv papers date by date."""
+
 from __future__ import annotations
 
 import argparse
 import logging
 from datetime import datetime
 
-from analyze_deepseek import DEFAULT_ANALYSIS_VERSION, analyze_date
-from archive_store import available_dates, load_analysis_index, paper_id, papers_for_date
-from build_site import build_site
-from utils import parse_date, setup_logging
+from commands.analyze import DEFAULT_ANALYSIS_VERSION, analyze_date
+from commands.build import build_site
+from lib.archive import available_dates, load_analysis_index, paper_id, papers_for_date
+from lib.config import parse_date, setup_logging
 
-
-LOGGER = logging.getLogger("analyze_archive")
+LOGGER = logging.getLogger("batch.analyze_archive")
 
 
 def date_range_filter(dates: list[str], start_date: str, end_date: str) -> list[str]:
@@ -38,7 +39,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--skip-build",
         action="store_true",
-        help="Do not rebuild docs after each completed date.",
+        help="Do not rebuild doc after each completed date.",
     )
     return parser.parse_args()
 

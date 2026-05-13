@@ -1,14 +1,15 @@
+"""Backfill arXiv metadata into data/archive/papers.jsonl."""
+
 from __future__ import annotations
 
 import argparse
 import logging
 from datetime import datetime
 
-from fetch_arxiv import DEFAULT_BACKFILL_WORKERS, backfill_metadata
-from utils import load_config, parse_date, setup_logging
+from commands.fetch import DEFAULT_BACKFILL_WORKERS, backfill_metadata
+from lib.config import load_config, parse_date, setup_logging
 
-
-LOGGER = logging.getLogger("backfill_arxiv")
+LOGGER = logging.getLogger("batch.backfill_arxiv")
 
 
 def parse_args() -> argparse.Namespace:

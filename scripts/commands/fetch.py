@@ -1,3 +1,5 @@
+"""Fetch arXiv papers via OAI-PMH, arxiv.py, and browse-page fallback."""
+
 from __future__ import annotations
 
 import argparse
@@ -15,9 +17,8 @@ import xml.etree.ElementTree as ET
 import arxiv
 import requests
 
-from archive_store import append_new_papers, load_paper_index
-from progress import progress_bar
-from utils import (
+from lib.archive import append_new_papers, load_paper_index
+from lib.config import (
     PROJECT_ROOT,
     ensure_dirs,
     load_config,
@@ -26,8 +27,9 @@ from utils import (
     setup_logging,
     write_json,
 )
+from lib.progress import progress_bar
 
-LOGGER = logging.getLogger("fetch_arxiv")
+LOGGER = logging.getLogger("commands.fetch")
 
 ARXIV_BASE_URL = "https://arxiv.org"
 ARXIV_USER_AGENT = "ArxivDailyPaperGuide/0.1 (https://github.com/jwwangchn/Arxiv-Daily-Paper)"
@@ -439,14 +441,7 @@ def extract_browse_headings(html: str) -> list[str]:
 
 
 def find_browse_section(html: str, header: str) -> str | None:
-    """
-    Find the section under a date heading.
-
-    arXiv headings may look like:
-      <h3>Thu, 7 May 2026 (showing 116 of 116 entries )</h3>
-
-    So do not require an exact heading match.
-    """
+    """Find the section under a date heading."""
     pattern = (
         rf"<h3[^>]*>\s*"
         rf"{re.escape(header)}"
@@ -469,10 +464,7 @@ def fetch_browse_html(session: requests.Session, url: str) -> str:
 
 
 def candidate_browse_urls(category: str, target_date: str) -> list[str]:
-    """
-    Prefer monthly archive page because recent pages can be paginated and may not
-    contain the target date for high-volume categories such as cs.AI.
-    """
+    """Prefer monthly archive page because recent pages can be paginated."""
     month = browse_month_for_date(target_date)
     return [
         f"{ARXIV_BASE_URL}/list/{category}/{month}?show=all",
@@ -806,8 +798,35 @@ def backfill_metadata(
     return stats
 
 
+def merge_papers(existing: list[dict[str, Any]], new_papers: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Merge new papers into existing by arxiv_id."""
+    seen_ids: set[str] = set()
+    merged: list[dict[str, Any]] = []
+
+    existing_map: dict[str, dict[str, Any]] = {}
+    for paper in existing:
+        pid = str(paper.get("arxiv_id") or "").strip()
+        if pid:
+            existing_map[pid] = paper
+
+    for paper in new_papers:
+        pid = str(paper.get("arxiv_id") or "").strip()
+        if not pid:
+            continue
+        if pid not in existing_map:
+            existing_map[pid] = paper
+        else:
+            cur = existing_map[pid]
+            for key, value in paper.items():
+                if not cur.get(key) and value:
+                    cur[key] = value
+
+    return list(existing_map.values())
+
+
 def save_raw(target_date: str, papers: list[dict[str, Any]]) -> Path:
-    output = PROJECT_ROOT / "data" / "raw" / f"{target_date}.json"
+    month = target_date[:7]
+    output = PROJECT_ROOT / "data" / "raw" / month / f"{target_date}.json"
     write_json(output, {"date": target_date, "source": "arxiv", "papers": papers})
     LOGGER.info("Wrote %s", output)
     return output
@@ -930,6 +949,9 @@ def main() -> None:
                 prefer_oai=args.source == "auto",
             )
 
+    if not papers:
+        LOGGER.info("No papers found for %s; skipping raw file write.", target_date)
+        return
     save_raw(target_date, papers)
 
 

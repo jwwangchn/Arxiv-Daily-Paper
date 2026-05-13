@@ -1,3 +1,5 @@
+"""Analyze arXiv papers with DeepSeek AI."""
+
 from __future__ import annotations
 
 import argparse
@@ -10,24 +12,29 @@ from typing import Any
 
 from openai import OpenAI
 
-from archive_store import (
+from lib.archive import (
     append_new_analyses,
     load_analysis_index,
     paper_id,
     papers_for_date,
     utc_now_iso,
 )
-from progress import progress_bar
-from utils import PROJECT_ROOT, ensure_dirs, parse_date, read_json, setup_logging, write_json
+from lib.config import PROJECT_ROOT, ensure_dirs, parse_date, read_json, setup_logging, write_json
+from lib.progress import progress_bar
+from lib.taxonomy import (
+    AREA_CATEGORIES_MAP as _AREA_CATEGORIES_MAP,
+    AREA_INDEX as _AREA_INDEX,
+    CATEGORY_AREA_INDEX as _CATEGORY_AREA_INDEX,
+    CATEGORY_INDEX as _CATEGORY_INDEX,
+    load_taxonomy_prompt,
+)
 
-
-LOGGER = logging.getLogger("analyze_deepseek")
+LOGGER = logging.getLogger("commands.analyze")
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 DEFAULT_DEEPSEEK_MODEL = "deepseek-v4-flash"
-DEFAULT_ANALYSIS_VERSION = "v2_score_2026_05"
-DEFAULT_DEEPSEEK_CONCURRENCY = 2
-MAX_DEEPSEEK_CONCURRENCY = 4
-TAXONOMY_PATH = PROJECT_ROOT / "data" / "iclr_taxonomy.json"
+DEFAULT_ANALYSIS_VERSION = "v3_noscore_2026_05"
+DEFAULT_DEEPSEEK_CONCURRENCY = 4
+MAX_DEEPSEEK_CONCURRENCY = 8
 
 
 SYSTEM_PROMPT_TEMPLATE = """你是一个严谨的机器学习论文导读助手。请只根据论文标题和摘要生成中文导读，不要编造摘要中不存在的实验结论。如果摘要没有提到实验结果，请明确写“摘要未提供具体实验结果”。输出必须是合法 JSON。
@@ -50,13 +57,6 @@ SYSTEM_PROMPT_TEMPLATE = """你是一个严谨的机器学习论文导读助手�
   "category": "taxonomy 中该一级分类下的中文二级分类",
   "sub_area": "必须与 category 完全相同，用于兼容旧页面字段",
   "tags": ["VLM", "Video Generation"],
-  "novelty": 1,
-  "technical_depth": 1,
-  "impact": 1,
-  "relevance": 1,
-  "score_raw": 3.8,
-  "score": 4,
-  "reason": "推荐或跳过的简短理由",
   "recommended_action": "read_deeply|read_abstract|save_for_later|skip",
   "reading_priority": "must_read|recommended|skim|low_priority|skip"
 }}
@@ -74,12 +74,10 @@ SYSTEM_PROMPT_TEMPLATE = """你是一个严谨的机器学习论文导读助手�
 - problem 写“具体要解决什么问题”：论文直接攻克的任务、误差来源、约束或目标。
 - research_motivation 和 problem 不要原句重复；如果摘要信息不足，也要从不同角度简短表述。
 
-评分要求：
-- novelty、technical_depth、impact、relevance 都必须是 1 到 5 的整数，5 代表很强，1 代表很弱。
-- score_raw 必须按公式计算：0.30 * novelty + 0.25 * technical_depth + 0.25 * impact + 0.20 * relevance。
-- score 必须是 1 到 5 的整数，可基于 score_raw 四舍五入，但不确定时偏保守。
-- reason 用 1 句中文解释分数和推荐动作，不要夸大摘要中没有的信息。
+阅读建议要求：
+- 不要输出 novelty、technical_depth、impact、relevance、score_raw、score、reason 等评分或评分解释字段。
 - recommended_action 必须只选 read_deeply、read_abstract、save_for_later、skip。
+- reading_priority 用于粗粒度排序和筛选，不是评分；不确定时偏保守。
 
 reading_priority 判定标准：
 - must_read：必须满足至少一条：1) 与 VLM/MLLM、视频生成/图像生成、CT 报告生成、LLM 训练/对齐/推理/Agent 这些重点方向强相关，且摘要显示有明确方法创新、系统性实验或显著应用价值；2) 属于基础/前沿模型、生成模型、应用：CV/音频/语言等、数据集与基准，并且看起来值得优先精读；3) 摘要中出现强实证信号，如多个 benchmark、SOTA、显著效率提升、开源数据/代码或真实临床/工业场景验证。
@@ -104,61 +102,17 @@ class ModelJsonError(ValueError):
         self.raw_response = raw_response
 
 
-def load_taxonomy_prompt() -> str:
-    taxonomy = read_json(TAXONOMY_PATH)
-    lines: list[str] = []
-    for area in taxonomy.get("areas", []):
-        primary_area_en = area.get("primary_area_en", "")
-        primary_area = area.get("primary_area", "")
-        categories = "；".join(area.get("categories", []))
-        lines.append(f"- {primary_area_en} | {primary_area}: {categories}")
-    return "\n".join(lines)
-
-
-def normalize_label(value: str) -> str:
-    return "".join(str(value or "").replace("：", ":").lower().split())
-
-
-def taxonomy_indexes() -> tuple[dict[str, dict[str, Any]], dict[str, str], dict[str, str], dict[str, set[str]]]:
-    taxonomy = read_json(TAXONOMY_PATH)
-    area_index: dict[str, dict[str, Any]] = {}
-    category_index: dict[str, str] = {}
-    category_candidates: dict[str, set[str]] = {}
-    area_categories: dict[str, set[str]] = {}
-    for area in taxonomy.get("areas", []):
-        primary_area = str(area.get("primary_area") or "").strip()
-        if not primary_area:
-            continue
-        area_index[normalize_label(primary_area)] = area
-        area_categories[primary_area] = set()
-        for category in area.get("categories", []):
-            category_name = str(category).strip()
-            category_key = normalize_label(category_name)
-            category_index[category_key] = category_name
-            category_candidates.setdefault(category_key, set()).add(primary_area)
-            area_categories[primary_area].add(category_key)
-    category_area_index = {
-        category: next(iter(areas)) for category, areas in category_candidates.items() if len(areas) == 1
-    }
-    return area_index, category_index, category_area_index, area_categories
-
-
+AREA_INDEX = _AREA_INDEX
+CATEGORY_INDEX = _CATEGORY_INDEX
+CATEGORY_AREA_INDEX = _CATEGORY_AREA_INDEX
+AREA_CATEGORIES_MAP = _AREA_CATEGORIES_MAP
 SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE.format(taxonomy=load_taxonomy_prompt())
-AREA_INDEX, CATEGORY_INDEX, CATEGORY_AREA_INDEX, AREA_CATEGORIES = taxonomy_indexes()
 
 
-def clamp_int(value: Any, *, default: int = 3, minimum: int = 1, maximum: int = 5) -> int:
-    try:
-        parsed = int(round(float(value)))
-    except (TypeError, ValueError):
-        parsed = default
-    return max(minimum, min(maximum, parsed))
-
-
-def legacy_priority(priority: str, score: int) -> str:
-    if priority == "must_read" or score >= 4:
+def legacy_priority(priority: str) -> str:
+    if priority == "must_read":
         return "high"
-    if priority in {"recommended", "skim"} or score >= 3:
+    if priority in {"recommended", "skim"}:
         return "medium"
     return "low"
 
@@ -188,25 +142,15 @@ def normalize_analysis(analysis: dict[str, Any]) -> dict[str, Any]:
         analysis["tldr"] = tldr
         analysis["one_sentence_summary"] = tldr
 
-    novelty = clamp_int(analysis.get("novelty"))
-    technical_depth = clamp_int(analysis.get("technical_depth"))
-    impact = clamp_int(analysis.get("impact"))
-    relevance = clamp_int(analysis.get("relevance"))
-    score_raw = round(0.30 * novelty + 0.25 * technical_depth + 0.25 * impact + 0.20 * relevance, 2)
-    score = clamp_int(analysis.get("score", round(score_raw)))
-    analysis["novelty"] = novelty
-    analysis["technical_depth"] = technical_depth
-    analysis["impact"] = impact
-    analysis["relevance"] = relevance
-    analysis["score_raw"] = score_raw
-    analysis["score"] = score
+    for key in ("novelty", "technical_depth", "impact", "relevance", "score_raw", "score", "reason"):
+        analysis.pop(key, None)
 
-    priority = str(analysis.get("reading_priority", "")).strip().lower()
+    priority = str(analysis.get("reading_priority") or "").strip().lower()
     legacy_priority_aliases = {"high": "must_read", "medium": "recommended", "low": "low_priority"}
     priority = legacy_priority_aliases.get(priority, priority)
     if priority not in {"must_read", "recommended", "skim", "low_priority", "skip"}:
         priority = "recommended"
-    action = str(analysis.get("recommended_action", "")).strip().lower()
+    action = str(analysis.get("recommended_action") or "").strip().lower()
     if action not in {"read_deeply", "read_abstract", "save_for_later", "skip"}:
         action = {
             "must_read": "read_deeply",
@@ -216,31 +160,31 @@ def normalize_analysis(analysis: dict[str, Any]) -> dict[str, Any]:
             "skip": "skip",
         }[priority]
     analysis["reading_priority"] = priority
-    analysis["legacy_reading_priority"] = legacy_priority(priority, score)
+    analysis["legacy_reading_priority"] = legacy_priority(priority)
     analysis["recommended_action"] = action
-    analysis["reason"] = str(analysis.get("reason") or "").strip()
 
     category = str(analysis.get("category") or analysis.get("sub_area") or "").strip()
-    category_area = CATEGORY_AREA_INDEX.get(normalize_label(category))
+    category_area = CATEGORY_AREA_INDEX.get("".join(str(category or "").replace("：", ":").lower().split()))
     primary_area = str(analysis.get("primary_area") or "").strip()
-    area = AREA_INDEX.get(normalize_label(primary_area))
+    area = AREA_INDEX.get("".join(str(primary_area or "").replace("：", ":").lower().split()))
     legacy_area_aliases = {
-        normalize_label("医学与科学AI"): "应用: CV/音频/语言等",
-        normalize_label("医学与科学 AI"): "应用: CV/音频/语言等",
+        "".join("医学与科学AI".replace("：", ":").lower().split()): "应用: CV/音频/语言等",
+        "".join("医学与科学 AI".replace("：", ":").lower().split()): "应用: CV/音频/语言等",
     }
-    if not area and normalize_label(primary_area) in legacy_area_aliases:
-        area = AREA_INDEX.get(normalize_label(legacy_area_aliases[normalize_label(primary_area)]))
+    norm_pa = "".join(str(primary_area or "").replace("：", ":").lower().split())
+    if not area and norm_pa in legacy_area_aliases:
+        area = AREA_INDEX.get("".join(legacy_area_aliases[norm_pa].replace("：", ":").lower().split()))
     if category_area:
-        area = AREA_INDEX.get(normalize_label(category_area), area)
+        area = AREA_INDEX.get("".join(str(category_area).replace("：", ":").lower().split()), area)
     if area:
         analysis["primary_area_en"] = area.get("primary_area_en", analysis.get("primary_area_en", ""))
         analysis["primary_area"] = area.get("primary_area", primary_area)
 
-    category_key = normalize_label(category)
-    canonical_category = CATEGORY_INDEX.get(category_key)
+    norm_cat = "".join(str(category or "").replace("：", ":").lower().split())
+    canonical_category = CATEGORY_INDEX.get(norm_cat)
     primary_area_value = str(analysis.get("primary_area") or "").strip()
-    if not canonical_category or category_key not in AREA_CATEGORIES.get(primary_area_value, set()):
-        canonical_category = CATEGORY_INDEX.get(normalize_label("其他"), "其他")
+    if not canonical_category or norm_cat not in AREA_CATEGORIES_MAP.get(primary_area_value, set()):
+        canonical_category = CATEGORY_INDEX.get("".join("其他".replace("：", ":").lower().split()), "其他")
     analysis["category"] = canonical_category
     analysis["sub_area"] = canonical_category
     return analysis
@@ -249,10 +193,7 @@ def normalize_analysis(analysis: dict[str, Any]) -> dict[str, Any]:
 def legacy_analysis_for_site(analysis: dict[str, Any]) -> dict[str, Any]:
     legacy = dict(analysis)
     legacy["archive_reading_priority"] = analysis.get("reading_priority")
-    legacy["reading_priority"] = analysis.get("legacy_reading_priority") or legacy_priority(
-        str(analysis.get("reading_priority") or ""),
-        clamp_int(analysis.get("score")),
-    )
+    legacy["reading_priority"] = analysis.get("legacy_reading_priority") or legacy_priority(str(analysis.get("reading_priority") or ""))
     return legacy
 
 
@@ -335,13 +276,22 @@ def paper_with_analysis_record(paper: dict[str, Any], record: dict[str, Any]) ->
     return enriched
 
 
+def _raw_path(target_date: str) -> Path:
+    month = target_date[:7]
+    monthly = PROJECT_ROOT / "data" / "raw" / month / f"{target_date}.json"
+    legacy = PROJECT_ROOT / "data" / "raw" / f"{target_date}.json"
+    if monthly.exists():
+        return monthly
+    return legacy
+
+
 def load_raw_papers(target_date: str) -> tuple[list[dict[str, Any]], str]:
     archive_papers = papers_for_date(target_date)
     if archive_papers:
         LOGGER.info("Loaded %d paper(s) for %s from archive.", len(archive_papers), target_date)
         return archive_papers, "archive"
 
-    raw_path = PROJECT_ROOT / "data" / "raw" / f"{target_date}.json"
+    raw_path = _raw_path(target_date)
     if not raw_path.exists():
         raise FileNotFoundError(f"Archive and raw data not found for {target_date}: {raw_path}")
     raw = read_json(raw_path)
@@ -368,7 +318,8 @@ def analyze_date(
 ) -> Path:
     ensure_dirs()
     raw_papers, source = load_raw_papers(target_date)
-    output_path = PROJECT_ROOT / "data" / "analyzed" / f"{target_date}.json"
+    month = target_date[:7]
+    output_path = PROJECT_ROOT / "data" / "analyzed" / month / f"{target_date}.json"
     existing_by_id = load_existing(output_path)
     archive_analysis_index = load_analysis_index()
 
