@@ -1,6 +1,6 @@
 {
   "date": "2026-04-04",
-  "source": "archive",
+  "source": "arxiv",
   "papers": [
     {
       "arxiv_id": "2604.03898",
@@ -6312,6 +6312,909 @@
         "one_sentence_summary": "提出MYOE框架和QMoP-SSM模型，通过偏好遗憾优化机器人策略，在少量演示数据下实现鲁棒学习。",
         "legacy_reading_priority": "high",
         "archive_reading_priority": "must_read"
+      }
+    },
+    {
+      "arxiv_id": "2604.03867",
+      "title": "Where to Steer: Input-Dependent Layer Selection for Steering Improves LLM Alignment",
+      "authors": [
+        "Soham Gadgil",
+        "Chris Lin",
+        "Su-In Lee"
+      ],
+      "abstract": "Steering vectors have emerged as a lightweight and effective approach for aligning large language models (LLMs) at inference time, enabling modulation over model behaviors by shifting LLM representations towards a target behavior. However, existing methods typically apply steering vectors at a globally fixed layer, implicitly assuming that the optimal intervention layer is invariant across inputs. We argue that this assumption is fundamentally limited, as representations relevant to a target behavior can be encoded at different layers depending on the input. Theoretically, we show that different inputs can require steering at different layers to achieve alignment with a desirable model behavior. We also provide empirical evidence that the optimal steering layer varies substantially across inputs in practice. Motivated by these observations, we introduce Where to Steer (W2S), a framework that adaptively selects the intervention layer conditioned on the input, by learning a mapping from input embeddings to optimal steering layers. Across multiple LLMs and alignment behaviors, W2S consistently outperforms fixed-layer baselines, with improvements in both in-distribution and out-of-distribution settings. Our findings highlight the importance of input-dependent control in LLM alignment and demonstrate that adaptive layer selection is a key design dimension missing in the current methodology of steering vectors.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-04T21:16:47Z",
+      "updated": "2026-04-04T21:16:47Z",
+      "entry_url": "https://arxiv.org/abs/2604.03867",
+      "pdf_url": "https://arxiv.org/pdf/2604.03867",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出输入依赖的层选择方法W2S，自适应选择干预层以提升LLM对齐效果，优于固定层基线。",
+        "research_motivation": "现有steering方法固定干预层，假设最优层与输入无关，但实际中不同输入可能需要不同层进行干预。",
+        "problem": "固定层steering无法适应输入变化，导致对齐效果受限。",
+        "phenomenon_analysis": "理论和实验均表明，不同输入对应的最优steering层差异显著，固定层假设不成立。",
+        "main_method": "W2S框架通过学习输入嵌入到最优steering层的映射，实现输入自适应的层选择。",
+        "key_experiments": "在多个LLM和对齐行为上，W2S在分布内和分布外设置中均优于固定层基线。",
+        "contributions": "揭示了输入依赖控制的重要性，提出了自适应层选择方法W2S，显著提升对齐性能。",
+        "limitations": "未讨论计算开销或扩展到更复杂对齐场景的可行性。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 7,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03862",
+      "title": "SecureAFL: Secure Asynchronous Federated Learning",
+      "authors": [
+        "Anjun Gao",
+        "Feng Wang",
+        "Zhenglin Wan",
+        "Yueyang Quan",
+        "Zhuqing Liu",
+        "and Minghong Fang"
+      ],
+      "abstract": "Federated learning (FL) enables multiple clients to collaboratively train a global machine learning model via a server without sharing their private training data. In traditional FL, the system follows a synchronous approach, where the server waits for model updates from numerous clients before aggregating them to update the global model. However, synchronous FL is hindered by the straggler problem. To address this, the asynchronous FL architecture allows the server to update the global model immediately upon receiving any client's local model update. Despite its advantages, the decentralized nature of asynchronous FL makes it vulnerable to poisoning attacks. Several defenses tailored for asynchronous FL have been proposed, but these mechanisms remain susceptible to advanced attacks or rely on unrealistic server assumptions. In this paper, we introduce SecureAFL, an innovative framework designed to secure asynchronous FL against poisoning attacks. SecureAFL improves the robustness of asynchronous FL by detecting and discarding anomalous updates while estimating the contributions of missing clients. Additionally, it utilizes Byzantine-robust aggregation techniques, such as coordinate-wise median, to integrate the received and estimated updates. Extensive experiments on various real-world datasets demonstrate the effectiveness of SecureAFL.",
+      "categories": [
+        "cs.CR",
+        "cs.DC",
+        "cs.LG"
+      ],
+      "primary_category": "cs.CR",
+      "published": "2026-04-04T21:03:19Z",
+      "updated": "2026-04-04T21:03:19Z",
+      "entry_url": "https://arxiv.org/abs/2604.03862",
+      "pdf_url": "https://arxiv.org/pdf/2604.03862",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出SecureAFL框架，通过检测异常更新、估计缺失客户端贡献及拜占庭鲁棒聚合，增强异步联邦学习对投毒攻击的鲁棒性。",
+        "research_motivation": "异步联邦学习虽解决同步FL的掉队者问题，但其去中心化特性易受投毒攻击，现有防御机制存在局限。",
+        "problem": "异步联邦学习面临投毒攻击威胁，现有防御方法对高级攻击脆弱或依赖不现实的服务器假设。",
+        "phenomenon_analysis": "异步FL中服务器立即聚合单客户端更新，攻击者可通过恶意更新操纵全局模型，而缺失客户端信息加剧了检测难度。",
+        "main_method": "SecureAFL结合异常更新检测与丢弃、缺失客户端贡献估计，以及坐标中位数等拜占庭鲁棒聚合技术。",
+        "key_experiments": "在多个真实数据集上进行了广泛实验，验证了SecureAFL的有效性。",
+        "contributions": "提出首个针对异步FL的鲁棒框架，集成检测、估计与鲁棒聚合，有效防御投毒攻击。",
+        "limitations": "未明确讨论计算开销或对非独立同分布数据的适应性。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03870",
+      "title": "Your Agent is More Brittle Than You Think: Uncovering Indirect Injection Vulnerabilities in Agentic LLMs",
+      "authors": [
+        "Wenhui Zhu",
+        "Xuanzhao Dong",
+        "Xiwen Chen",
+        "Rui Cai",
+        "Peijie Qiu",
+        "Zhipeng Wang",
+        "Oana Frunza",
+        "Shao Tang",
+        "Jindong Gu",
+        "Yalin Wang"
+      ],
+      "abstract": "The rapid deployment of open-source frameworks has significantly advanced the development of modern multi-agent systems. However, expanded action spaces, including uncontrolled privilege exposure and hidden inter-system interactions, pose severe security challenges. Specifically, Indirect Prompt Injections (IPI), which conceal malicious instructions within third-party content, can trigger unauthorized actions such as data exfiltration during normal operations. While current security evaluations predominantly rely on isolated single-turn benchmarks, the systemic vulnerabilities of these agents within complex dynamic environments remain critically underexplored. To bridge this gap, we systematically evaluate six defense strategies against four sophisticated IPI attack vectors across nine LLM backbones. Crucially, we conduct our evaluation entirely within dynamic multi-step tool-calling environments to capture the true attack surface of modern autonomous agents. Moving beyond binary success rates, our multidimensional analysis reveals a pronounced fragility. Advanced injections successfully bypass nearly all baseline defenses, and some surface-level mitigations even produce counterproductive side effects. Furthermore, while agents execute malicious instructions almost instantaneously, their internal states exhibit abnormally high decision entropy. Motivated by this latent hesitation, we investigate Representation Engineering (RepE) as a robust detection strategy. By extracting hidden states at the tool-input position, we revealed that the RepE-based circuit breaker successfully identifies and intercepts unauthorized actions before the agent commits to them, achieving high detection accuracy across diverse LLM backbones. This study exposes the limitations of current IPI defenses and provides a highly practical paradigm for building resilient multi-agent architectures.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-04T21:27:04Z",
+      "updated": "2026-04-04T21:27:04Z",
+      "entry_url": "https://arxiv.org/abs/2604.03870",
+      "pdf_url": "https://arxiv.org/pdf/2604.03870",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "揭示多智能体系统在动态环境中对间接提示注入攻击的脆弱性，并提出基于表征工程的检测方法。",
+        "research_motivation": "现有安全评估多依赖静态单轮基准，忽略了多智能体系统在复杂动态环境中的系统性漏洞。",
+        "problem": "间接提示注入攻击可隐藏恶意指令于第三方内容中，触发未授权操作，而当前防御策略在动态多步工具调用场景下效果未知。",
+        "phenomenon_analysis": "高级注入攻击能绕过几乎所有基线防御，表面缓解措施甚至产生反效果；智能体执行恶意指令时内部决策熵异常升高。",
+        "main_method": "在动态多步工具调用环境中系统评估六种防御策略，并利用表征工程提取工具输入位置的隐藏状态来检测和拦截未授权动作。",
+        "key_experiments": "针对四种间接提示注入攻击向量，在九个大型语言模型骨干上评估六种防御策略，并测试表征工程电路断路器的检测准确性。",
+        "contributions": "揭示了现有间接提示注入防御的局限性，并提出一种基于表征工程的高效检测范式，适用于多种模型骨干。",
+        "limitations": "研究主要聚焦于特定攻击向量和防御策略，未涵盖所有可能的注入变体或更复杂的多智能体交互场景。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03843",
+      "title": "Explainability-Guided Adversarial Attacks on Transformer-Based Malware Detectors Using Control Flow Graphs",
+      "authors": [
+        "Andrew Wheeler",
+        "Kshitiz Aryal",
+        "Maanak Gupta"
+      ],
+      "abstract": "Transformer-based malware detection systems operating on graph modalities such as control flow graphs (CFGs) achieve strong performance by modeling structural relationships in program behavior. However, their robustness to adversarial evasion attacks remains underexplored. This paper examines the vulnerability of a RoBERTa-based malware detector that linearizes CFGs into sequences of function calls, a design choice that enables transformer modeling but may introduce token-level sensitivities and ordering artifacts exploitable by adversaries. By evaluating evasion strategies within this graph-to-sequence framework, we provide insight into the practical robustness of transformer-based malware detectors beyond aggregate detection accuracy. This paper proposes a white-box adversarial evasion attack that leverages explainability mechanisms to identify and perturb most influential graph components. Using token- and word-level attributions derived from integrated gradients, the attack iteratively replaces positively attributed function calls with synthetic external imports, producing adversarial CFG representations without altering overall program structure. Experimental evaluation on small- and large-scale Windows Portable Executable (PE) datasets demonstrates that the proposed method can reliably induce misclassification, even against models trained to high accuracy. Our results highlight that explainability tools, while valuable for interpretability, can also expose critical attack surfaces in transformer-based malware detectors.",
+      "categories": [
+        "cs.CR",
+        "cs.LG"
+      ],
+      "primary_category": "cs.CR",
+      "published": "2026-04-04T19:50:04Z",
+      "updated": "2026-04-04T19:50:04Z",
+      "entry_url": "https://arxiv.org/abs/2604.03843",
+      "pdf_url": "https://arxiv.org/pdf/2604.03843",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "利用可解释性方法对基于Transformer的恶意软件检测器进行白盒对抗攻击，通过扰动控制流图中关键函数调用实现逃逸。",
+        "research_motivation": "Transformer在恶意软件检测中表现优异，但其对图模态（如控制流图）的对抗鲁棒性尚未充分研究。",
+        "problem": "现有研究缺乏对基于Transformer的恶意软件检测器在控制流图上的对抗攻击分析。",
+        "phenomenon_analysis": "将控制流图线性化为函数调用序列的设计引入了令牌级敏感性和排序伪影，易被攻击者利用。",
+        "main_method": "提出白盒对抗攻击，利用集成梯度获取令牌和词级归因，迭代替换正贡献函数调用为合成外部导入，生成对抗性控制流图。",
+        "key_experiments": "在小型和大型Windows PE数据集上实验，证明该方法能可靠诱导误分类，即使对高精度模型也有效。",
+        "contributions": "揭示了可解释性工具在提升透明度的同时，也暴露了Transformer恶意软件检测器的攻击面。",
+        "limitations": "仅针对白盒场景，未考虑黑盒或更复杂的防御机制。",
+        "score": 7,
+        "relevance": 8,
+        "novelty": 7,
+        "technical_depth": 7,
+        "impact": 7,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03891",
+      "title": "Provable Multi-Task Reinforcement Learning: A Representation Learning Framework with Low Rank Rewards",
+      "authors": [
+        "Yaoze Guo and Shana Moothedath"
+      ],
+      "abstract": "Multi-task representation learning (MTRL) is an approach that learns shared latent representations across related tasks, facilitating collaborative learning that improves the overall learning efficiency. This paper studies MTRL for multi-task reinforcement learning (RL), where multiple tasks have the same state-action space and transition probabilities, but different rewards. We consider T linear Markov Decision Processes (MDPs) where the reward functions and transition dynamics admit linear feature embeddings of dimension d. The relatedness among the tasks is captured by a low-rank structure on the reward matrices. Learning shared representations across multiple RL tasks is challenging due to the complex and policy-dependent nature of data that leads to a temporal progression of error. Our approach adopts a reward-free reinforcement learning framework to first learn a data-collection policy. This policy then informs an exploration strategy for estimating the unknown reward matrices. Importantly, the data collected under this well-designed policy enable accurate estimation, which ultimately supports the learning of an near-optimal policy. Unlike existing approaches that rely on restrictive assumptions such as Gaussian features, incoherence conditions, or access to optimal solutions, we propose a low-rank matrix estimation method that operates under more general feature distributions encountered in RL settings. Theoretical analysis establishes that accurate low-rank matrix recovery is achievable under these relaxed assumptions, and we characterize the relationship between representation error and sample complexity. Leveraging the learned representation, we construct near-optimal policies and prove a regret bound. Experimental results demonstrate that our method effectively learns robust shared representations and task dynamics from finite data.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-04T23:08:35Z",
+      "updated": "2026-04-04T23:08:35Z",
+      "entry_url": "https://arxiv.org/abs/2604.03891",
+      "pdf_url": "https://arxiv.org/pdf/2604.03891",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出一种基于低秩奖励的多任务强化学习表示学习框架，通过奖励自由探索和低秩矩阵估计实现高效共享表示学习。",
+        "research_motivation": "多任务强化学习中共享表示学习面临数据策略依赖性和误差时序累积的挑战，现有方法依赖高斯特征等严格假设。",
+        "problem": "解决多任务线性MDP中奖励矩阵低秩结构下的共享表示学习问题，无需严格假设即可实现准确低秩矩阵恢复。",
+        "phenomenon_analysis": "多任务RL中奖励矩阵的低秩结构可捕捉任务相关性，但策略依赖的数据分布导致表示学习误差随时间累积。",
+        "main_method": "采用奖励自由RL框架学习数据收集策略，结合低秩矩阵估计方法在一般特征分布下恢复奖励矩阵，并基于学习表示构建近优策略。",
+        "key_experiments": "在有限数据下验证了方法能有效学习鲁棒共享表示和任务动态，并证明了遗憾界。",
+        "contributions": "提出更一般特征分布下的低秩矩阵估计方法，理论证明放松假设后仍可实现准确恢复，并建立表示误差与样本复杂度关系。",
+        "limitations": "未明确讨论任务数量T较大时的计算效率，以及低秩假设在极端稀疏奖励场景下的适用性。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03853",
+      "title": "Understanding When Poisson Log-Normal Models Outperform Penalized Poisson Regression for Microbiome Count Data",
+      "authors": [
+        "Daniel Agyapong",
+        "Julien Chiquet",
+        "Jane Marks and Toby Dylan Hocking"
+      ],
+      "abstract": "Multivariate count models are often justified by their ability to capture latent dependence, but researchers receive little guidance on when this added structure improves on simpler penalized marginal Poisson regression. We study this question using real microbiome data under a unified held-out evaluation framework. For count prediction, we compare PLN and GLMNet(Poisson) on 20 datasets spanning 32 to 18,270 samples and 24 to 257 taxa, using held-out Poisson deviance under leave-one-taxon-out prediction with 3-fold sample cross-validation rather than synthetic or in-sample criteria. For network inference, we compare PLNNetwork and GLMNet(Poisson) neighborhood selection on five publicly available datasets with experimentally validated microbial interaction truth. PLN outperforms GLMNet(Poisson) on most count-prediction datasets, with gains up to 38 percent. The primary predictor of the winner is the sample-to-taxon ratio, with mean absolute correlation as the strongest secondary signal and overdispersion as an additional predictor. PLNNetwork performs best on broad undirected interaction benchmarks, whereas GLMNet(Poisson) is better aligned with local or directional effects. Taken together, these results provide guidance for choosing between latent multivariate count models and penalized Poisson regression in biological count prediction and interaction recovery.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-04T20:26:32Z",
+      "updated": "2026-04-04T20:26:32Z",
+      "entry_url": "https://arxiv.org/abs/2604.03853",
+      "pdf_url": "https://arxiv.org/pdf/2604.03853",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "比较PLN与惩罚泊松回归在微生物组计数数据中的表现，发现PLN在预测和网络推断上更优，样本-分类群比是主要预测因子。",
+        "research_motivation": "研究者缺乏关于何时使用复杂潜在变量模型优于简单惩罚回归的指导。",
+        "problem": "确定在微生物组计数数据中，PLN模型何时比惩罚泊松回归更有效。",
+        "phenomenon_analysis": "PLN在多数数据集上预测性能更优，样本-分类群比是主要决定因素，平均绝对相关性和过度离散为次要信号。",
+        "main_method": "使用留一分类群预测和3折交叉验证，比较PLN与GLMNet(Poisson)在20个真实数据集上的泊松偏差。",
+        "key_experiments": "在20个数据集上比较预测性能，在5个数据集上比较网络推断，使用实验验证的微生物互作真值。",
+        "contributions": "提供了选择PLN与惩罚泊松回归的实用指导，揭示了样本-分类群比等关键预测因子。",
+        "limitations": "仅基于真实数据，未涵盖所有可能的模型变体或合成数据场景。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03850",
+      "title": "Collapse-Free Prototype Readout Layer for Transformer Encoders",
+      "authors": [
+        "Giansalvo Cirrincione and Rahul Ranjeev Kumar"
+      ],
+      "abstract": "DDCL-Attention is a prototype-based readout layer for transformer encoders that replaces simple pooling methods, such as mean pooling or class tokens, with a learned compression mechanism. It uses a small set of global prototype vectors and assigns tokens to them through soft probabilistic matching, producing compact token summaries at linear complexity in sequence length. The method offers three main advantages. First, it avoids prototype collapse through an exact decomposition of the training loss into a reconstruction term and a diversity term, ensuring that prototypes remain distinct. Second, its joint training with the encoder is shown to be stable under a practical timescale condition, using Tikhonov's singular perturbation theory and explicit learning-rate constraints. Third, the same framework supports three uses: a final readout layer, a differentiable codebook extending VQ-VAE, and a hierarchical document compressor. Experiments on four datasets confirm the theoretical predictions: the loss decomposition holds exactly, prototype separation grows as expected when the stability condition is met, and the codebook reaches full utilization, outperforming standard hard vector quantization. An additional study on orbital debris classification shows that the method also applies beyond standard NLP and vision tasks, including scientific tabular data.",
+      "categories": [
+        "cs.LG",
+        "cs.NE"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-04T20:23:21Z",
+      "updated": "2026-04-04T20:23:21Z",
+      "entry_url": "https://arxiv.org/abs/2604.03850",
+      "pdf_url": "https://arxiv.org/pdf/2604.03850",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出一种基于原型的无坍缩读出层，通过损失分解避免原型坍缩，支持多种应用，在多个数据集上验证了有效性。",
+        "research_motivation": "现有Transformer编码器的池化方法（如均值池化或类标记）缺乏可解释性和压缩效率，需要一种更紧凑且稳定的读出机制。",
+        "problem": "如何设计一种原型读出层，既能避免原型坍缩，又能与编码器联合稳定训练，并支持多种下游任务。",
+        "phenomenon_analysis": "原型坍缩会导致所有原型收敛到相同表示，降低多样性；通过将损失分解为重构项和多样性项，可以精确控制原型分离。",
+        "main_method": "使用一组全局原型向量，通过软概率匹配将令牌分配给原型，并利用Tikhonov奇异摄动理论推导训练稳定性条件。",
+        "key_experiments": "在四个数据集上验证了损失分解的精确性、原型分离随稳定性条件增长，以及码本利用率优于标准硬向量量化。",
+        "contributions": "提出无坍缩的原型读出层，理论证明训练稳定性条件，并展示其在读出、码本和文档压缩三种场景下的通用性。",
+        "limitations": "实验仅覆盖有限数据集，未深入探讨大规模或长序列场景下的性能；稳定性条件可能对学习率敏感。",
+        "score": 8,
+        "relevance": 8,
+        "novelty": 7,
+        "technical_depth": 9,
+        "impact": 7,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03892",
+      "title": "Lotka-Sharpe Neural Operators for Control of Population PDEs",
+      "authors": [
+        "Miroslav Krstic",
+        "Iasson Karafyllis",
+        "Luke Bhan",
+        "Carina Veil"
+      ],
+      "abstract": "Age-structured predator-prey integro-partial differential equations provide models of interacting populations in ecology, epidemiology, and biotechnology. A key challenge in feedback design for these systems is the scalar $\\zeta$, defined implicitly by the Lotka-Sharpe nonlinear integral condition, as a mapping from fertility and mortality rates to $\\zeta$. To solve this challenge with operator learning, we first prove that the Lotka-Sharpe operator is Lipschitz continuous, guaranteeing the existence of arbitrarily accurate neural operator approximations over a compact set of fertility and mortality functions. We then show that the resulting approximate feedback law preserves semi-global practical asymptotic stability under propagation of the operator approximation error through various other nonlinear operators, all the way through to the control input. In the numerical results, not only do we learn ``once-and-for-all'' the canonical Lotka-Sharpe (LS) operator, and thus make it available for future uses in control of other age-structured population interconnections, but we demonstrate the online usage of the neural LS operator under estimation of the fertility and mortality functions.",
+      "categories": [
+        "eess.SY",
+        "cs.LG",
+        "cs.SY",
+        "math.OC"
+      ],
+      "primary_category": "eess.SY",
+      "published": "2026-04-04T23:17:44Z",
+      "updated": "2026-04-04T23:17:44Z",
+      "entry_url": "https://arxiv.org/abs/2604.03892",
+      "pdf_url": "https://arxiv.org/pdf/2604.03892",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出用神经算子学习Lotka-Sharpe条件，实现年龄结构捕食-被捕食PDE系统的反馈控制，并证明稳定性。",
+        "research_motivation": "年龄结构种群PDE的反馈控制中，Lotka-Sharpe非线性积分条件隐含定义的标量ζ难以直接计算，需要高效近似方法。",
+        "problem": "如何通过算子学习高效近似Lotka-Sharpe算子，并保证近似反馈控制系统的稳定性。",
+        "phenomenon_analysis": "Lotka-Sharpe算子具有Lipschitz连续性，允许在紧集上存在任意精度的神经算子近似，且近似误差可通过非线性算子传播到控制输入。",
+        "main_method": "证明Lotka-Sharpe算子的Lipschitz连续性，训练神经算子近似该算子，并分析近似反馈律的半全局实用渐近稳定性。",
+        "key_experiments": "学习标准Lotka-Sharpe算子并在线使用，在估计生育率和死亡率函数下验证控制效果。",
+        "contributions": "首次将神经算子用于年龄结构种群PDE控制，证明近似稳定性，实现“一次学习，多次使用”的算子。",
+        "limitations": "仅考虑紧集上的函数近似，未讨论非紧集或高维情况；实验部分未提供详细对比基线。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03787",
+      "title": "On the Efficiency of Sinkhorn-Knopp for Entropically Regularized Optimal Transport",
+      "authors": [
+        "Kun He"
+      ],
+      "abstract": "The Sinkhorn--Knopp (SK) algorithm is a cornerstone method for matrix scaling and entropically regularized optimal transport (EOT). Despite its empirical efficiency, existing theoretical guarantees to achieve a target marginal accuracy $\\varepsilon$ deteriorate severely in the presence of outliers, bottlenecked either by the global maximum regularized cost $\\eta\\|C\\|_\\infty$ (where $\\eta$ is the regularization parameter and $C$ the cost matrix) or the matrix's minimum-to-maximum entry ratio $\\nu$. This creates a fundamental disconnect between theory and practice. In this paper, we resolve this discrepancy. For EOT, we introduce the novel concept of well-boundedness, a local bulk mass property that rigorously isolates the well-behaved portion of the data from extreme outliers. We prove that governed by this fundamental notion, SK recovers the target transport plan for a problem of dimension $n$ in $O(\\log n - \\log \\varepsilon)$ iterations, completely independent of the regularized cost $\\eta\\|C\\|_\\infty$. Furthermore, we show that a virtually cost-free pre-scaling step eliminates the dimensional dependence entirely, accelerating convergence to a strictly dimension-free $O(\\log(1/\\varepsilon))$ iterations. Beyond EOT, we establish a sharp phase transition for general $(\\boldsymbol{u},\\boldsymbol{v})$-scaling governed by a critical matrix density threshold. We prove that when a matrix's density exceeds this threshold, the iteration complexity is strictly independent of $\\nu$. Conversely, when the density falls below this threshold, the dependence on $\\nu$ becomes unavoidable; in this sub-critical regime, we construct instances where SK requires $\\Omega(n/\\varepsilon)$ iterations.",
+      "categories": [
+        "cs.DS",
+        "cs.LG"
+      ],
+      "primary_category": "cs.DS",
+      "published": "2026-04-04T16:24:19Z",
+      "updated": "2026-04-04T16:24:19Z",
+      "entry_url": "https://arxiv.org/abs/2604.03787",
+      "pdf_url": "https://arxiv.org/pdf/2604.03787",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "本文证明Sinkhorn-Knopp算法在熵正则化最优传输中，迭代复杂度与正则化成本无关，仅需O(log n - log ε)步，并通过预缩放实现维度无关的O(log(1/ε))收敛。",
+        "research_motivation": "现有理论保证在存在异常值时严重退化，与Sinkhorn-Knopp算法在实际中的高效表现存在显著差距，亟需弥合理论与实践的脱节。",
+        "problem": "解决Sinkhorn-Knopp算法在熵正则化最优传输中，现有理论边界因异常值或矩阵条目比而恶化的问题。",
+        "phenomenon_analysis": "发现算法效率由局部质量属性“well-boundedness”主导，该属性隔离了数据中的良好部分与极端异常值，而非全局正则化成本。",
+        "main_method": "引入“well-boundedness”概念刻画数据局部质量，并设计几乎零成本的预缩放步骤消除维度依赖。",
+        "key_experiments": "理论分析表明在well-bounded条件下迭代复杂度为O(log n - log ε)，预缩放后达到O(log(1/ε))；同时揭示矩阵密度阈值导致的相变现象。",
+        "contributions": "首次建立与正则化成本无关的Sinkhorn-Knopp收敛保证，提出维度无关的加速策略，并发现一般矩阵缩放中的相变临界点。",
+        "limitations": "well-boundedness概念的理论验证可能依赖特定数据结构，预缩放步骤的实际实现细节未充分讨论。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 9,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03840",
+      "title": "New insights into Elo algorithm for practitioners and statisticians",
+      "authors": [
+        "Leszek Szczecinski"
+      ],
+      "abstract": "This work reconciles two perspectives on the Elo ranking that coexist in the literature: the practitioner's view as a heuristic feedback rule, and the statistician's view as online maximum likelihood estimation via stochastic gradient ascent. Both perspectives coincide exactly in the binary case (iff the expected score is the logistic function). However, estimation noise forces a principled decoupling between the model used for ranking and the model used for prediction: the effective scale and home-field advantage parameter must be adjusted to account for the noise. We provide both closed-form corrections and a data-driven identification procedure. For multilevel outcomes, an exact relationship exists when outcome scores are uniformly spaced, but approximations are preferred in general: they account for estimation noise and better fit the data. The decoupled approach substantially outperforms the conventional one that reuses the ranking model for prediction, and serves as a diagnostic of convergence status. Applied to six years of FIFA men's ranking, we find that the ranking had not converged for the vast majority of national teams. The paper is written in a semi-tutorial style accessible to practitioners, with all key results accompanied by closed-form expressions and numerical examples.",
+      "categories": [
+        "stat.ME",
+        "cs.LG"
+      ],
+      "primary_category": "stat.ME",
+      "published": "2026-04-04T19:38:28Z",
+      "updated": "2026-04-04T19:38:28Z",
+      "entry_url": "https://arxiv.org/abs/2604.03840",
+      "pdf_url": "https://arxiv.org/pdf/2604.03840",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "统一了 Elo 算法的实践与统计视角，揭示了排名与预测模型的解耦必要性，并提供了修正方法。",
+        "research_motivation": "现有文献中 Elo 算法存在实践者（启发式反馈）和统计学家（在线最大似然估计）两种视角，需要统一并解决其不一致性。",
+        "problem": "Elo 算法中排名模型与预测模型在估计噪声下被错误耦合，导致预测偏差和收敛问题。",
+        "phenomenon_analysis": "估计噪声迫使排名模型与预测模型在有效尺度和主场优势参数上必须解耦，否则预测性能下降；多级结果中均匀间距假设不成立时需近似处理。",
+        "main_method": "提出闭式修正公式和数据驱动的识别流程，实现排名与预测模型的解耦，并应用于多级结果场景。",
+        "key_experiments": "在六年 FIFA 男子排名数据上验证，发现大多数国家队排名未收敛，解耦方法显著优于传统复用排名模型的方法。",
+        "contributions": "统一了 Elo 算法的两种视角，揭示了噪声驱动的解耦必要性，提供了实用修正公式和收敛诊断工具。",
+        "limitations": "多级结果中均匀间距假设的近似可能不适用于所有场景；方法依赖数据驱动识别，需足够历史数据。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03772",
+      "title": "Debiased Machine Learning for Conformal Prediction of Counterfactual Outcomes Under Runtime Confounding",
+      "authors": [
+        "Keith Barnatchez",
+        "Kevin P. Josey",
+        "Rachel C. Nethery",
+        "Giovanni Parmigiani"
+      ],
+      "abstract": "Data-driven decision making frequently relies on predicting counterfactual outcomes. In practice, researchers commonly train counterfactual prediction models on a source dataset to inform decisions on a possibly separate target population. Conformal prediction has arisen as a popular method for producing assumption-lean prediction intervals for counterfactual outcomes that would arise under different treatment decisions in the target population of interest. However, existing methods require that every confounding factor of the treatment-outcome relationship used for training on the source data is additionally measured in the target population, risking miscoverage if important confounders are unmeasured in the target population. In this paper, we introduce a computationally efficient debiased machine learning framework that allows for valid prediction intervals when only a subset of confounders is measured in the target population, a common challenge referred to as runtime confounding. Grounded in semiparametric efficiency theory, we show the resulting prediction intervals achieve desired coverage rates with faster convergence compared to standard methods. Through numerous synthetic and semi-synthetic experiments, we demonstrate the utility of our proposed method.",
+      "categories": [
+        "stat.ML",
+        "cs.LG"
+      ],
+      "primary_category": "stat.ML",
+      "published": "2026-04-04T15:49:41Z",
+      "updated": "2026-04-04T15:49:41Z",
+      "entry_url": "https://arxiv.org/abs/2604.03772",
+      "pdf_url": "https://arxiv.org/pdf/2604.03772",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出一种去偏机器学习框架，在目标群体仅测量部分混杂因素时，仍能对反事实结果进行有效的共形预测。",
+        "research_motivation": "现有共形预测方法要求目标群体测量所有混杂因素，但实际中常面临运行时混杂问题，即部分混杂因素未测量，导致预测区间覆盖不足。",
+        "problem": "解决在目标群体中仅部分混杂因素可观测时，如何构建有效的反事实结果预测区间。",
+        "phenomenon_analysis": "运行时混杂导致标准共形预测方法因未测量混杂因素而产生覆盖偏差，且收敛速度慢。",
+        "main_method": "基于半参数效率理论，提出计算高效的去偏机器学习框架，通过去偏估计调整部分混杂信息下的预测区间。",
+        "key_experiments": "通过大量合成和半合成实验验证，所提方法在覆盖率和收敛速度上优于标准方法。",
+        "contributions": "首次在运行时混杂场景下实现有效的共形预测，理论保证覆盖率和更快收敛。",
+        "limitations": "依赖半参数效率假设，可能对复杂非线性混杂结构敏感。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 9,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03721",
+      "title": "The Generalised Kernel Covariance Measure",
+      "authors": [
+        "Luca Bergen",
+        "Dino Sejdinovic",
+        "Vanessa Didelez"
+      ],
+      "abstract": "We consider the problem of conditional independence (CI) testing and adopt a kernel-based approach. Kernel-based CI tests embed variables in reproducing kernel Hilbert spaces, regress their embeddings on the conditioning variables, and test the resulting residuals for marginal independence. This approach yields tests that are sensitive to a broad range of conditional dependencies. Existing methods, however, rely heavily on kernel ridge regression, which is computationally expensive when properly tuned and yields poorly calibrated tests when left untuned, which limits their practical usefulness. We propose the Generalised Kernel Covariance Measure (GKCM), a regression-model-agnostic kernel-based CI test that accommodates a broad class of regression estimators. Building on the Generalised Hilbertian Covariance Measure framework (Lundborg et al., 2022), we characterise conditions under which GKCM satisfies uniform asymptotic level guarantees. In simulations, GKCM paired with tree-based regression models frequently outperforms state-of-the-art CI tests across a diverse range of data-generating processes, achieving better type I error control and competitive or superior power.",
+      "categories": [
+        "stat.ML",
+        "cs.LG",
+        "stat.ME"
+      ],
+      "primary_category": "stat.ML",
+      "published": "2026-04-04T12:55:00Z",
+      "updated": "2026-04-04T12:55:00Z",
+      "entry_url": "https://arxiv.org/abs/2604.03721",
+      "pdf_url": "https://arxiv.org/pdf/2604.03721",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出广义核协方差度量（GKCM），一种回归模型无关的核条件独立性检验方法，在多种数据生成过程中优于现有方法。",
+        "research_motivation": "现有基于核的条件独立性检验依赖核岭回归，计算昂贵且调参困难，限制了实际应用。",
+        "problem": "解决现有核条件独立性检验计算成本高、调参困难、校准差的问题。",
+        "phenomenon_analysis": "核岭回归在未调参时导致检验校准差，而调参后计算开销大，影响实用性和性能。",
+        "main_method": "提出GKCM，基于广义希尔伯特协方差度量框架，支持多种回归估计器，并推导了均匀渐近水平保证的条件。",
+        "key_experiments": "在模拟中，GKCM结合基于树的回归模型，在多种数据生成过程中优于现有最先进的条件独立性检验，具有更好的I类错误控制和竞争性或更优的检验功效。",
+        "contributions": "提出回归模型无关的核条件独立性检验方法，理论保证渐近水平，实验验证了其优越性能。",
+        "limitations": "未讨论高维或大规模数据下的计算效率，以及回归模型选择对检验性能的影响。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03664",
+      "title": "Document-Level Numerical Reasoning across Single and Multiple Tables in Financial Reports",
+      "authors": [
+        "Yi-Cheng Wang",
+        "Wei-An Wang",
+        "Chu-Song Chen"
+      ],
+      "abstract": "Despite the strong language understanding abilities of large language models (LLMs), they still struggle with reliable question answering (QA) over long, structured documents, particularly for numerical reasoning. Financial annual reports exemplify this difficulty: financial statement analysis often hinges on accurate arithmetic, and analysts derive key indicators by integrating evidence scattered across multiple tables and narrative text. However, existing benchmarks focus largely on single-table settings, leaving cross-table document-level numerical reasoning underexplored. To address this gap, we introduce FinLongDocQA, a dataset for both single-table and cross-table financial numerical reasoning in long-context reports. Evaluating both closed-source and open-source LLMs on FinLongDocQA reveals two bottlenecks: (1) annual reports often exceed 129k tokens, exacerbating the context rot problem for locating relevant tables; and (2) even when relevant evidence is located, LLMs remain prone to errors in multi-step numerical reasoning. We propose FinLongDocAgent, a Multi-Agent Multi-Round Retrieval-Augmented Generation (RAG) approach that iteratively retrieves evidence, performs intermediate calculations, and verifies results across rounds. Experiments highlight the importance of iterative retrieval and verification for reliable numerical QA in long financial documents.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-04T09:30:59Z",
+      "updated": "2026-04-04T09:30:59Z",
+      "entry_url": "https://arxiv.org/abs/2604.03664",
+      "pdf_url": "https://arxiv.org/pdf/2604.03664",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出 FinLongDocQA 数据集和 FinLongDocAgent 方法，解决财务报告中跨表格的文档级数值推理难题。",
+        "research_motivation": "现有基准主要关注单表格设置，跨表格文档级数值推理在财务报告分析中未被充分探索。",
+        "problem": "大语言模型在处理长文档（如财务年报）时，难以定位相关表格并进行多步数值推理。",
+        "phenomenon_analysis": "年报常超过129k tokens，导致上下文旋转问题；即使定位到证据，模型在多步数值推理中仍易出错。",
+        "main_method": "提出 FinLongDocAgent，一种多智能体多轮检索增强生成方法，迭代检索证据、执行中间计算并验证结果。",
+        "key_experiments": "在 FinLongDocQA 数据集上评估闭源和开源 LLM，验证了迭代检索和验证对可靠数值问答的重要性。",
+        "contributions": "引入跨表格文档级数值推理数据集 FinLongDocQA，并提出有效的多智能体 RAG 方法。",
+        "limitations": "方法依赖多轮交互，可能增加计算开销；未在更广泛领域验证泛化性。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03673",
+      "title": "'Layer su Layer': Identifying and Disambiguating the Italian NPN Construction in BERT's family",
+      "authors": [
+        "Greta Gorzoni",
+        "Ludovica Pannitto and Francesca Masini"
+      ],
+      "abstract": "Interpretability research has highlighted the importance of evaluating Pretrained Language Models (PLMs) and in particular contextual embeddings against explicit linguistic theories to determine what linguistic information they encode. This study focuses on the Italian NPN (noun-preposition-noun) constructional family, challenging some of the theoretical and methodological assumptions underlying previous experimental designs and extending this type of research to a lesser-investigated language. Contextual vector representations are extracted from BERT and used as input to layer-wise probing classifiers, systematically evaluating information encoded across the model's internal layers. The results shed light on the extent to which constructional form and meaning are reflected in contextual embeddings, contributing empirical evidence to the dialogue between constructionist theory and neural language modelling",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-04T10:12:35Z",
+      "updated": "2026-04-04T10:12:35Z",
+      "entry_url": "https://arxiv.org/abs/2604.03673",
+      "pdf_url": "https://arxiv.org/pdf/2604.03673",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "研究BERT家族模型对意大利语NPN构式的编码，通过逐层探针分析构式形式和意义的表征。",
+        "research_motivation": "检验预训练语言模型是否编码特定语言构式信息，并扩展至较少研究的意大利语。",
+        "problem": "现有研究对构式形式和意义在模型内部层的表征缺乏系统性分析。",
+        "phenomenon_analysis": "BERT的上下文嵌入在不同层中编码了构式的形式和意义信息，但分布不均匀。",
+        "main_method": "从BERT提取上下文向量，使用逐层探针分类器评估各层编码的构式信息。",
+        "key_experiments": "在意大利语NPN构式数据集上训练探针，比较不同层对构式形式和意义的分类性能。",
+        "contributions": "为构式语法与神经语言模型的对话提供实证证据，揭示构式信息在模型中的层分布。",
+        "limitations": "仅针对意大利语NPN构式，且探针方法可能无法完全反映模型内部表征的复杂性。",
+        "score": 7,
+        "relevance": 8,
+        "novelty": 7,
+        "technical_depth": 7,
+        "impact": 6,
+        "reading_priority": "medium"
+      }
+    },
+    {
+      "arxiv_id": "2604.03695",
+      "title": "POEMetric: The Last Stanza of Humanity",
+      "authors": [
+        "Bingru Li",
+        "Han Wang and Hazel Wilkinson"
+      ],
+      "abstract": "Large Language Models (LLMs) can compose poetry, but how far are they from human poets? In this paper, we introduce POEMetric, the first comprehensive framework for poetry evaluation, examining 1) basic instruction-following abilities in generating poems according to a certain form and theme, 2) advanced abilities of showing creativity, lexical diversity, and idiosyncrasy, evoking emotional resonance, and using imagery and literary devices, and 3) general appraisal of the overall poem quality and estimation of authorship. We curated a human poem dataset - 203 English poems of 7 fixed forms annotated with meter, rhyme patterns and themes - and experimented with 30 LLMs for poetry generation based on the same forms and themes of the human data, totaling 6,090 LLM poems. Based on POEMetric, we assessed the performance of both human poets and LLMs through rule-based evaluation and LLM-as-a-judge, whose results were validated by human experts. Results show that, though the top model achieved high form accuracy (4.26 out of 5.00, with Gemini-2.5-Pro as a judge; same below) and theme alignment (4.99), all models failed to reach the same level of advanced abilities as human poets, who achieved unparalleled creativity (4.02), idiosyncrasy (3.95), emotional resonance (4.06), and skillful use of imagery (4.49) and literary devices (4.67). Humans also defeated the best-performing LLM in overall poem quality (4.22 vs. 3.20). As such, poetry generation remains a formidable challenge for LLMs. Data and codes are released at https://github.com/Bingru-Li/POEMetric.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-04T11:48:55Z",
+      "updated": "2026-04-04T11:48:55Z",
+      "entry_url": "https://arxiv.org/abs/2604.03695",
+      "pdf_url": "https://arxiv.org/pdf/2604.03695",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出首个诗歌评估框架POEMetric，发现顶级LLM在形式与主题上接近人类，但在创造力、情感共鸣等高级能力上远逊于人类诗人。",
+        "research_motivation": "现有研究缺乏对LLM诗歌生成能力的全面评估，尤其是与人类诗人的系统性比较。",
+        "problem": "如何量化评估LLM在诗歌创作中的指令遵循、高级文学能力及整体质量，并与人类诗人对比。",
+        "phenomenon_analysis": "LLM在形式准确性和主题对齐上表现优异，但在创造力、情感共鸣、意象运用等高级能力上显著落后于人类。",
+        "main_method": "构建包含203首人类诗歌的数据集，基于相同形式和主题生成6090首LLM诗歌，采用规则评估和LLM-as-a-judge方法，并由人类专家验证。",
+        "key_experiments": "评估30个LLM在7种固定诗歌形式上的生成能力，对比人类诗人，使用Gemini-2.5-Pro作为评判模型。",
+        "contributions": "首个全面诗歌评估框架POEMetric，系统揭示LLM与人类诗人在高级诗歌能力上的差距。",
+        "limitations": "仅评估英文诗歌，未涵盖自由诗或非英语诗歌；LLM-as-a-judge的可靠性可能受限于评判模型本身。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 7,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03616",
+      "title": "The Format Tax",
+      "authors": [
+        "Ivan Yee Lee",
+        "Loris D'Antoni",
+        "Taylor Berg-Kirkpatrick"
+      ],
+      "abstract": "Asking a large language model to respond in JSON should be a formatting choice, not a capability tax. Yet we find that structured output requirements -- JSON, XML, LaTeX, Markdown -- substantially degrade reasoning and writing performance across open-weight models. The research response has focused on constrained decoding, but sampling bias accounts for only a fraction of the degradation. The dominant cost enters at the prompt: format-requesting instructions alone cause most of the accuracy loss, before any decoder constraint is applied. This diagnosis points to a simple principle: decouple reasoning from formatting. Whether by generating freeform first and reformatting in a second pass, or by enabling extended thinking within a single generation, separating the two concerns substantially recovers lost accuracy. Across six open-weight models, four API models, four formats, and tasks spanning math, science, logic, and writing, decoupling recovers most lost accuracy. Notably, most recent closed-weight models show little to no format tax, suggesting the problem is not inherent to structured generation but a gap that current open-weight models have yet to close. Code is available at https://github.com/ivnle/the-format-tax.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-04T07:16:28Z",
+      "updated": "2026-04-04T07:16:28Z",
+      "entry_url": "https://arxiv.org/abs/2604.03616",
+      "pdf_url": "https://arxiv.org/pdf/2604.03616",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "结构化输出格式（JSON等）会显著降低开源模型的推理和写作性能，而解耦推理与格式化可恢复大部分损失。",
+        "research_motivation": "探究结构化输出要求对模型性能的影响，并寻找缓解方法。",
+        "problem": "结构化输出格式（如JSON）导致开源模型性能下降，且现有约束解码方法仅能解决部分问题。",
+        "phenomenon_analysis": "性能下降主要源于提示中的格式指令，而非解码约束；闭源模型几乎不受影响。",
+        "main_method": "提出解耦推理与格式化的方法：先生成自由文本，再二次格式化，或单次生成中分离思考与格式。",
+        "key_experiments": "在6个开源模型、4个API模型、4种格式及数学、科学、逻辑、写作任务上验证，解耦方法恢复大部分精度。",
+        "contributions": "揭示格式税现象并量化其来源，提出简单有效的解耦策略。",
+        "limitations": "仅针对开源模型，闭源模型表现不同；未深入探讨格式税的根本原因。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 6,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03650",
+      "title": "CAGMamba: Context-Aware Gated Cross-Modal Mamba Network for Multimodal Sentiment Analysis",
+      "authors": [
+        "Minghai Jiao",
+        "Jing Xiao",
+        "Peng Xiao",
+        "Ende Zhang",
+        "Shuang Kan",
+        "Wenyan Jiang",
+        "Jinyao Li",
+        "Yixian Liu",
+        "Haidong Xin"
+      ],
+      "abstract": "Multimodal Sentiment Analysis (MSA) requires effective modeling of cross-modal interactions and contextual dependencies while remaining computationally efficient. Existing fusion approaches predominantly rely on Transformer-based cross-modal attention, which incurs quadratic complexity with respect to sequence length and limits scalability. Moreover, contextual information from preceding utterances is often incorporated through concatenation or independent fusion, without explicit temporal modeling that captures sentiment evolution across dialogue turns. To address these limitations, we propose CAGMamba, a context-aware gated cross-modal Mamba framework for dialogue-based sentiment analysis. Specifically, we organize the contextual and the current-utterance features into a temporally ordered binary sequence, which provides Mamba with explicit temporal structure for modeling sentiment evolution. To further enable controllable cross-modal integration, we propose a Gated Cross-Modal Mamba Network (GCMN) that integrates cross-modal and unimodal paths via learnable gating to balance information fusion and modality preservation, and is trained with a three-branch multi-task objective over text, audio, and fused predictions. Experiments on three benchmark datasets demonstrate that CAGMamba achieves state-of-the-art or competitive results across multiple evaluation metrics. All codes are available at https://github.com/User2024-xj/CAGMamba.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-04T09:02:31Z",
+      "updated": "2026-04-04T09:02:31Z",
+      "entry_url": "https://arxiv.org/abs/2604.03650",
+      "pdf_url": "https://arxiv.org/pdf/2604.03650",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出CAGMamba，一种基于Mamba的上下文感知门控跨模态网络，用于对话情感分析，实现高效且性能领先。",
+        "research_motivation": "现有Transformer跨模态注意力计算复杂度高，且缺乏对对话中情感演变的显式时序建模。",
+        "problem": "解决多模态情感分析中跨模态交互和上下文依赖建模的计算效率低及时序建模不足的问题。",
+        "phenomenon_analysis": "对话情感分析中，情感随对话轮次演变，但现有方法通过拼接或独立融合处理上下文，未显式建模时序结构。",
+        "main_method": "将上下文和当前话语特征组织为时序二元序列，提出门控跨模态Mamba网络（GCMN），通过可学习门控融合跨模态和单模态路径，并采用三分支多任务训练。",
+        "key_experiments": "在三个基准数据集上评估，达到最先进或竞争性结果。",
+        "contributions": "提出CAGMamba框架，首次将Mamba用于对话情感分析，设计GCMN实现可控跨模态融合，并引入显式时序建模。",
+        "limitations": "未明确讨论对极长序列或噪声模态的鲁棒性，且门控机制可能增加训练复杂度。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03684",
+      "title": "Researchers waste 80% of LLM annotation costs by classifying one text at a time",
+      "authors": [
+        "Christian Pipal",
+        "Eva-Maria Vogel",
+        "Morgan Wack",
+        "Frank Esser"
+      ],
+      "abstract": "Large language models (LLMs) are increasingly being used for text classification across the social sciences, yet researchers overwhelmingly classify one text per variable per prompt. Coding 100,000 texts on four variables requires 400,000 API calls. Batching 25 items and stacking all variables into a single prompt reduces this to 4,000 calls, cutting token costs by over 80%. Whether this degrades coding quality is unknown. We tested eight production LLMs from four providers on 3,962 expert-coded tweets across four tasks, varying batch size from 1 to 1,000 items and stacking up to 25 coding dimensions per prompt. Six of eight models maintained accuracy within 2 pp of the single-item baseline through batch sizes of 100. Variable stacking with up to 10 dimensions produced results comparable to single-variable coding, with degradation driven by task complexity rather than prompt length. Within this safe operating range, the measurement error from batching and stacking is smaller than typical inter-coder disagreement in the ground-truth data.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-04T11:00:39Z",
+      "updated": "2026-04-04T11:00:39Z",
+      "entry_url": "https://arxiv.org/abs/2604.03684",
+      "pdf_url": "https://arxiv.org/pdf/2604.03684",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "研究发现，通过批处理和变量堆叠，可将LLM文本分类的API调用成本降低80%以上，且不显著影响编码质量。",
+        "research_motivation": "当前研究者逐条分类文本导致高昂的API成本，亟需探索更高效的批处理方法。",
+        "problem": "逐条分类大量文本（如10万条）需大量API调用，成本高且效率低。",
+        "phenomenon_analysis": "批处理（batch size达100）和变量堆叠（最多10个维度）在多数模型上保持精度在2个百分点内，误差小于人工编码员间的不一致性。",
+        "main_method": "通过批处理（batch size从1到1000）和变量堆叠（最多25个维度）优化提示设计，测试8个LLM在3962条专家编码推文上的表现。",
+        "key_experiments": "在4个任务上测试8个模型，比较不同batch size和堆叠维度下的编码精度，发现batch size 100内精度稳定。",
+        "contributions": "揭示了批处理和变量堆叠的安全操作范围，证明成本降低80%以上而不牺牲质量。",
+        "limitations": "仅测试了推文数据，未覆盖其他文本类型；任务复杂度影响堆叠效果，需进一步验证。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 7,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03599",
+      "title": "Evaluation of Bagging Predictors with Kernel Density Estimation and Bagging Score",
+      "authors": [
+        "Philipp Seitz",
+        "Jan Schmitt",
+        "Andreas Schiffler"
+      ],
+      "abstract": "For a larger set of predictions of several differently trained machine learning models, known as bagging predictors, the mean of all predictions is taken by default. Nevertheless, this proceeding can deviate from the actual ground truth in certain parameter regions. An approach is presented to determine a representative y_BS from such a set of predictions using Kernel Density Estimation (KDE) in nonlinear regression with Neural Networks (NN) which simultaneously provides an associated quality criterion beta_BS, called Bagging Score (BS), that reflects the confidence of the obtained ensemble prediction. It is shown that working with the new approach better predictions can be made than working with the common use of mean or median. In addition to this, the used method is contrasted to several approaches of nonlinear regression from the literatur, resulting in a top ranking in each of the calculated error values without using any optimization or feature selection technique.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-04T05:54:19Z",
+      "updated": "2026-04-04T05:54:19Z",
+      "entry_url": "https://arxiv.org/abs/2604.03599",
+      "pdf_url": "https://arxiv.org/pdf/2604.03599",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出用核密度估计从Bagging预测中提取代表性预测值，并引入Bagging Score作为置信度指标，优于均值和中位数。",
+        "research_motivation": "传统Bagging使用均值作为最终预测，但在某些参数区域可能偏离真实值，需要更鲁棒的聚合方法。",
+        "problem": "如何从多个神经网络模型的Bagging预测中获取更准确的代表性预测，并量化其置信度。",
+        "phenomenon_analysis": "均值预测在非线性回归中可能因预测分布的多模态或偏态而偏离真实值，而核密度估计能更好地捕捉分布特征。",
+        "main_method": "使用核密度估计（KDE）对Bagging预测集建模，选取密度最大的点作为代表性预测y_BS，并定义Bagging Score（β_BS）作为置信度。",
+        "key_experiments": "在非线性回归任务上对比均值、中位数与KDE方法，结果显示新方法在多个误差指标上排名最优，且无需优化或特征选择。",
+        "contributions": "提出基于KDE的Bagging预测聚合方法及Bagging Score置信度指标，实验证明其优于传统均值/中位数。",
+        "limitations": "未讨论KDE带宽选择对结果的影响，且实验仅针对神经网络回归任务，泛化性待验证。",
+        "score": 7,
+        "relevance": 8,
+        "novelty": 6,
+        "technical_depth": 7,
+        "impact": 7,
+        "reading_priority": "medium"
+      }
+    },
+    {
+      "arxiv_id": "2604.03606",
+      "title": "BlazeFL: Fast and Deterministic Federated Learning Simulation",
+      "authors": [
+        "Kitsuya Azuma",
+        "Takayuki Nishio"
+      ],
+      "abstract": "Federated learning (FL) research increasingly relies on single-node simulations with hundreds or thousands of virtual clients, making both efficiency and reproducibility essential. Yet parallel client training often introduces nondeterminism through shared random state and scheduling variability, forcing researchers to trade throughput for reproducibility or to implement custom control logic within complex frameworks. We present BlazeFL, a lightweight framework for single-node FL simulation that alleviates this trade-off through free-threaded shared-memory execution and deterministic randomness management. BlazeFL uses thread-based parallelism with in-memory parameter exchange between the server and clients, avoiding serialization and inter-process communication overhead. To support deterministic execution, BlazeFL assigns isolated random number generator (RNG) streams to clients. Under a fixed software/hardware stack, and when stochastic operators consume BlazeFL-managed generators, this design yields bitwise-identical results across repeated high-concurrency runs in both thread-based and process-based modes. In CIFAR-10 image-classification experiments, BlazeFL substantially reduces execution time relative to a widely used open-source baseline, achieving up to 3.1$\\times$ speedup on communication-dominated workloads while preserving a lightweight dependency footprint. Our open-source implementation is available at: https://github.com/kitsuyaazuma/blazefl.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-04T06:35:15Z",
+      "updated": "2026-04-04T06:35:15Z",
+      "entry_url": "https://arxiv.org/abs/2604.03606",
+      "pdf_url": "https://arxiv.org/pdf/2604.03606",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "BlazeFL 是一个轻量级联邦学习模拟框架，通过线程级并行和确定性随机管理，在保持可复现性的同时实现高达3.1倍加速。",
+        "research_motivation": "现有联邦学习模拟在追求高吞吐量时往往牺牲可复现性，或需要复杂的自定义控制逻辑，亟需一种兼顾效率与确定性的轻量级方案。",
+        "problem": "单节点联邦学习模拟中，并行客户端训练因共享随机状态和调度不确定性导致非确定性，难以同时保证高吞吐量和结果可复现。",
+        "phenomenon_analysis": "并行训练中的随机状态共享和调度变化是导致非确定性的根源，而传统进程间通信和序列化开销进一步降低了模拟效率。",
+        "main_method": "采用线程级并行与内存内参数交换，避免序列化和进程间通信；为每个客户端分配独立随机数生成器流，确保在固定软硬件栈下结果比特级一致。",
+        "key_experiments": "在CIFAR-10图像分类任务中，与广泛使用的开源基线相比，BlazeFL在通信密集型场景下实现最高3.1倍加速，且依赖轻量。",
+        "contributions": "提出了一个轻量级、确定性且高效的联邦学习模拟框架，通过线程并行和独立RNG流解决了吞吐量与可复现性的权衡问题。",
+        "limitations": "确定性仅在固定软硬件栈下保证，且要求所有随机操作使用BlazeFL管理的生成器；未涉及跨节点分布式场景。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 7,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03586",
+      "title": "MultiPress: A Multi-Agent Framework for Interpretable Multimodal News Classification",
+      "authors": [
+        "Tailong Luo",
+        "Hao Li",
+        "Rong Fu",
+        "Xinyue Jiang",
+        "Huaxuan Ding",
+        "Yiduo Zhang",
+        "Zilin Zhao",
+        "Simon Fong",
+        "Guangyin Jin",
+        "Jianyuan Ni"
+      ],
+      "abstract": "With the growing prevalence of multimodal news content, effective news topic classification demands models capable of jointly understanding and reasoning over heterogeneous data such as text and images. Existing methods often process modalities independently or employ simplistic fusion strategies, limiting their ability to capture complex cross-modal interactions and leverage external knowledge. To overcome these limitations, we propose MultiPress, a novel three-stage multi-agent framework for multimodal news classification. MultiPress integrates specialized agents for multimodal perception, retrieval-augmented reasoning, and gated fusion scoring, followed by a reward-driven iterative optimization mechanism. We validate MultiPress on a newly constructed large-scale multimodal news dataset, demonstrating significant improvements over strong baselines and highlighting the effectiveness of modular multi-agent collaboration and retrieval-augmented reasoning in enhancing classification accuracy and interpretability.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-04T04:25:26Z",
+      "updated": "2026-04-04T04:25:26Z",
+      "entry_url": "https://arxiv.org/abs/2604.03586",
+      "pdf_url": "https://arxiv.org/pdf/2604.03586",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出多智能体框架MultiPress，通过模块化协作与检索增强推理提升多模态新闻分类的准确性和可解释性。",
+        "research_motivation": "现有方法独立处理模态或采用简单融合策略，难以捕捉复杂跨模态交互并利用外部知识。",
+        "problem": "多模态新闻分类中跨模态交互建模不足及外部知识利用有限的问题。",
+        "phenomenon_analysis": "独立模态处理或简单融合导致模型无法充分理解图文间的语义关联，影响分类效果。",
+        "main_method": "构建三阶段多智能体框架，包括多模态感知、检索增强推理和门控融合评分，并引入奖励驱动的迭代优化机制。",
+        "key_experiments": "在自建大规模多模态新闻数据集上验证，相比强基线方法取得显著提升。",
+        "contributions": "提出模块化多智能体协作框架，结合检索增强推理提升分类准确性与可解释性。",
+        "limitations": "依赖外部知识库质量，多智能体协作可能增加计算开销。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 7,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03583",
+      "title": "Text Summarization With Graph Attention Networks",
+      "authors": [
+        "Mohammadreza Ardestani and Yllias Chali"
+      ],
+      "abstract": "This study aimed to leverage graph information, particularly Rhetorical Structure Theory (RST) and Co-reference (Coref) graphs, to enhance the performance of our baseline summarization models. Specifically, we experimented with a Graph Attention Network architecture to incorporate graph information. However, this architecture did not enhance the performance. Subsequently, we used a simple Multi-layer Perceptron architecture, which improved the results in our proposed model on our primary dataset, CNN/DM. Additionally, we annotated XSum dataset with RST graph information, establishing a benchmark for future graph-based summarization models. This secondary dataset posed multiple challenges, revealing both the merits and limitations of our models.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-04T04:17:29Z",
+      "updated": "2026-04-04T04:17:29Z",
+      "entry_url": "https://arxiv.org/abs/2604.03583",
+      "pdf_url": "https://arxiv.org/pdf/2604.03583",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "尝试用图注意力网络融合RST和共指图提升摘要性能未果，改用MLP在CNN/DM上取得改进，并标注了XSum数据集。",
+        "research_motivation": "探索图结构信息（如修辞结构理论和共指图）是否能增强文本摘要模型的性能。",
+        "problem": "现有摘要模型未充分利用文本的图结构信息，导致可能遗漏关键语义关系。",
+        "phenomenon_analysis": "图注意力网络未能提升性能，而简单的多层感知机反而有效，表明复杂图结构可能引入噪声或与任务不匹配。",
+        "main_method": "分别使用图注意力网络和多层感知机融合RST和共指图信息，并在CNN/DM和XSum数据集上评估。",
+        "key_experiments": "在CNN/DM数据集上，MLP模型优于基线；在XSum数据集上，模型面临挑战，但建立了图摘要基准。",
+        "contributions": "揭示了图注意力网络在摘要任务中的局限性，并提供了带RST标注的XSum数据集作为基准。",
+        "limitations": "图注意力网络未带来提升，且XSum数据集上的性能有限，方法泛化性待验证。",
+        "score": 6,
+        "relevance": 7,
+        "novelty": 5,
+        "technical_depth": 6,
+        "impact": 5,
+        "reading_priority": "medium"
+      }
+    },
+    {
+      "arxiv_id": "2604.03582",
+      "title": "Simple yet Effective: Low-Rank Spatial Attention for Neural Operators",
+      "authors": [
+        "Zherui Yang",
+        "Haiyang Xin",
+        "Tao Du",
+        "Ligang Liu"
+      ],
+      "abstract": "Neural operators have emerged as data-driven surrogates for solving partial differential equations (PDEs), and their success hinges on efficiently modeling the long-range, global coupling among spatial points induced by the underlying physics. In many PDE regimes, the induced global interaction kernels are empirically compressible, exhibiting rapid spectral decay that admits low-rank approximations. We leverage this observation to unify representative global mixing modules in neural operators under a shared low-rank template: compressing high-dimensional pointwise features into a compact latent space, processing global interactions within it, and reconstructing the global context back to spatial points. Guided by this view, we introduce Low-Rank Spatial Attention (LRSA) as a clean and direct instantiation of this template. Crucially, unlike prior approaches that often rely on non-standard aggregation or normalization modules, LRSA is built purely from standard Transformer primitives, i.e., attention, normalization, and feed-forward networks, yielding a concise block that is straightforward to implement and directly compatible with hardware-optimized kernels. In our experiments, such a simple construction is sufficient to achieve high accuracy, yielding an average error reduction of over 17\\% relative to second-best methods, while remaining stable and efficient in mixed-precision training.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-04T04:15:01Z",
+      "updated": "2026-04-04T04:15:01Z",
+      "entry_url": "https://arxiv.org/abs/2604.03582",
+      "pdf_url": "https://arxiv.org/pdf/2604.03582",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出低秩空间注意力（LRSA），用标准Transformer模块高效建模PDE全局耦合，误差降低17%以上。",
+        "research_motivation": "神经算子依赖全局空间耦合建模，但现有方法常使用非标准聚合或归一化模块，实现复杂且效率低。",
+        "problem": "如何用标准Transformer原语简洁高效地实现神经算子中的全局交互建模。",
+        "phenomenon_analysis": "PDE诱导的全局交互核具有快速谱衰减特性，可被低秩近似压缩。",
+        "main_method": "将高维点特征压缩到紧凑隐空间处理全局交互，再重构回空间点，LRSA完全由注意力、归一化和前馈网络组成。",
+        "key_experiments": "在多个PDE基准上测试，LRSA相比次优方法平均误差降低17%以上，且支持混合精度训练。",
+        "contributions": "统一了神经算子中多种全局混合模块的低秩模板，并提出了简洁高效的LRSA实现。",
+        "limitations": "低秩假设可能不适用于所有PDE问题，且实验仅在有限数据集上验证。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03537",
+      "title": "Rethinking Token Prediction: Tree-Structured Diffusion Language Model",
+      "authors": [
+        "Zihao Wu",
+        "Haoming Yang",
+        "Juncheng Dong",
+        "Vahid Tarokh"
+      ],
+      "abstract": "Discrete diffusion language models have emerged as a competitive alternative to auto-regressive language models, but training them efficiently under limited parameter and memory budgets remains challenging. Modern architectures are predominantly based on a full-vocabulary token prediction layer, which accounts for a substantial fraction of model parameters (e.g., more than 20% in small scale DiT-style designs) and often dominates peak GPU memory usage. This leads to inefficient use of both parameters and memory under constrained training resources. To address this issue, we revisit the necessity of explicit full-vocabulary prediction, and instead exploit the inherent structure among tokens to build a tree-structured diffusion language model. Specifically, we model the diffusion process with intermediate latent states corresponding to a token's ancestor nodes in a pre-constructed vocabulary tree. This tree-structured factorization exponentially reduces the classification dimensionality, makes the prediction head negligible in size, and enables reallocation of parameters to deepen the attention blocks. Empirically, under the same parameter budget, our method reduces peak GPU memory usage by half while matching the perplexity performance of state-of-the-art discrete diffusion language models.",
+      "categories": [
+        "cs.CL",
+        "cs.LG"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-04T01:19:12Z",
+      "updated": "2026-04-04T01:19:12Z",
+      "entry_url": "https://arxiv.org/abs/2604.03537",
+      "pdf_url": "https://arxiv.org/pdf/2604.03537",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "提出树结构扩散语言模型，通过词汇树分解预测头，减少参数和内存占用，性能持平现有模型。",
+        "research_motivation": "离散扩散语言模型在有限参数和内存预算下训练效率低，全词汇预测层占用大量参数和GPU内存。",
+        "problem": "全词汇预测层导致参数和内存利用低效，限制模型在资源受限环境下的训练。",
+        "phenomenon_analysis": "全词汇预测层在小规模DiT设计中占超20%参数，并主导峰值GPU内存使用，造成资源浪费。",
+        "main_method": "利用词汇树结构，将扩散过程建模为中间潜在状态对应词汇树祖先节点，降低分类维度，缩小预测头。",
+        "key_experiments": "在相同参数预算下，峰值GPU内存减半，困惑度性能与最先进离散扩散语言模型持平。",
+        "contributions": "提出树结构扩散语言模型，显著减少参数和内存开销，并重新分配参数以加深注意力模块。",
+        "limitations": "依赖预构建词汇树，树结构设计可能影响泛化性；实验规模较小，未在更大模型上验证。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 7,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.03525",
+      "title": "Online learning of smooth functions on $\\mathbb{R}$",
+      "authors": [
+        "Jesse Geneson",
+        "Kuldeep Singh",
+        "and Alexander Wang"
+      ],
+      "abstract": "We study adversarial online learning of real-valued functions on $\\mathbb{R}$. In each round the learner is queried at $x_t\\in\\mathbb{R}$, predicts $\\hat y_t$, and then observes the true value $f(x_t)$; performance is measured by cumulative $p$-loss $\\sum_{t\\ge 1}|\\hat y_t-f(x_t)|^p$. For the class \\[ \\mathcal{G}_q=\\Bigl\\{f:\\mathbb{R}\\to\\mathbb{R}\\ \\text{absolutely continuous}:\\ \\int_{\\mathbb{R}}|f'(x)|^q\\,dx\\le 1\\Bigr\\}, \\] we show that the standard model becomes ill-posed on $\\mathbb{R}$: for every $p\\ge 1$ and $q>1$, an adversary can force infinite loss. Motivated by this obstruction, we analyze three modified learning scenarios that limit the influence of queries that are far from previously observed inputs. In Scenario 1 the adversary must choose each new query within distance $1$ of some past query. In Scenario 2 the adversary may query anywhere, but the learner is penalized only on rounds whose query lies within distance $1$ of a past query. In Scenario 3 the loss in round $t$ is multiplied by a weight $g(\\min_{j<t}|x_t-x_j|)$. We obtain sharp characterizations for Scenarios 1-2 in several regimes. For Scenario 3 we identify a clean threshold phenomenon: if $g$ decays too slowly, then the adversary can force infinite weighted loss. In contrast, for rapidly decaying weights such as $g(z)=e^{-cz}$ we obtain finite and sharp guarantees in the quadratic case $p=q=2$. Finally, we study a natural multivariable slice generalization $\\mathcal{G}_{q,d}$ of $\\mathcal{G}_q$ on $\\mathbb{R}^d$ and show a sharp dichotomy: while the one-dimensional case admits finite opt-values in certain regimes, for every $d\\ge 2$ the slice class $\\mathcal{G}_{q,d}$ is too permissive, and even under Scenarios 1-3 an adversary can force infinite loss.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-04T00:08:22Z",
+      "updated": "2026-04-04T00:08:22Z",
+      "entry_url": "https://arxiv.org/abs/2604.03525",
+      "pdf_url": "https://arxiv.org/pdf/2604.03525",
+      "source_date": "2026-04-04",
+      "analysis": {
+        "tldr": "研究实值函数在线学习，发现标准模型在无界域上病态，提出三种受限场景并刻画其可学习性，揭示高维不可学。",
+        "research_motivation": "探索实值函数在线学习在无界域上的可行性，解决标准模型下对抗性损失无限的问题。",
+        "problem": "标准在线学习模型在实线上对光滑函数类病态，对抗者总能迫使累积损失无限。",
+        "phenomenon_analysis": "无界域中查询点可任意远，导致函数值变化不可控，标准损失累积发散。",
+        "main_method": "提出三种场景限制查询点与历史点的距离或加权损失，并分析其可学习性阈值。",
+        "key_experiments": "对场景1-2给出精确刻画，场景3发现权重衰减阈值（如指数衰减可学习），高维扩展显示不可学。",
+        "contributions": "揭示标准模型病态性，提出并分析三种修正场景，给出高维不可学二分性。",
+        "limitations": "仅考虑一维和高维切片类，未涉及更复杂函数空间或自适应策略。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 9,
+        "impact": 7,
+        "reading_priority": "high"
       }
     }
   ]

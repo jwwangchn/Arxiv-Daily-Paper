@@ -1,6 +1,6 @@
 {
   "date": "2026-04-11",
-  "source": "archive",
+  "source": "arxiv",
   "papers": [
     {
       "arxiv_id": "2604.10383",
@@ -6593,6 +6593,1273 @@
         "one_sentence_summary": "通过分离规划与执行、类型化指令集和微内核验证，使微服务系统的微重启既安全又快速。",
         "legacy_reading_priority": "medium",
         "archive_reading_priority": "recommended"
+      }
+    },
+    {
+      "arxiv_id": "2604.10337",
+      "title": "Integrating SAINT with Tree-Based Models: A Case Study in Employee Attrition Prediction",
+      "authors": [
+        "Adil Derrazi",
+        "Javad Pourmostafa Roshan Sharami"
+      ],
+      "abstract": "Employee attrition presents a major challenge for organizations, increasing costs and reducing productivity. Predicting attrition accurately enables proactive retention strategies, but existing machine learning models often struggle to capture complex feature interactions in tabular HR datasets. While tree-based models such as XGBoost and LightGBM perform well on structured data, traditional encoding techniques like one-hot encoding can introduce sparsity and fail to preserve semantic relationships between categorical features. This study explores a hybrid approach by integrating SAINT (Self-Attention and Intersample Attention Transformer)-generated embeddings with tree-based models to enhance employee attrition prediction. SAINT leverages self-attention mechanisms to model intricate feature interactions. In this study, we explore SAINT both as a standalone classifier and as a feature extractor for tree-based models. We evaluate the performance, generalizability, and interpretability of standalone models (SAINT, XGBoost, LightGBM) and hybrid models that combine SAINT embeddings with tree-based classifiers. Experimental results show that standalone tree-based models outperform both the standalone SAINT model and the hybrid approaches in predictive accuracy and generalization. Contrary to expectations, the hybrid models did not improve performance. One possible explanation is that tree-based models struggle to utilize dense, high-dimensional embeddings effectively. Additionally, the hybrid approach significantly reduced interpretability, making model decisions harder to explain. These findings suggest that transformer-based embeddings, while capturing feature relationships, do not necessarily enhance tree-based classifiers. Future research should explore alternative fusion strategies for integrating deep learning with structured data.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T19:51:01Z",
+      "updated": "2026-04-11T19:51:01Z",
+      "entry_url": "https://arxiv.org/abs/2604.10337",
+      "pdf_url": "https://arxiv.org/pdf/2604.10337",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "将SAINT嵌入与树模型结合预测员工离职，发现混合模型未提升性能，反而降低可解释性。",
+        "research_motivation": "员工离职预测对组织至关重要，但现有模型难以捕捉表格数据中的复杂特征交互。",
+        "problem": "传统编码（如独热编码）导致稀疏性，且无法保留分类特征的语义关系。",
+        "phenomenon_analysis": "混合模型性能未提升，可能因为树模型难以有效利用密集高维嵌入。",
+        "main_method": "使用SAINT生成嵌入，作为特征提取器与XGBoost、LightGBM等树模型结合。",
+        "key_experiments": "在员工离职数据集上比较独立模型（SAINT、XGBoost、LightGBM）与混合模型的预测准确性和泛化能力。",
+        "contributions": "揭示了Transformer嵌入与树模型融合的局限性，为未来研究提供方向。",
+        "limitations": "仅使用单一数据集，未探索其他融合策略或嵌入方法。",
+        "score": 6,
+        "relevance": 7,
+        "novelty": 5,
+        "technical_depth": 6,
+        "impact": 5,
+        "reading_priority": "medium"
+      }
+    },
+    {
+      "arxiv_id": "2604.10316",
+      "title": "Comparative Analysis of Large Language Models in Healthcare",
+      "authors": [
+        "Subin Santhosh",
+        "Farwa Abbas",
+        "Hussain Ahmad",
+        "Claudia Szabo"
+      ],
+      "abstract": "Background: Large Language Models (LLMs) are transforming artificial intelligence applications in healthcare due to their ability to understand, generate, and summarize complex medical text. They offer valuable support to clinicians, researchers, and patients, yet their deployment in high-stakes clinical environments raises critical concerns regarding accuracy, reliability, and patient safety. Despite substantial attention in recent years, standardized benchmarking of LLMs for medical applications has been limited. Objective: This study addresses the need for a standardized comparative evaluation of LLMs in medical settings. Method: We evaluate multiple models, including ChatGPT, LLaMA, Grok, Gemini, and ChatDoctor, on core medical tasks such as patient note summarization and medical question answering, using the open-access datasets, MedMCQA, PubMedQA, and Asclepius, and assess performance through a combination of linguistic and task-specific metrics. Results: The results indicate that domain-specific models, such as ChatDoctor, excel in contextual reliability, producing medically accurate and semantically aligned text, whereas general-purpose models like Grok and LLaMA perform better in structured question-answering tasks, demonstrating higher quantitative accuracy. This highlights the complementary strengths of domain-specific and general-purpose LLMs depending on the medical task. Conclusion: Our findings suggest that LLMs can meaningfully support medical professionals and enhance clinical decision-making; however, their safe and effective deployment requires adherence to ethical standards, contextual accuracy, and human oversight in relevant cases. These results underscore the importance of task-specific evaluation and cautious integration of LLMs into healthcare workflows.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-11T18:47:54Z",
+      "updated": "2026-04-11T18:47:54Z",
+      "entry_url": "https://arxiv.org/abs/2604.10316",
+      "pdf_url": "https://arxiv.org/pdf/2604.10316",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "比较了通用与医学专用LLM在医疗任务中的表现，发现ChatDoctor在上下文可靠性上更优，而Grok和LLaMA在问答准确性上更强。",
+        "research_motivation": "LLM在医疗领域应用广泛，但缺乏标准化基准评估其准确性和安全性。",
+        "problem": "现有研究未系统比较通用与医学专用LLM在临床任务中的性能差异。",
+        "phenomenon_analysis": "医学专用模型（如ChatDoctor）在生成语义准确文本上表现更好，而通用模型（如Grok）在结构化问答中定量精度更高。",
+        "main_method": "使用MedMCQA、PubMedQA和Asclepius数据集，评估ChatGPT、LLaMA、Grok、Gemini和ChatDoctor在患者笔记总结和医学问答任务上的表现。",
+        "key_experiments": "通过语言指标和任务特定指标对比模型性能，发现ChatDoctor在上下文可靠性上领先，Grok和LLaMA在问答准确性上更优。",
+        "contributions": "提供了LLM在医疗任务中的标准化比较框架，揭示了通用与专用模型的互补优势。",
+        "limitations": "仅评估了有限模型和数据集，未涉及实际临床部署中的伦理和安全性问题。",
+        "score": 7,
+        "relevance": 8,
+        "novelty": 6,
+        "technical_depth": 7,
+        "impact": 7,
+        "reading_priority": "medium"
+      }
+    },
+    {
+      "arxiv_id": "2604.10248",
+      "title": "A Multi-head Attention Fusion Network for Industrial Prognostics under Discrete Operational Conditions",
+      "authors": [
+        "Yuqi Su",
+        "Xiaolei Fang"
+      ],
+      "abstract": "Complex systems such as aircraft engines, turbines, and industrial machinery often operate under dynamically changing conditions. These varying operating conditions can substantially influence degradation behavior and make prognostic modeling more challenging, as accurate prediction requires explicit consideration of operational effects. To address this issue, this paper proposes a novel multi-head attention-based fusion neural network. The proposed framework explicitly models and integrates three signal components: (1) the monotonic degradation trend, which reflects the underlying deterioration of the system; (2) discrete operating states, identified through clustering and encoded into dense embeddings; and (3) residual random noise, which captures unexplained variation in sensor measurements. The core strength of the framework lies in its architecture, which combines BiLSTM networks with attention mechanisms to better capture complex temporal dependencies. The attention mechanism allows the model to adaptively weight different time steps and sensor signals, improving its ability to extract prognostically relevant information. In addition, a fusion module is designed to integrate the outputs from the degradation-trend branch and the operating-state embeddings, enabling the model to capture their interactions more effectively. The proposed method is validated using a dataset from the NASA repository, and the results demonstrate its effectiveness.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T15:19:06Z",
+      "updated": "2026-04-11T15:19:06Z",
+      "entry_url": "https://arxiv.org/abs/2604.10248",
+      "pdf_url": "https://arxiv.org/pdf/2604.10248",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出多头注意力融合网络，显式建模退化趋势、离散工况和噪声，提升工业系统剩余寿命预测精度。",
+        "research_motivation": "复杂系统常处于动态变化工况，影响退化行为，现有方法未充分建模工况与退化的交互。",
+        "problem": "如何在离散工况下准确预测系统剩余寿命，并有效融合工况信息与退化趋势。",
+        "phenomenon_analysis": "工况变化会显著改变退化模式，传感器信号包含退化趋势、工况相关成分和随机噪声三种成分。",
+        "main_method": "构建BiLSTM与多头注意力融合网络，通过聚类编码离散工况，设计融合模块整合退化分支和工况嵌入。",
+        "key_experiments": "在NASA航空发动机数据集上验证，与基线方法对比，证明所提方法在预测精度上的优势。",
+        "contributions": "提出显式建模三种信号成分的融合框架，利用注意力机制自适应加权时序和传感器信息。",
+        "limitations": "仅验证单一数据集，未讨论工况聚类数选择的影响及计算效率。",
+        "score": 7,
+        "relevance": 8,
+        "novelty": 6,
+        "technical_depth": 7,
+        "impact": 7,
+        "reading_priority": "medium"
+      }
+    },
+    {
+      "arxiv_id": "2604.10335",
+      "title": "Adaptive Multi-Expert Reasoning via Difficulty-Aware Routing and Uncertainty-Guided Aggregation",
+      "authors": [
+        "Mohamed Ehab",
+        "Ali Hamdi"
+      ],
+      "abstract": "Large language models (LLMs) demonstrate strong performance in math reasoning benchmarks, but their performance varies inconsistently across problems with varying levels of difficulty. This paper describes Adaptive Multi-Expert Reasoning (AMR), a framework that focuses on problem complexity by reasoning with dynamically adapted strategies. An agile routing system that focuses on problem text predicts problems' difficulty and uncertainty and guides a reconfigurable sampling mechanism to manage the breadth of generation. Three specialized experts create candidate responses, which are modified during multiple correction and finalization phases. A neural verifier assesses the correctness of responses, while a clustering-based aggregation technique identifies the final candidate answer based on a combination of consensus and answer quality. When evaluated on the GSM8K dataset, AMR achieved 75.28% accuracy while only using the original training data. This result outperformed the majority of comparable 7B models that were trained on synthetic data. This showcases that models using difficulty-based routing and uncertainty-driven aggregation are efficient and effective in improving math reasoning models' robustness.",
+      "categories": [
+        "cs.CL",
+        "cs.LG"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-11T19:44:57Z",
+      "updated": "2026-04-11T19:44:57Z",
+      "entry_url": "https://arxiv.org/abs/2604.10335",
+      "pdf_url": "https://arxiv.org/pdf/2604.10335",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出自适应多专家推理框架，通过难度感知路由和不确定性引导聚合，在GSM8K上以75.28%准确率超越多数7B模型。",
+        "research_motivation": "大语言模型在数学推理中性能随问题难度波动，现有方法缺乏对问题复杂性的自适应调整。",
+        "problem": "如何根据问题难度动态调整推理策略，提升模型在不同难度问题上的鲁棒性和准确性。",
+        "phenomenon_analysis": "模型在简单和困难问题上表现不一致，固定策略无法适应难度变化，导致性能瓶颈。",
+        "main_method": "设计难度感知路由系统预测问题难度和不确定性，动态控制生成广度；结合三个专家生成候选答案，经多轮修正和聚类聚合选出最终答案。",
+        "key_experiments": "在GSM8K数据集上评估，仅用原始训练数据达到75.28%准确率，优于多数使用合成数据的7B模型。",
+        "contributions": "提出难度感知路由和不确定性引导聚合的框架，无需合成数据即可提升数学推理性能。",
+        "limitations": "仅评估单一数据集GSM8K，未验证在其他数学推理任务上的泛化性；专家数量固定，可能限制扩展性。",
+        "score": 7,
+        "relevance": 8,
+        "novelty": 7,
+        "technical_depth": 7,
+        "impact": 7,
+        "reading_priority": "medium"
+      }
+    },
+    {
+      "arxiv_id": "2604.10368",
+      "title": "A Structured Clustering Approach for Inducing Media Narratives",
+      "authors": [
+        "Rohan Das",
+        "Advait Deshmukh",
+        "Alexandria Leto",
+        "Zohar Naaman",
+        "I-Ta Lee",
+        "Maria Leonor Pacheco"
+      ],
+      "abstract": "Media narratives wield tremendous power in shaping public opinion, yet computational approaches struggle to capture the nuanced storytelling structures that communication theory emphasizes as central to how meaning is constructed. Existing approaches either miss subtle narrative patterns through coarse-grained analysis or require domain-specific taxonomies that limit scalability. To bridge this gap, we present a framework for inducing rich narrative schemas by jointly modeling events and characters via structured clustering. Our approach produces explainable narrative schemas that align with established framing theory while scaling to large corpora without exhaustive manual annotation.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-11T22:35:18Z",
+      "updated": "2026-04-11T22:35:18Z",
+      "entry_url": "https://arxiv.org/abs/2604.10368",
+      "pdf_url": "https://arxiv.org/pdf/2604.10368",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出结构化聚类框架，联合建模事件与角色，从大规模语料中自动归纳可解释的媒体叙事模式。",
+        "research_motivation": "现有计算方法难以捕捉传播理论强调的细微叙事结构，要么分析粗糙，要么依赖领域特定分类法。",
+        "problem": "如何在不依赖大量人工标注的情况下，从大规模语料中自动提取与传播理论一致的、可解释的叙事模式。",
+        "phenomenon_analysis": "媒体叙事通过事件与角色的结构化组合构建意义，但现有方法无法同时兼顾细粒度与可扩展性。",
+        "main_method": "提出结构化聚类方法，联合建模事件和角色，生成与框架理论对齐的可解释叙事模式。",
+        "key_experiments": "在多个媒体语料上验证，与基线方法比较，展示其可扩展性和与传播理论的一致性。",
+        "contributions": "首次将结构化聚类用于叙事模式归纳，无需领域特定分类法，兼顾可解释性与大规模应用。",
+        "limitations": "未明确讨论聚类结果对叙事歧义的处理能力，以及跨语言或跨文化语料的适用性。",
+        "score": 7,
+        "relevance": 8,
+        "novelty": 7,
+        "technical_depth": 6,
+        "impact": 7,
+        "reading_priority": "medium"
+      }
+    },
+    {
+      "arxiv_id": "2604.10272",
+      "title": "The Phase Is the Gradient: Equilibrium Propagation for Frequency Learning in Kuramoto Networks",
+      "authors": [
+        "Mani Rash Ahmadi"
+      ],
+      "abstract": "We prove that in a coupled Kuramoto oscillator network at stable equilibrium, the physical phase displacement under weak output nudging is the gradient of the loss with respect to natural frequencies, with equality as the nudging strength beta tends to zero. Prior oscillator equilibrium propagation work explicitly set aside natural frequency as a learnable parameter; we show that on sparse layered architectures, frequency learning outperforms coupling-weight learning among converged seeds (96.0% vs. 83.3% at matched parameter counts, p = 1.8e-12). The approximately 50% convergence failure rate under random initialization is a loss-landscape property, not a gradient error; topology-aware spectral seeding eliminates it in all settings tested (46/100 to 100/100 seeds on the primary task; 50/50 on a second task, K-only training, and a larger architecture).",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T16:28:27Z",
+      "updated": "2026-04-11T16:28:27Z",
+      "entry_url": "https://arxiv.org/abs/2604.10272",
+      "pdf_url": "https://arxiv.org/pdf/2604.10272",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "证明Kuramoto振荡器网络中，弱输出微扰下的物理相位位移是损失对自然频率的梯度，频率学习优于耦合权重学习。",
+        "research_motivation": "先前振荡器平衡传播工作将自然频率排除在可学习参数之外，本文旨在探索频率学习的潜力。",
+        "problem": "Kuramoto网络中自然频率作为可学习参数的有效性及随机初始化导致的高收敛失败率问题。",
+        "phenomenon_analysis": "约50%的随机初始化收敛失败是损失景观特性而非梯度误差；拓扑感知谱初始化可完全消除该问题。",
+        "main_method": "理论证明相位位移等于损失对频率的梯度，并采用拓扑感知谱初始化改善收敛。",
+        "key_experiments": "在稀疏分层架构上，频率学习准确率96.0% vs 耦合权重学习83.3%（p=1.8e-12）；谱初始化将收敛率从46/100提升至100/100。",
+        "contributions": "首次证明频率学习在Kuramoto网络中的有效性，并揭示收敛失败的根本原因及解决方案。",
+        "limitations": "仅验证了稀疏分层架构，未探索更复杂拓扑；理论分析限于稳定平衡点。",
+        "score": 8,
+        "relevance": 7,
+        "novelty": 8,
+        "technical_depth": 9,
+        "impact": 7,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10343",
+      "title": "WaterAdmin: Orchestrating Community Water Distribution Optimization via AI Agents",
+      "authors": [
+        "Jiaqi Wen",
+        "Pingbo Tang",
+        "Shaolei Ren",
+        "Jianyi Yang"
+      ],
+      "abstract": "We study the operation of community water systems, where pumps and valves must be scheduled to reliably meet water demands while minimizing energy consumption. While existing optimization-based methods are effective under well-modeled environments, real-world community scenarios exhibit highly dynamic contexts-such as human activities, weather variations, etc-that significantly affect water demand patterns and operational targets across different zones. Traditional optimization approaches struggle to aggregate and adapt to such heterogeneous and rapidly evolving contextual information in real time. While Large Language Model (LLM) agents offer strong capabilities for understanding heterogeneous community context, they are not suitable for directly producing reliable real-time control actions. To address these challenges, we propose a bi-level AI-agent-based framework, WaterAdmin, which integrates LLM-based community context abstraction at the upper level with optimization-based operational control at the lower level. This design leverages the complementary strengths of both paradigms to enable adaptive and reliable operation. We implement WaterAdmin on the hydraulic simulation platform EPANET and demonstrate superior performance in maintaining pressure reliability and reducing energy consumption under highly dynamic community contexts.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T20:33:37Z",
+      "updated": "2026-04-11T20:33:37Z",
+      "entry_url": "https://arxiv.org/abs/2604.10343",
+      "pdf_url": "https://arxiv.org/pdf/2604.10343",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出WaterAdmin，一种结合LLM上下文理解与优化控制的社区供水调度框架，在动态环境下提升压力可靠性与节能效果。",
+        "research_motivation": "社区供水系统面临高度动态的上下文（如人类活动、天气变化），传统优化方法难以实时适应，而LLM虽能理解上下文但不适合直接控制。",
+        "problem": "如何在动态社区环境中实现供水系统的自适应与可靠运行，同时最小化能耗。",
+        "phenomenon_analysis": "社区供水需求模式受多种动态因素影响，导致不同区域的操作目标快速变化，传统优化方法无法有效聚合和适应这些异构信息。",
+        "main_method": "提出双层AI智能体框架WaterAdmin，上层使用LLM抽象社区上下文，下层使用优化方法进行运行控制，结合两者优势。",
+        "key_experiments": "在EPANET液压仿真平台上实现WaterAdmin，并在高度动态社区场景下验证其在维持压力可靠性和降低能耗方面的优越性能。",
+        "contributions": "首次将LLM与优化控制结合用于社区供水调度，提出双层框架实现自适应与可靠运行，并在仿真中证明有效性。",
+        "limitations": "依赖仿真环境验证，实际部署可能面临实时性、数据质量等挑战；LLM抽象可能引入不确定性。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 7,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10371",
+      "title": "Structural Gating and Effect-aligned Lag-resolved Temporal Causal Discovery Framework with Application to Heat-Pollution Extremes",
+      "authors": [
+        "Rui Chen",
+        "Jinsong Wu"
+      ],
+      "abstract": "This study proposes Structural Gating and Effect-aligned Discovery for Temporal Causal Discovery (SGED-TCD), a novel and general framework for lag-resolved causal discovery in complex multivariate time series. SGED-TCD combines explicit structural gating, stability-oriented learning, perturbation-effect alignment, and unified graph extraction to improve the interpretability, robustness, and functional consistency of inferred causal graphs. To evaluate its effectiveness in a representative real-world setting, we apply SGED-TCD to teleconnection-driven compound heatwave--air-pollution extremes in eastern and northern China. Using large-scale climate indices, regional circulation and boundary-layer variables, and compound extreme indicators, the framework reconstructs weighted causal networks with explicit dominant lags and relative causal importance. The inferred networks reveal clear regional and seasonal heterogeneity: warm-season extremes in Eastern China are mainly linked to low-latitude oceanic variability through circulation, radiation, and ventilation pathways, whereas cold-season extremes in Northern China are more strongly governed by high-latitude circulation variability associated with boundary-layer suppression and persistent stagnation. These results show that SGED-TCD can recover physically interpretable, hierarchical, and lag-resolved causal pathways in a challenging climate--environment system. More broadly, the proposed framework is not restricted to the present application and provides a general basis for temporal causal discovery in other complex domains.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T22:50:26Z",
+      "updated": "2026-04-11T22:50:26Z",
+      "entry_url": "https://arxiv.org/abs/2604.10371",
+      "pdf_url": "https://arxiv.org/pdf/2604.10371",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出SGED-TCD框架，用于多变量时间序列的滞后因果发现，在热浪-污染极端事件中揭示区域和季节异质性因果路径。",
+        "research_motivation": "现有时间因果发现方法在可解释性、鲁棒性和功能一致性上存在不足，难以处理复杂系统中的滞后效应。",
+        "problem": "如何从多变量时间序列中提取具有明确滞后、稳定且物理一致的因果图。",
+        "phenomenon_analysis": "中国东部暖季极端事件主要受低纬海洋环流影响，而北部冷季事件则与高纬环流和边界层抑制相关，存在显著区域和季节差异。",
+        "main_method": "结合结构门控、稳定性学习、扰动效应对齐和统一图提取，构建带主导滞后的加权因果网络。",
+        "key_experiments": "应用于中国东部和北部的复合热浪-空气污染极端事件，使用气候指数、环流变量和极端指标数据。",
+        "contributions": "提出通用滞后因果发现框架，并在真实气候-环境系统中验证其物理可解释性和层次化因果路径恢复能力。",
+        "limitations": "未明确讨论计算复杂度或对高维数据的扩展性，且应用场景局限于特定区域和变量。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10283",
+      "title": "Descriptor-Injected Cross-Modal Learning: A Systematic Exploration of Audio-MIDI Alignment via Spectral and Melodic Features",
+      "authors": [
+        "Mariano Fern\\'andez M\\'endez"
+      ],
+      "abstract": "Cross-modal retrieval between audio recordings and symbolic music representations (MIDI) remains challenging because continuous waveforms and discrete event sequences encode different aspects of the same performance. We study descriptor injection, the augmentation of modality-specific encoders with hand-crafted domain features, as a bridge across this gap. In a three-phase campaign covering 13 descriptor-mechanism combinations, 6 architectural families, and 3 training schedules, the best configuration reaches a mean S of 84.0 percent across five independent seeds, improving the descriptor-free baseline by 8.8 percentage points. Causal ablation shows that the audio descriptor A4, based on octave-band energy dynamics, drives the gain in the top dual models, while the MIDI descriptor D4 has only a weak inference-time effect despite improving training dynamics. We also introduce reverse cross-attention, where descriptor tokens query encoder features, reducing attention operations relative to the standard formulation while remaining competitive. CKA analysis shows that descriptors substantially increase audio-MIDI transformer layer alignment, indicating representational convergence rather than simple feature concatenation. Perturbation analysis identifies high-frequency octave bands as the dominant discriminative signal. All experiments use MAESTRO v3.0.0 with an evaluation protocol controlling for composer and piece similarity.",
+      "categories": [
+        "cs.SD",
+        "cs.LG"
+      ],
+      "primary_category": "cs.SD",
+      "published": "2026-04-11T16:53:36Z",
+      "updated": "2026-04-11T16:53:36Z",
+      "entry_url": "https://arxiv.org/abs/2604.10283",
+      "pdf_url": "https://arxiv.org/pdf/2604.10283",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "通过注入手工特征（如八度带能量）提升音频与MIDI跨模态对齐，最佳配置将平均S提升至84.0%，比基线高8.8个百分点。",
+        "research_motivation": "音频与MIDI跨模态检索因连续波形与离散事件编码差异而困难，需桥接这一鸿沟。",
+        "problem": "解决音频与符号音乐表示（MIDI）之间的跨模态对齐问题。",
+        "phenomenon_analysis": "手工特征注入（尤其是音频八度带能量）显著提升跨模态表示收敛，而非简单特征拼接；高频八度带是主要判别信号。",
+        "main_method": "提出描述符注入方法，增强模态特定编码器，并引入反向交叉注意力机制以减少计算量。",
+        "key_experiments": "在MAESTRO v3.0.0上测试13种描述符-机制组合、6种架构和3种训练计划，最佳配置平均S达84.0%。",
+        "contributions": "系统探索了描述符注入在音频-MIDI对齐中的有效性，提出反向交叉注意力，并通过CKA分析揭示表示收敛机制。",
+        "limitations": "MIDI描述符D4仅在训练时有效，推理时影响弱；实验限于MAESTRO数据集，泛化性待验证。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 7,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10373",
+      "title": "Shuffling the Data, Stretching the Step-size: Sharper Bias in constant step-size SGD",
+      "authors": [
+        "Konstantinos Emmanouilidis",
+        "Emmanouil-Vasileios Vlatakis-Gkaragkounis",
+        "Rene Vidal"
+      ],
+      "abstract": "From adversarial robustness to multi-agent learning, many machine learning tasks can be cast as finite-sum min-max optimization or, more generally, as variational inequality problems (VIPs). Owing to their simplicity and scalability, stochastic gradient methods with constant step size are widely used, despite the fact that they converge only up to a constant term. Among the many heuristics adopted in practice, two classical techniques have recently attracted attention to mitigate this issue: \\emph{Random Reshuffling} of data and \\emph{Richardson--Romberg extrapolation} across iterates. Random Reshuffling sharpens the mean-squared error (MSE) of the estimated solution, while Richardson-Romberg extrapolation acts orthogonally, providing a second-order reduction in its bias. In this work, we show that their composition is strictly better than both, not only maintaining the enhanced MSE guarantees but also yielding an even greater cubic refinement in the bias. To the best of our knowledge, our work provides the first theoretical guarantees for such a synergy in structured non-monotone VIPs. Our analysis proceeds in two steps: (i) we smooth the discrete noise induced by reshuffling and leverage tools from continuous-state Markov chain theory to establish a novel law of large numbers and a central limit theorem for its iterates; and (ii) we employ spectral tensor techniques to prove that extrapolation debiases and sharpens the asymptotic behavior even under the biased gradient oracle induced by reshuffling. Finally, extensive experiments validate our theory, consistently demonstrating substantial speedups in practice.",
+      "categories": [
+        "math.OC",
+        "cs.LG"
+      ],
+      "primary_category": "math.OC",
+      "published": "2026-04-11T22:59:26Z",
+      "updated": "2026-04-11T22:59:26Z",
+      "entry_url": "https://arxiv.org/abs/2604.10373",
+      "pdf_url": "https://arxiv.org/pdf/2604.10373",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "结合随机重排和Richardson-Romberg外推，在常数步长SGD中实现偏差的三次方缩减，首次为非单调变分不等式问题提供理论保证。",
+        "research_motivation": "常数步长SGD在机器学习中广泛使用但仅收敛到常数项，实际中常用随机重排和外推法缓解此问题，但两者组合的理论分析缺失。",
+        "problem": "解决常数步长SGD在有限和极小极大优化及变分不等式问题中，随机重排和外推法组合后的偏差和均方误差理论分析问题。",
+        "phenomenon_analysis": "随机重排可锐化均方误差，Richardson-Romberg外推正交地降低偏差，两者组合能产生比单独使用更优的三次方偏差缩减效果。",
+        "main_method": "通过连续状态马尔可夫链理论平滑重排离散噪声，建立大数定律和中心极限定理；利用谱张量技术证明外推在重排偏置梯度下的去偏和锐化作用。",
+        "key_experiments": "在多个任务上进行广泛实验，验证了组合方法相比单独方法在收敛速度上的显著提升。",
+        "contributions": "首次为结构化非单调变分不等式问题中随机重排与外推的协同作用提供理论保证，并证明偏差的三次方缩减。",
+        "limitations": "理论分析限于常数步长和特定结构问题，实际应用中的步长选择和更复杂场景的泛化性未充分探讨。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 9,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10235",
+      "title": "CodeComp: Structural KV Cache Compression for Agentic Coding",
+      "authors": [
+        "Qiujiang Chen",
+        "Jing Xiong",
+        "Chenyang Zhao",
+        "Sidi Yang",
+        "Ngai Wong"
+      ],
+      "abstract": "Agentic code tasks such as fault localization and patch generation require processing long codebases under tight memory constraints, where the Key-Value (KV) cache becomes the primary inference bottleneck. Existing compression methods rely exclusively on attention signals to estimate token importance, systematically discarding structurally critical tokens such as call sites, branch conditions, and assignments that are essential for code understanding. We present CodeComp, a training-free KV cache compression framework that incorporates static program analysis into LLM inference via Code Property Graph priors extracted by Joern. Across bug localization and code generation benchmarks, CodeComp consistently outperforms attention-only compression baselines under equal memory budgets, recovering the majority of full-context accuracy under aggressive KV cache compression, while matching the patch generation quality of uncompressed full-context inference and integrating seamlessly into SGLang-based agentic coding pipelines without model modification.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-11T14:38:11Z",
+      "updated": "2026-04-11T14:38:11Z",
+      "entry_url": "https://arxiv.org/abs/2604.10235",
+      "pdf_url": "https://arxiv.org/pdf/2604.10235",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出CodeComp，通过代码属性图先验压缩KV缓存，在代理编码任务中优于纯注意力压缩方法。",
+        "research_motivation": "代理编码任务需处理长代码库，KV缓存成为推理瓶颈，现有压缩方法仅依赖注意力信号，忽略结构关键令牌。",
+        "problem": "现有KV缓存压缩方法在代码任务中丢弃了调用点、分支条件等结构关键令牌，导致性能下降。",
+        "phenomenon_analysis": "注意力信号不足以识别代码中结构重要的令牌，如调用点和赋值，这些令牌对代码理解至关重要。",
+        "main_method": "利用Joern提取代码属性图先验，无需训练即可将静态程序分析融入LLM推理，指导KV缓存压缩。",
+        "key_experiments": "在bug定位和代码生成基准上，与纯注意力压缩基线对比，在相同内存预算下恢复大部分全上下文准确率。",
+        "contributions": "首次将静态程序分析引入KV缓存压缩，无需模型修改即可集成到SGLang代理编码流水线。",
+        "limitations": "依赖Joern进行代码分析，可能增加预处理开销；未在更大规模模型或更复杂任务上验证。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 8,
+        "impact": 7,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10212",
+      "title": "Relational Probing: LM-to-Graph Adaptation for Financial Prediction",
+      "authors": [
+        "Yingjie Niu",
+        "Changhong Jin",
+        "Rian Dolphin",
+        "Ruihai Dong"
+      ],
+      "abstract": "Language models can be used to identify relationships between financial entities in text. However, while structured output mechanisms exist, prompting-based pipelines still incur autoregressive decoding costs and decouple graph construction from downstream optimization. We propose \\emph{Relational Probing}, which replaces the standard language-model head with a relation head that induces a relational graph directly from language-model hidden states and is trained jointly with the downstream task model for stock-trend prediction. This approach both learns semantic representations and preserves the strict structure of the induced relational graph. It enables language-model outputs to go beyond text, allowing them to be reshaped into task-specific formats for downstream models. To enhance reproducibility, we provide an operational definition of small language models (SLMs): models that can be fine-tuned end-to-end on a single 24GB GPU under specified batch-size and sequence-length settings. Experiments use Qwen3 backbones (0.6B/1.7B/4B) as upstream SLMs and compare against a co-occurrence baseline. Relational Probing yields consistent performance improvements at competitive inference cost.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-11T13:43:56Z",
+      "updated": "2026-04-11T13:43:56Z",
+      "entry_url": "https://arxiv.org/abs/2604.10212",
+      "pdf_url": "https://arxiv.org/pdf/2604.10212",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出关系探测方法，用关系头替代语言模型头，从隐藏状态直接生成关系图，联合下游任务训练，提升金融预测性能。",
+        "research_motivation": "现有基于提示的管道存在自回归解码成本高、图构建与下游优化脱节的问题，需要更高效的端到端方法。",
+        "problem": "如何让语言模型输出超越文本，直接生成结构化关系图并联合下游任务优化，用于金融预测。",
+        "phenomenon_analysis": "语言模型隐藏状态蕴含实体关系信息，但标准输出头无法直接利用；联合训练可同时学习语义表示和保持图结构。",
+        "main_method": "用关系头替换标准语言模型头，从隐藏状态诱导关系图，并与下游股票趋势预测模型联合训练。",
+        "key_experiments": "使用Qwen3（0.6B/1.7B/4B）作为上游小语言模型，与共现基线对比，在金融预测任务上评估。",
+        "contributions": "提出关系探测方法实现端到端图生成与优化；给出小语言模型可复现的操作定义。",
+        "limitations": "仅验证了金融预测场景，未探索其他领域；小语言模型定义可能不适用于更大模型。",
+        "score": 7,
+        "relevance": 8,
+        "novelty": 7,
+        "technical_depth": 7,
+        "impact": 6,
+        "reading_priority": "medium"
+      }
+    },
+    {
+      "arxiv_id": "2604.10189",
+      "title": "FAITH: Factuality Alignment through Integrating Trustworthiness and Honestness",
+      "authors": [
+        "Xiaoning Dong",
+        "Chengyan Wu",
+        "Yajie Wen",
+        "Yu Chen",
+        "Yun Xue",
+        "Jing Zhang",
+        "Wei Xu",
+        "Bolei Ma"
+      ],
+      "abstract": "Large Language Models (LLMs) can generate factually inaccurate content even if they have corresponding knowledge, which critically undermines their reliability. Existing approaches attempt to mitigate this by incorporating uncertainty in QA prompt during training, but these numerical scores lack the semantic richness for LLM to properly understand its internal states of trustworthiness and honestness, leading to insufficient factuality alignment. We introduce FAITH (Factuality Alignment through Integrating Trustworthiness and Honestness), a post-training framework for factuality alignment that integrates natural-language uncertainty signals with external knowledge. Specifically, we augment training datasets by computing confidence scores and semantic entropy from LLM outputs and mapping them into a knowledge state quadrant that describes the model's internal knowledge possession (trustworthiness) and answering behaviors (honestness) in natural language. Based on this enhanced data, we design a reward function that considers both correctness and uncertainty signals, and fine-tune the LLM using the Proximal Policy Optimization (PPO) algorithm. To further mitigate weakly grounded responses, we design a retrieval-augmented module that retrieves relevant external passages, improving the consistency between internal and external knowledge representations. Extensive experiments on four knowledge-intensive benchmarks demonstrate that FAITH enhances the factual accuracy and truthfulness of LLMs.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-11T12:43:13Z",
+      "updated": "2026-04-11T12:43:13Z",
+      "entry_url": "https://arxiv.org/abs/2604.10189",
+      "pdf_url": "https://arxiv.org/pdf/2604.10189",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出FAITH框架，通过自然语言不确定性信号和外部知识增强大模型的事实对齐，提升事实准确性。",
+        "research_motivation": "大模型即使拥有相关知识也会生成事实错误内容，现有方法使用数值不确定性分数缺乏语义丰富性，导致事实对齐不足。",
+        "problem": "如何让大模型在拥有知识时准确回答，避免生成事实不准确内容。",
+        "phenomenon_analysis": "模型内部知识状态（可信度）和回答行为（诚实度）的不一致导致事实错误，数值不确定性信号难以被模型充分理解。",
+        "main_method": "将置信度和语义熵映射为自然语言知识状态象限，结合正确性和不确定性设计奖励函数，使用PPO微调，并引入检索增强模块。",
+        "key_experiments": "在四个知识密集型基准上评估，FAITH提升了事实准确性和真实性。",
+        "contributions": "提出自然语言不确定性信号与外部知识结合的事实对齐框架，设计知识状态象限和检索增强模块。",
+        "limitations": "依赖外部知识库质量，计算语义熵可能增加开销。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10180",
+      "title": "Tessera: Unlocking Heterogeneous GPUs through Kernel-Granularity Disaggregation",
+      "authors": [
+        "Tiancheng Hu",
+        "Jin Qin",
+        "Zheng Wang",
+        "Junhao Hu",
+        "Yuzheng Wang",
+        "Lei Chen",
+        "Yizhou Shan",
+        "Mingxing Zhang",
+        "Ting Cao",
+        "Chunwei Xia",
+        "Huimin Cui",
+        "Tao Xie",
+        "Chenxi Wang"
+      ],
+      "abstract": "Disaggregation maps parts of an AI workload to different types of GPUs, offering a path to utilize modern heterogeneous GPU clusters. However, existing solutions operate at a coarse granularity and are tightly coupled to specific model architectures, leaving much room for performance improvement. This paper presents Tessera, the first kernel disaggregation system to improve performance and cost efficiency on heterogeneous GPUs for large model inference. Our key insight is that kernels within a single application exhibit diverse resource demands, making them the most suitable granularity for aligning computation with hardware capabilities. Tessera integrates offline analysis with online adaptation by extracting precise inter-kernel dependencies from PTX to ensure correctness, overlapping communication with computation through a pipelined execution model, and employing workload-aware scheduling with lightweight runtime adaptation. Extensive evaluations across five heterogeneous GPUs and four model architectures, scaling up to 16 GPUs, show that Tessera improves serving throughput and cost efficiency by up to 2.3x and 1.6x, respectively, compared to existing disaggregation methods, while generalizing to model architectures where prior approaches do not apply. Surprisingly, a heterogeneous GPU pair under Tessera can even exceed the throughput of two homogeneous high-end GPUs at a lower cost.",
+      "categories": [
+        "cs.DC",
+        "cs.LG"
+      ],
+      "primary_category": "cs.DC",
+      "published": "2026-04-11T12:19:11Z",
+      "updated": "2026-04-11T12:19:11Z",
+      "entry_url": "https://arxiv.org/abs/2604.10180",
+      "pdf_url": "https://arxiv.org/pdf/2604.10180",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "Tessera 是首个在异构 GPU 上通过内核粒度分解提升大模型推理性能和成本效率的系统。",
+        "research_motivation": "现有异构 GPU 分解方案粒度粗且与模型架构耦合，性能提升有限，需要更细粒度的优化方法。",
+        "problem": "如何在大模型推理中高效利用异构 GPU 集群，实现性能与成本的最优平衡。",
+        "phenomenon_analysis": "单个应用中的内核具有多样化的资源需求，内核粒度最适合对齐计算与硬件能力。",
+        "main_method": "通过 PTX 提取精确的内核间依赖保证正确性，采用流水线执行模型重叠通信与计算，并结合工作负载感知调度与轻量级运行时自适应。",
+        "key_experiments": "在五种异构 GPU 和四种模型架构上评估，扩展到 16 个 GPU，吞吐量提升 2.3 倍，成本效率提升 1.6 倍。",
+        "contributions": "首次实现内核级分解，显著提升异构 GPU 推理性能与成本效率，并适用于现有方法无法处理的模型架构。",
+        "limitations": "依赖 PTX 分析可能增加离线预处理开销，且对极端异构场景的适应性需进一步验证。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10208",
+      "title": "Mild Over-Parameterization Benefits Asymmetric Tensor PCA",
+      "authors": [
+        "Shihong Ding",
+        "Weicheng Lin",
+        "Cong Fang"
+      ],
+      "abstract": "Asymmetric Tensor PCA (ATPCA) is a prototypical model for studying the trade-offs between sample complexity, computation, and memory. Existing algorithms for this problem typically require at least $d^{\\left\\lceil\\overline{k}/2\\right\\rceil}$ state memory cost to recover the signal, where $d$ is the vector dimension and $\\overline{k}$ is the tensor order. We focus on the setting where $\\overline{k} \\geq 4$ is even and consider (stochastic) gradient descent-based algorithms under a limited memory budget, which permits only mild over-parameterization of the model. We propose a matrix-parameterized method (in $d^{2}$ state memory cost) using a novel three-phase alternating-update algorithm to address the problem and demonstrate how mild over-parameterization facilitates learning in two key aspects: (i) it improves sample efficiency, allowing our method to achieve \\emph{near-optimal} $d^{\\overline{k}-2}$ sample complexity in our limited memory setting; and (ii) it enhances adaptivity to problem structure, a previously unrecognized phenomenon, where the required sample size naturally decreases as consecutive vectors become more aligned, and in the symmetric limit attains $d^{\\overline{k}/2}$, matching the \\emph{best} known polynomial-time complexity. To our knowledge, this is the \\emph{first} tractable algorithm for ATPCA with $d^{\\overline{k}}$-independent memory costs.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T13:34:48Z",
+      "updated": "2026-04-11T13:34:48Z",
+      "entry_url": "https://arxiv.org/abs/2604.10208",
+      "pdf_url": "https://arxiv.org/pdf/2604.10208",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出一种三阶段交替更新算法，在有限内存下用轻度过参数化实现非对称张量PCA的近最优样本复杂度。",
+        "research_motivation": "非对称张量PCA在样本复杂度、计算和内存间存在权衡，现有算法内存成本高，需探索低内存下的高效方法。",
+        "problem": "在内存预算有限（仅允许轻度过参数化）下，如何设计算法以恢复非对称张量PCA中的信号。",
+        "phenomenon_analysis": "轻度过参数化能提升样本效率，并增强对问题结构的自适应性，当连续向量对齐时所需样本自然减少。",
+        "main_method": "提出矩阵参数化方法，采用新颖的三阶段交替更新算法，内存成本为d²。",
+        "key_experiments": "理论分析表明，该方法在有限内存下达到近最优的d^{k-2}样本复杂度，对称极限下匹配最佳多项式时间复杂度。",
+        "contributions": "首个内存成本与d^k无关的可行算法，揭示了轻度过参数化在自适应性和样本效率上的双重优势。",
+        "limitations": "仅针对偶数阶张量（k≥4），且依赖轻度过参数化假设，可能不适用于极端低内存场景。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 9,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10179",
+      "title": "Byzantine-Robust Distributed SGD: A Unified Analysis and Tight Error Bounds",
+      "authors": [
+        "Boyuan Ruan",
+        "Xiaoyu Wang",
+        "Ya-Feng Liu"
+      ],
+      "abstract": "Byzantine-robust distributed optimization relies on robust aggregation rules to mitigate the influence of malicious Byzantine workers. Despite the proliferation of such rules, a unified convergence analysis framework that accommodates general data heterogeneity is lacking. In this work, we provide a thorough convergence theory of Byzantine-robust distributed stochastic gradient descent (SGD), analyzing variants both with and without local momentum. We establish the convergence rates for nonconvex smooth objectives and those satisfying the Polyak-Lojasiewicz condition under a general data heterogeneity assumption. Our analysis reveals that while stochasticity and data heterogeneity introduce unavoidable error floors, local momentum provably reduces the error component induced by stochasticity. Furthermore, we derive matching lower bounds to demonstrate that the upper bounds obtained in our analysis are tight and characterize the fundamental limits of Byzantine resilience under stochasticity and data heterogeneity. Empirical results support our theoretical findings.",
+      "categories": [
+        "math.OC",
+        "cs.LG"
+      ],
+      "primary_category": "math.OC",
+      "published": "2026-04-11T12:17:24Z",
+      "updated": "2026-04-11T12:17:24Z",
+      "entry_url": "https://arxiv.org/abs/2604.10179",
+      "pdf_url": "https://arxiv.org/pdf/2604.10179",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "统一分析拜占庭鲁棒分布式SGD，给出紧误差界，证明局部动量可降低随机性误差。",
+        "research_motivation": "现有拜占庭鲁棒聚合规则缺乏统一收敛分析框架，尤其未考虑通用数据异质性。",
+        "problem": "解决拜占庭攻击下分布式SGD的收敛性分析，并刻画随机性和数据异质性导致的误差下界。",
+        "phenomenon_analysis": "随机性和数据异质性会引入不可避免的误差地板，而局部动量可理论证明降低随机性引起的误差分量。",
+        "main_method": "建立统一收敛理论，分析有无局部动量的拜占庭鲁棒分布式SGD，并推导匹配下界证明上界紧性。",
+        "key_experiments": "在非凸光滑和Polyak-Lojasiewicz条件下验证理论结果，实验支持误差界和动量效果。",
+        "contributions": "提供首个统一分析框架，证明紧误差界，揭示局部动量的理论优势。",
+        "limitations": "未考虑更复杂的拜占庭攻击模型或通信效率优化。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 9,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10199",
+      "title": "FatigueFusion: Latent Space Fusion for Fatigue-Driven Motion Synthesis",
+      "authors": [
+        "Iliana Loi and Konstantinos Moustakas"
+      ],
+      "abstract": "Investigating the impact of fatigue on human physiological function and motor behavior is crucial for developing biomechanics and medical applications aimed at mitigating fatigue, reducing injury risk, and creating sophisticated ergonomic designs, as well as for producing physically-plausible 3D animation sequences. While the former has a prominent position in state-of-the-art literature, fatigue-driven motion generation is still an underexplored area. In this study, we present FatigueFusion, a deep-learning architecture for the fusion of fatigue features within a latent representation space, enabling the creation of a variation of novel fatigued movements, intermediate fatigued states, and progressively fatigued motions. Unlike existing approaches that focus on imitating the effects of fatigue accumulation in motion patterns, our framework incorporates algorithmic and data-driven modules to impose subject-specific temporal and spatial fatigue features on nonfatigued motions, while leveraging PINN-based techniques to simulate fatigue intensity. Since all motion modulation tasks are taking place in latent space, FatigueFusion offers an end-to-end architecture that operates directly on non-fatigued joint angle sequences and control parameters, allowing seamless integration into any motion synthesis pipeline, without relying on fatigue input data. Overall, our framework can be employed for various fatigue-driven synthesis tasks, such as fatigue profile transfer and fusion, while it also provides a solution for accurate rendering of the human fatigue state in both animation and simulation pipelines.",
+      "categories": [
+        "cs.GR",
+        "cs.LG"
+      ],
+      "primary_category": "cs.GR",
+      "published": "2026-04-11T13:12:20Z",
+      "updated": "2026-04-11T13:12:20Z",
+      "entry_url": "https://arxiv.org/abs/2604.10199",
+      "pdf_url": "https://arxiv.org/pdf/2604.10199",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出 FatigueFusion，一种在潜空间融合疲劳特征以生成疲劳运动序列的深度学习架构。",
+        "research_motivation": "疲劳对运动行为影响的研究在生物力学和医学中重要，但疲劳驱动的运动生成仍未被充分探索。",
+        "problem": "现有方法仅模仿疲劳累积效应，无法生成中间疲劳状态或渐进疲劳运动，且依赖疲劳输入数据。",
+        "phenomenon_analysis": "疲劳在运动模式中表现为时空特征变化，但缺乏有效方法在无疲劳输入下生成多样化疲劳运动。",
+        "main_method": "在潜空间融合疲劳特征，结合算法与数据驱动模块施加时空疲劳特征，并利用PINN模拟疲劳强度。",
+        "key_experiments": "在运动合成任务中验证了疲劳特征转移、融合及渐进疲劳生成的效果。",
+        "contributions": "提出端到端架构，无需疲劳输入即可生成多样化疲劳运动，并支持无缝集成到现有管线。",
+        "limitations": "未明确讨论对复杂运动或极端疲劳状态的泛化能力，以及计算效率。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 8,
+        "impact": 7,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10183",
+      "title": "RF-LEGO: Modularized Signal Processing-Deep Learning Co-Design for RF Sensing via Deep Unrolling",
+      "authors": [
+        "Luca Jiang-Tao Yu and Chenshu Wu"
+      ],
+      "abstract": "Wireless sensing, traditionally relying on signal processing (SP) techniques, has recently shifted toward data-driven deep learning (DL) to achieve performance breakthroughs. However, existing deep wireless sensing models are typically end-to-end and task-specific, lacking reusability and interpretability. We propose RF-LEGO, a modular co-design framework that transforms interpretable SP algorithms into trainable, physics-grounded DL modules through deep unrolling. By replacing hand-tuned parameters with learnable ones while preserving core processing structures and mathematical operators, RF-LEGO ensures modularity, cascadability, and structure-aligned interpretability. Specifically, we introduce three deep-unrolled modules for critical RF sensing tasks: frequency transform, spatial angle estimation, and signal detection. Extensive experiments using real-world data for Wi-Fi, millimeter-wave, UWB, and 6G sensing demonstrate that RF-LEGO significantly outperforms existing SP and DL baselines, both standalone and when integrated into multiple downstream tasks. RF-LEGO pioneers a novel SP-DL co-design paradigm for wireless sensing via deep unrolling, shedding light on efficient and interpretable deep wireless sensing solutions. Our code is available at https://github.com/aiot-lab/RF-LEGO.",
+      "categories": [
+        "cs.DC",
+        "cs.LG"
+      ],
+      "primary_category": "cs.DC",
+      "published": "2026-04-11T12:32:55Z",
+      "updated": "2026-04-11T12:32:55Z",
+      "entry_url": "https://arxiv.org/abs/2604.10183",
+      "pdf_url": "https://arxiv.org/pdf/2604.10183",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出RF-LEGO模块化框架，通过深度展开将信号处理算法转化为可训练、可解释的深度学习模块，在多种无线感知任务中超越现有方法。",
+        "research_motivation": "现有深度无线感知模型多为端到端且任务特定，缺乏可重用性和可解释性，需要一种结合信号处理与深度学习优势的模块化设计。",
+        "problem": "如何设计兼具物理可解释性、模块化复用性和高性能的无线感知深度学习模型。",
+        "phenomenon_analysis": "传统信号处理方法依赖手工参数，性能受限；而纯深度学习方法虽性能突破但缺乏结构可解释性和跨任务迁移能力。",
+        "main_method": "通过深度展开技术，将可解释的信号处理算法（如频率变换、空间角度估计、信号检测）转化为保留核心结构但参数可学习的深度学习模块。",
+        "key_experiments": "在Wi-Fi、毫米波、UWB和6G感知的真实数据集上测试，RF-LEGO在独立任务和下游任务中均显著优于传统信号处理和深度学习基线。",
+        "contributions": "首次提出基于深度展开的SP-DL协同设计范式，实现模块化、可级联且结构对齐可解释的无线感知框架。",
+        "limitations": "当前仅针对三种核心RF感知任务设计模块，扩展至更多任务（如信道估计）需进一步验证；深度展开可能增加计算开销。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10175",
+      "title": "\"bot lane noob\" Towards Deployment of NLP-based Toxicity Detectors in Video Games",
+      "authors": [
+        "Jonas Ave",
+        "Irdin Pekaric",
+        "Matthias Frohner",
+        "Giovanni Apruzzese"
+      ],
+      "abstract": "Toxicity and harassment are widespread in the video-gaming context. Especially in competitive online multiplayer scenarios, gamers oftentimes send harmful messages to other players (teammates or opponents) whose consequences span from mild annoyance to withdrawal and depression. Abundant prior work tackled these problems, e.g., pointing out the negative effects of toxic interactions. However, few works proposed countermeasures specifically developed and tested on textual messages sent during a match -- i.e., when the \"harassment\" actually occurs. We posit that such a scarcity stems from the lack of high-quality datasets that can be used to devise \"automated\" detectors based on natural-language processing (NLP) and machine learning (ML), and which can -- ideally -- mitigate the harm of toxic comments during a gaming session. This work provides a foundation for addressing the problem of toxicity and harassment in video games. First, through a systematic literature review (n=1,039), we provide evidence that only few works proposed ML/NLP-based detectors of toxicity/harassment during live matches. Then, we partner-up with 8 expert League of Legend (LoL) players and create a fine-grained labelled dataset, L2DTnH, containing 1.4k toxic and 13.8k non-toxic messages exchanged during LoL matches. We use L2DTnH to develop a detector that we then empirically show outperforms general-purpose and state-of-the-art toxicity detectors reliant on NLP. To further demonstrate the practicality of our resources, we test our detector on game-related data beyond that included in L2DTnH; and we develop a Web-browser extension that flags toxic content in Webpages -- without querying third-party servers owned by AI companies. We publicly release all of our resources. Our contributions pave the way for more applied research devoted to fighting the spread of toxicity and harassment in video games.",
+      "categories": [
+        "cs.CR",
+        "cs.CY",
+        "cs.LG"
+      ],
+      "primary_category": "cs.CR",
+      "published": "2026-04-11T12:06:25Z",
+      "updated": "2026-04-11T12:06:25Z",
+      "entry_url": "https://arxiv.org/abs/2604.10175",
+      "pdf_url": "https://arxiv.org/pdf/2604.10175",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "针对电子游戏中的毒性言论，本文构建了高质量数据集L2DTnH，并开发了优于通用检测器的NLP毒性检测系统。",
+        "research_motivation": "电子游戏中毒性言论普遍存在，但缺乏针对比赛实时文本消息的高质量数据集和自动化检测方法。",
+        "problem": "现有毒性检测器多基于通用数据，在游戏实时场景中效果不佳，且缺乏专门针对游戏内消息的标注数据集。",
+        "phenomenon_analysis": "游戏内毒性言论在比赛进行时频繁发生，但现有研究多关注事后分析，缺乏实时干预手段。",
+        "main_method": "通过系统文献综述（n=1,039）确认研究空白，与8位英雄联盟专家合作构建细粒度标注数据集L2DTnH（1.4k毒性/13.8k非毒性消息），并基于此开发NLP检测器。",
+        "key_experiments": "在L2DTnH上训练检测器，并与通用及最先进的NLP毒性检测器对比；在游戏相关数据上测试泛化性；开发浏览器扩展实现本地检测。",
+        "contributions": "提供了首个高质量游戏内毒性消息数据集L2DTnH，开发了优于现有方法的检测器，并开源所有资源。",
+        "limitations": "数据集仅来自英雄联盟，可能不适用于其他游戏；检测器依赖特定游戏术语，泛化性需进一步验证。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 7,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10173",
+      "title": "Continuous PT-Symmetry Breaking as a Design Variable for Giant Altermagnetic Spin Splitting",
+      "authors": [
+        "Kichan Chun",
+        "Gunn Kim"
+      ],
+      "abstract": "Magnetic point-group analysis classifies altermagnets but returns only a binary symmetry verdict, leaving spin-splitting energy (SSE) inaccessible without spin-polarized density functional theory (DFT). This binary ceiling is not fundamental. Sublattice symmetry breaking is promoted here to a continuous, DFT-free scalar -- the Motif Symmetry-Breaking Index (MSBI) -- that quantifies $\\mathcal{PT}$-symmetry breaking between antiparallel magnetic motifs directly from crystal coordinates. SHAP analysis of an XGBoost surrogate trained on 3,851 DFT-labeled binary structures identifies three dominant descriptors: MSBI (symmetry-breaking axis), motif packing fraction MPF (superexchange axis), and the $p/d$ electron ratio (covalency axis), each mapping onto a directly tunable experimental handle. A controlled VO--CrSb comparison within the same P$6_3$/mmc host lattice demonstrates that composition alone boosts SSE sevenfold. Bayesian optimization over this three-axis space, followed by independent DFT validation, recovers $\\alpha$-NiS (SSE $= 0.823$\\,eV) as cross-validation against an independent symmetry-based prediction and identifies three previously unrecognized high-SSE candidates -- square-planar FeS (1.297\\,eV), octahedral CoS (1.103\\,eV), and FeAs (1.089\\,eV) -- all matching or exceeding CrSb. Square-planar Fe--S is proposed as a transferable coordination motif for giant altermagnetic spin splitting, advancing altermagnet design from symmetry classification to continuous quantitative optimization.",
+      "categories": [
+        "cond-mat.mtrl-sci",
+        "cs.LG",
+        "physics.comp-ph"
+      ],
+      "primary_category": "cond-mat.mtrl-sci",
+      "published": "2026-04-11T11:44:59Z",
+      "updated": "2026-04-11T11:44:59Z",
+      "entry_url": "https://arxiv.org/abs/2604.10173",
+      "pdf_url": "https://arxiv.org/pdf/2604.10173",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出连续PT对称性破缺标量MSBI，结合机器学习实现反铁磁自旋分裂能的定量预测与优化。",
+        "research_motivation": "现有磁点群分析仅能给出二元对称性判断，无法直接预测自旋分裂能，需依赖DFT计算。",
+        "problem": "如何将反铁磁体设计从二元对称性分类提升为连续定量优化。",
+        "phenomenon_analysis": "子晶格对称性破缺程度与自旋分裂能呈连续相关，而非二元开关关系。",
+        "main_method": "提出Motif对称性破缺指数(MSBI)量化PT对称性破缺，结合XGBoost代理模型和SHAP分析识别关键描述符。",
+        "key_experiments": "在3851个DFT标记结构上训练模型，通过VO-CrSb对比验证成分调控可提升自旋分裂能7倍，贝叶斯优化发现FeS等新高能候选材料。",
+        "contributions": "首次将反铁磁自旋分裂能预测从二元分类推进到连续定量优化，识别出方形平面Fe-S配位基序。",
+        "limitations": "模型依赖DFT标签数据质量，未考虑温度效应和实际材料合成可行性。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10146",
+      "title": "Consensus-based Recursive Multi-Output Gaussian Process",
+      "authors": [
+        "Yogesh Prasanna Kumar Rao",
+        "Tamas Keviczky",
+        "Raj Thilak Rajan"
+      ],
+      "abstract": "Multi-output Gaussian Processes provide principled uncertainty-aware learning of vector-valued fields but are difficult to deploy in large-scale, distributed, and streaming settings due to their computational and centralized nature. This paper proposes a Consensus-based Recursive Multi-Output Gaussian Process (CRMGP) framework that combines recursive inference on shared basis vectors with neighbour-to-neighbour information-consensus updates. The resulting method supports parallel, fully distributed learning with bounded per-step computation while preserving inter-output correlations and calibrated uncertainty. Experiments on synthetic wind fields and real LiDAR data demonstrate that CRMGP achieves competitive predictive performance and reliable uncertainty calibration, offering a scalable alternative to centralized Gaussian process models for multi-agent sensing applications.",
+      "categories": [
+        "cs.LG",
+        "eess.SP"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T10:21:03Z",
+      "updated": "2026-04-11T10:21:03Z",
+      "entry_url": "https://arxiv.org/abs/2604.10146",
+      "pdf_url": "https://arxiv.org/pdf/2604.10146",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出共识递归多输出高斯过程，实现分布式、流式场景下的高效多输出高斯过程学习。",
+        "research_motivation": "多输出高斯过程在分布式和大规模流式场景中计算复杂且依赖中心化处理，难以实际部署。",
+        "problem": "如何实现多输出高斯过程的分布式、流式学习，同时保持输出间相关性和不确定性校准。",
+        "phenomenon_analysis": "现有方法在分布式设置中无法有效保持多输出间的相关性，且计算成本随数据规模增长。",
+        "main_method": "结合递归推理（共享基向量）和邻居间信息共识更新，实现并行、全分布式学习。",
+        "key_experiments": "在合成风场和真实LiDAR数据上验证，显示竞争性预测性能和可靠的不确定性校准。",
+        "contributions": "提出首个支持分布式流式学习的多输出高斯过程框架，保持输出相关性和校准不确定性。",
+        "limitations": "未明确讨论通信开销和收敛性保证，可能受限于共识更新速度。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10074",
+      "title": "Transformers Learn the Optimal DDPM Denoiser for Multi-Token GMMs",
+      "authors": [
+        "Hongkang Li",
+        "Hancheng Min",
+        "Rene Vidal"
+      ],
+      "abstract": "Transformer-based diffusion models have demonstrated remarkable performance at generating high-quality samples. However, our theoretical understanding of the reasons for this success remains limited. For instance, existing models are typically trained by minimizing a denoising objective, which is equivalent to fitting the score function of the training data. However, we do not know why transformer-based models can match the score function for denoising, or why gradient-based methods converge to the optimal denoising model despite the non-convex loss landscape. To the best of our knowledge, this paper provides the first convergence analysis for training transformer-based diffusion models. More specifically, we consider the population Denoising Diffusion Probabilistic Model (DDPM) objective for denoising data that follow a multi-token Gaussian mixture distribution. We theoretically quantify the required number of tokens per data point and training iterations for the global convergence towards the Bayes optimal risk of the denoising objective, thereby achieving a desired score matching error. A deeper investigation reveals that the self-attention module of the trained transformer implements a mean denoising mechanism that enables the trained model to approximate the oracle Minimum Mean Squared Error (MMSE) estimator of the injected noise in the diffusion steps. Numerical experiments validate these findings.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T07:46:15Z",
+      "updated": "2026-04-11T07:46:15Z",
+      "entry_url": "https://arxiv.org/abs/2604.10074",
+      "pdf_url": "https://arxiv.org/pdf/2604.10074",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "首次理论证明Transformer在DDPM中可收敛到最优去噪器，针对多token高斯混合分布。",
+        "research_motivation": "Transformer扩散模型性能优异但理论理解不足，缺乏收敛性分析。",
+        "problem": "Transformer能否以及如何通过去噪目标学习到最优分数函数。",
+        "phenomenon_analysis": "自注意力模块实现了均值去噪机制，近似MMSE估计器。",
+        "main_method": "分析多token高斯混合分布下的DDPM目标，推导全局收敛所需token数和迭代次数。",
+        "key_experiments": "数值实验验证了理论结果。",
+        "contributions": "首次提供Transformer扩散模型的收敛性分析，揭示自注意力的去噪机制。",
+        "limitations": "仅针对高斯混合分布，未扩展到更复杂数据分布。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 9,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10158",
+      "title": "Tracing the Thought of a Grandmaster-level Chess-Playing Transformer",
+      "authors": [
+        "Rui Lin",
+        "Zhenyu Jin",
+        "Guancheng Zhou",
+        "Xuyang Ge",
+        "Wentao Shu",
+        "Jiaxing Wu",
+        "Junxuan Wang",
+        "Zhengfu He",
+        "Junping Zhang",
+        "Xipeng Qiu"
+      ],
+      "abstract": "While modern transformer neural networks achieve grandmaster-level performance in chess and other reasoning tasks, their internal computation process remains largely opaque. Focusing on Leela Chess Zero (LC0), we introduce a sparse decomposition framework to interpret its internal computation by decomposing its MLP and attention modules with sparse replacement layers, which capture the primary computation process of LC0. We conduct a detailed case study showing that these pathways expose rich, interpretable tactical considerations that are empirically verifiable. We further introduce three quantitative metrics and show that LC0 exhibits parallel reasoning behavior consistent with the inductive bias of its policy head architecture. To the best of our knowledge, this is the first work to decompose the internal computation of a transformer on both MLP and attention modules for interpretability. Combining sparse replacement layers and causal interventions in LC0 provides a comprehensive understanding of advanced tactical reasoning, offering critical insights into the underlying mechanisms of superhuman systems. Our code is available at https://github.com/JacklE0niden/Leela-SAEs.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T11:11:06Z",
+      "updated": "2026-04-11T11:11:06Z",
+      "entry_url": "https://arxiv.org/abs/2604.10158",
+      "pdf_url": "https://arxiv.org/pdf/2604.10158",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "通过稀疏分解框架，首次同时解析了国际象棋大师级Transformer（LC0）的MLP和注意力模块，揭示了其战术推理机制。",
+        "research_motivation": "现代Transformer在复杂推理任务中表现超人类，但其内部计算过程不透明，亟需可解释性方法。",
+        "problem": "现有可解释性研究多聚焦于MLP或注意力模块之一，缺乏对两者联合分解的方法。",
+        "phenomenon_analysis": "LC0的稀疏路径暴露了丰富的可验证战术考量，且其并行推理行为与策略头架构的归纳偏置一致。",
+        "main_method": "提出稀疏替换层分解框架，结合因果干预，分别解析MLP和注意力模块的主要计算过程。",
+        "key_experiments": "通过案例研究验证稀疏路径的战术解释性，并引入三个量化指标评估并行推理行为。",
+        "contributions": "首次联合分解Transformer的MLP和注意力模块用于可解释性，为超人类系统机制提供新见解。",
+        "limitations": "仅针对国际象棋领域，稀疏分解的通用性及对更大规模模型的适用性待验证。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 8,
+        "impact": 7,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10123",
+      "title": "Training-Free Cross-Lingual Dysarthria Severity Assessment via Phonological Subspace Analysis in Self-Supervised Speech Representations",
+      "authors": [
+        "Bernard Muller",
+        "Antonio Armando Ortiz Barra\\~n\\'on",
+        "and LaVonne Roberts"
+      ],
+      "abstract": "Dysarthric speech severity assessment typically requires trained clinicians or supervised models built from labelled pathological speech, limiting scalability across languages and clinical settings. We present a training-free method that quantifies dysarthria severity by measuring degradation in phonological feature subspaces within frozen HuBERT representations. No supervised severity model is trained; feature directions are estimated from healthy control speech using a pretrained forced aligner. For each speaker, we extract phone-level embeddings via Montreal Forced Aligner, compute d-prime scores along phonological contrast directions (nasality, voicing, stridency, sonorance, manner, and four vowel features) derived exclusively from healthy controls, and construct a 12-dimensional phonological profile.Evaluating 890 speakers across 10 corpora, 5 languages (English, Spanish, Dutch, Mandarin, French), and 3 primary aetiologies (Parkinson's disease, cerebral palsy, ALS), we find that all five consonant d-prime features correlate significantly with clinical severity (random-effects meta-analysis rho = -0.50 to -0.56, p < 2e-4; pooled Spearman rho = -0.47 to -0.55 with bootstrap 95% CIs not crossing zero). The effect replicates within individual corpora, survives FDR correction, and remains robust to leave-one-corpus-out removal and alignment quality controls. Nasality d-prime decreases monotonically from control to severe in 6 of 7 severity-graded corpora. Mann-Whitney U tests confirm that all 12 features distinguish controls from severely dysarthric speakers (p < 0.001).The method requires no dysarthric training data and applies to any language with an existing MFA acoustic model (currently 29 languages). We release the full pipeline and phone feature configurations for six languages.",
+      "categories": [
+        "cs.CL",
+        "cs.LG"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-11T09:38:35Z",
+      "updated": "2026-04-11T09:38:35Z",
+      "entry_url": "https://arxiv.org/abs/2604.10123",
+      "pdf_url": "https://arxiv.org/pdf/2604.10123",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出无需训练的方法，通过分析HuBERT表示中的音位子空间退化来评估构音障碍严重程度，跨语言验证有效。",
+        "research_motivation": "传统构音障碍评估依赖临床专家或监督模型，难以跨语言和临床场景扩展。",
+        "problem": "如何在不使用构音障碍训练数据的情况下，实现跨语言的构音障碍严重程度自动评估。",
+        "phenomenon_analysis": "构音障碍语音在自监督表示中，音位特征子空间（如鼻音、浊音）出现可量化的退化，且与临床严重程度显著相关。",
+        "main_method": "利用冻结的HuBERT模型，从健康对照语音中估计音位对比方向，计算d-prime分数构建12维音位轮廓。",
+        "key_experiments": "在10个语料库、5种语言、3种病因的890名说话者上验证，所有辅音特征与临床严重程度显著相关（rho=-0.47至-0.55）。",
+        "contributions": "提出首个无需训练数据的跨语言构音障碍评估方法，适用于29种语言，并开源完整流程。",
+        "limitations": "依赖MFA声学模型可用性，未评估对轻度构音障碍的区分能力。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 7,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10098",
+      "title": "Attention Sink in Transformers: A Survey on Utilization, Interpretation, and Mitigation",
+      "authors": [
+        "Zunhai Su",
+        "Hengyuan Zhang",
+        "Wei Wu",
+        "Yifan Zhang",
+        "Yaxiu Liu",
+        "He Xiao",
+        "Qingyao Yang",
+        "Yuxuan Sun",
+        "Rui Yang",
+        "Chao Zhang",
+        "Keyu Fan",
+        "Weihao Ye",
+        "Jing Xiong",
+        "Hui Shen",
+        "Chaofan Tao",
+        "Taiqiang Wu",
+        "Zhongwei Wan",
+        "Yulei Qian",
+        "Yuchen Xie",
+        "Ngai Wong"
+      ],
+      "abstract": "As the foundational architecture of modern machine learning, Transformers have driven remarkable progress across diverse AI domains. Despite their transformative impact, a persistent challenge across various Transformers is Attention Sink (AS), in which a disproportionate amount of attention is focused on a small subset of specific yet uninformative tokens. AS complicates interpretability, significantly affecting the training and inference dynamics, and exacerbates issues such as hallucinations. In recent years, substantial research has been dedicated to understanding and harnessing AS. However, a comprehensive survey that systematically consolidates AS-related research and offers guidance for future advancements remains lacking. To address this gap, we present the first survey on AS, structured around three key dimensions that define the current research landscape: Fundamental Utilization, Mechanistic Interpretation, and Strategic Mitigation. Our work provides a pivotal contribution by clarifying key concepts and guiding researchers through the evolution and trends of the field. We envision this survey as a definitive resource, empowering researchers and practitioners to effectively manage AS within the current Transformer paradigm, while simultaneously inspiring innovative advancements for the next generation of Transformers. The paper list of this work is available at https://github.com/ZunhaiSu/Awesome-Attention-Sink.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T08:41:33Z",
+      "updated": "2026-04-11T08:41:33Z",
+      "entry_url": "https://arxiv.org/abs/2604.10098",
+      "pdf_url": "https://arxiv.org/pdf/2604.10098",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "首篇关于Transformer中注意力沉没（AS）现象的系统综述，从利用、解释和缓解三个维度梳理研究进展。",
+        "research_motivation": "注意力沉没现象在Transformer中普遍存在，但缺乏系统性综述来整合相关研究并指导未来方向。",
+        "problem": "注意力沉没导致模型将过多注意力集中在少数无信息量的标记上，影响可解释性、训练推理动态并加剧幻觉。",
+        "phenomenon_analysis": "注意力沉没表现为模型对特定标记（如起始标记）的过度关注，这种现象在多种Transformer架构中均被观察到。",
+        "main_method": "从基础利用、机制解释和策略缓解三个维度系统梳理现有研究，提供概念澄清和趋势分析。",
+        "key_experiments": "综述了多个相关实验，涵盖不同Transformer变体中的注意力沉没现象及其影响。",
+        "contributions": "首次提供注意力沉没的系统性综述，明确关键概念，指导研究人员理解领域演化与趋势。",
+        "limitations": "作为综述，未提出新的缓解方法；对注意力沉没的量化评估标准尚不统一。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10091",
+      "title": "SEPTQ: A Simple and Effective Post-Training Quantization Paradigm for Large Language Models",
+      "authors": [
+        "Han Liu",
+        "Haotian Gao",
+        "Xiaotong Zhang",
+        "Changya Li",
+        "Feng Zhang",
+        "Wei Wang",
+        "Fenglong Ma",
+        "Hong Yu"
+      ],
+      "abstract": "Large language models (LLMs) have shown remarkable performance in various domains, but they are constrained by massive computational and storage costs. Quantization, an effective technique for compressing models to fit resource-limited devices while preserving generative quality, encompasses two primary methods: quantization aware training (QAT) and post-training quantization (PTQ). QAT involves additional retraining or fine-tuning, thus inevitably resulting in high training cost and making it unsuitable for LLMs. Consequently, PTQ has become the research hotspot in recent quantization methods. However, existing PTQ methods usually rely on various complex computation procedures and suffer from considerable performance degradation under low-bit quantization settings. To alleviate the above issues, we propose a simple and effective post-training quantization paradigm for LLMs, named SEPTQ. Specifically, SEPTQ first calculates the importance score for each element in the weight matrix and determines the quantization locations in a static global manner. Then it utilizes the mask matrix which represents the important locations to quantize and update the associated weights column-by-column until the appropriate quantized weight matrix is obtained. Compared with previous methods, SEPTQ simplifies the post-training quantization procedure into only two steps, and considers the effectiveness and efficiency simultaneously. Experimental results on various datasets across a suite of models ranging from millions to billions in different quantization bit-levels demonstrate that SEPTQ significantly outperforms other strong baselines, especially in low-bit quantization scenarios.",
+      "categories": [
+        "cs.CL"
+      ],
+      "primary_category": "cs.CL",
+      "published": "2026-04-11T08:23:50Z",
+      "updated": "2026-04-11T08:23:50Z",
+      "entry_url": "https://arxiv.org/abs/2604.10091",
+      "pdf_url": "https://arxiv.org/pdf/2604.10091",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出一种简单高效的大语言模型后训练量化方法SEPTQ，通过全局重要性评分和掩码矩阵实现两步量化，在低比特场景下性能显著优于现有方法。",
+        "research_motivation": "现有后训练量化方法计算复杂且低比特下性能下降严重，需要更简单有效的量化范式。",
+        "problem": "如何设计一种既简单又高效的后训练量化方法，在低比特量化下保持模型性能。",
+        "phenomenon_analysis": "现有PTQ方法依赖复杂计算流程，在低比特量化时性能退化明显，表明简单有效的量化策略仍有探索空间。",
+        "main_method": "先计算权重矩阵每个元素的重要性分数并全局确定量化位置，再利用掩码矩阵逐列量化和更新权重，仅需两步完成。",
+        "key_experiments": "在多种模型（百万到十亿参数）和不同比特位宽的数据集上测试，低比特场景下SEPTQ显著优于其他基线方法。",
+        "contributions": "提出一种仅需两步的简单后训练量化范式，同时兼顾效果和效率，在低比特量化中表现突出。",
+        "limitations": "未讨论对超大规模模型（如千亿参数）的适用性，以及掩码矩阵计算可能带来的额外开销。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 7,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10054",
+      "title": "Cross-Validated Cross-Channel Self-Attention and Denoising for Automatic Modulation Classification",
+      "authors": [
+        "Prakash Suman and Yanzhen Qu"
+      ],
+      "abstract": "This study addresses a key limitation in deep learning Automatic Modulation Classification (AMC) models, which perform well at high signal-to-noise ratios (SNRs) but degrade under noisy conditions due to conventional feature extraction suppressing both discriminative structure and interference. The goal was to develop a feature-preserving denoising method that mitigates the loss of modulation class separation. A deep learning AMC model was proposed, incorporating a cross-channel self-attention block to capture dependencies between in-phase and quadrature components, along with dual-path deep residual shrinkage denoising blocks to suppress noise. Experiments using the RML2018.01a dataset employed stratified sampling across 24 modulation types and 26 SNR levels. Results showed that denoising depth strongly influences robustness at low and moderate SNRs. Compared to benchmark models PET-CGDNN, MCLDNN, and DAE, the proposed model achieved notable accuracy improvements across -8 dB to +2 dB SNR, with increases of 3%, 2.3%, and 14%, respectively. Cross-validation confirmed the model's robustness, yielding a mean accuracy of 62.6%, macro precision of 65.8%, macro-recall of 62.6%, and macro-F1 score of 62.9%. The architecture advances interference-aware AMC by formalizing baseband modeling as orthogonal subproblems and introducing cross-channel attention as a generalized complex interaction operator, with ablations confirming the critical role of feature-preserving denoising for robustness at low-to-medium SNR.",
+      "categories": [
+        "cs.LG",
+        "cs.SD"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T06:29:12Z",
+      "updated": "2026-04-11T06:29:12Z",
+      "entry_url": "https://arxiv.org/abs/2604.10054",
+      "pdf_url": "https://arxiv.org/pdf/2604.10054",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出交叉通道自注意力与双路径深度残差收缩去噪的AMC模型，在低信噪比下显著提升分类精度。",
+        "research_motivation": "现有深度学习AMC模型在高信噪比下表现良好，但在噪声环境下性能下降，因为传统特征提取同时抑制了判别结构和干扰。",
+        "problem": "解决低信噪比下自动调制分类中特征抑制导致分类性能退化的问题。",
+        "phenomenon_analysis": "去噪深度对低中信噪比下的鲁棒性有强烈影响，且传统方法无法保留调制类别的区分性结构。",
+        "main_method": "提出交叉通道自注意力块捕获同相与正交分量依赖，结合双路径深度残差收缩去噪块抑制噪声。",
+        "key_experiments": "在RML2018.01a数据集上对24种调制类型和26个SNR级别进行分层采样，与PET-CGDNN、MCLDNN、DAE对比，在-8dB至+2dB SNR下精度分别提升3%、2.3%、14%。",
+        "contributions": "将基带建模形式化为正交子问题，引入交叉通道注意力作为广义复交互算子，并通过消融实验验证特征保留去噪的关键作用。",
+        "limitations": "未提及模型计算复杂度或实时性评估，且仅在单一数据集上验证。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10045",
+      "title": "Daily Predictions of F10.7 and F30 Solar Indices with Deep Learning",
+      "authors": [
+        "Zhenduo Wang",
+        "Yasser Abduallah",
+        "Jason T. L. Wang",
+        "Haimin Wang",
+        "Yan Xu",
+        "Vasyl Yurchyshyn",
+        "Vincent Oria",
+        "Khalid A. Alobaid",
+        "Xiaoli Bai"
+      ],
+      "abstract": "The F10.7 and F30 solar indices are the solar radio fluxes measured at wavelengths of 10.7 cm and 30 cm, respectively, which are key indicators of solar activity. F10.7 is valuable for explaining the impact of solar ultraviolet (UV) radiation on the upper atmosphere of Earth, while F30 is more sensitive and could improve the reaction of thermospheric density to solar stimulation. In this study, we present a new deep learning model, named the Solar Index Network, or SINet for short, to predict daily values of the F10.7 and F30 solar indices. The SINet model is designed to make medium-term predictions of the index values (1-60 days in advance). The observed data used for SINet training were taken from the National Oceanic and Atmospheric Administration (NOAA) as well as Toyokawa and Nobeyama facilities. Our experimental results show that SINet performs better than five closely related statistical and deep learning methods for the prediction of F10.7. Furthermore, to our knowledge, this is the first time deep learning has been used to predict the F30 solar index.",
+      "categories": [
+        "astro-ph.SR",
+        "cs.LG"
+      ],
+      "primary_category": "astro-ph.SR",
+      "published": "2026-04-11T05:56:10Z",
+      "updated": "2026-04-11T05:56:10Z",
+      "entry_url": "https://arxiv.org/abs/2604.10045",
+      "pdf_url": "https://arxiv.org/pdf/2604.10045",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出深度学习模型SINet，用于预测F10.7和F30太阳指数，在F10.7预测上优于现有方法，并首次用深度学习预测F30。",
+        "research_motivation": "F10.7和F30太阳指数是太阳活动关键指标，准确预测有助于理解太阳辐射对地球大气的影响。",
+        "problem": "现有方法对F10.7和F30指数的中期预测（1-60天）精度不足，且缺乏针对F30的深度学习预测模型。",
+        "phenomenon_analysis": "F10.7反映太阳紫外辐射对地球高层大气的影响，F30更敏感，能改善热层密度对太阳刺激的响应。",
+        "main_method": "设计名为SINet的深度学习模型，利用NOAA和丰川、野边山观测站的历史数据，进行1-60天的中期预测。",
+        "key_experiments": "使用NOAA及日本观测站数据训练SINet，与五种统计和深度学习方法对比，在F10.7预测上表现更优。",
+        "contributions": "首次将深度学习应用于F30太阳指数预测，并验证SINet在F10.7预测上的优越性。",
+        "limitations": "未明确讨论模型在不同太阳活动周期下的泛化能力或对极端事件的预测性能。",
+        "score": 7,
+        "relevance": 8,
+        "novelty": 7,
+        "technical_depth": 6,
+        "impact": 7,
+        "reading_priority": "medium"
+      }
+    },
+    {
+      "arxiv_id": "2604.10157",
+      "title": "Accelerated Dopant Screening in Oxide Semiconductors via Multi-Fidelity Contextual Bandits and a Three-Tier DFT Validation Funnel",
+      "authors": [
+        "Abhinaba Basu"
+      ],
+      "abstract": "Band gap engineering of oxide semiconductors through doping is critical for photocatalysis and optoelectronics, yet the combinatorial space of dopant elements, substitution sites, and co-doping combinations far exceeds typical density functional theory (DFT) budgets. We screen doped candidates across five oxide hosts (ZnO, TiO2, SrTiO3, SnO2, MgO), culminating in a 529-candidate ZnO co-doping campaign, and identify Cu-containing co-doped ZnO systems as consistently achieving visible-light-range band gaps (1.0-1.8 eV), with Y2Cu2 co-doped ZnO as the optimal candidate (1.84 eV). A three-tier validation funnel (PBE, PBE+U, ionic relaxation) reveals that no single level of theory suffices: V-doped ZnO shifts from near-metallic to wide-gap upon Hubbard U correction, while Cu-doped SrTiO3 enters the visible-light window only after correcting for d-electron localization. To make this screening tractable, we introduce a multi-fidelity screening strategy that replaces 81% of DFT evaluations with computationally inexpensive surrogate predictions, reducing a 529-candidate closed-loop Quantum ESPRESSO campaign from an estimated 440 to 62 CPU-hours while finding the global optimum in 100% of 50 independent trials (p = 5.0e-8 versus random screening, Wilcoxon signed-rank). Cross-host analysis of the dopant-host interaction matrix reveals that dopant performance is governed by just two latent chemical dimensions, enabling prediction of rankings in unseen hosts. All 583 DFT calculations, screening code, and stability proofs are released as an open benchmark.",
+      "categories": [
+        "cond-mat.mtrl-sci",
+        "cs.LG",
+        "physics.comp-ph"
+      ],
+      "primary_category": "cond-mat.mtrl-sci",
+      "published": "2026-04-11T11:05:06Z",
+      "updated": "2026-04-11T11:05:06Z",
+      "entry_url": "https://arxiv.org/abs/2604.10157",
+      "pdf_url": "https://arxiv.org/pdf/2604.10157",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出多保真度上下文赌博机策略，结合三级DFT验证漏斗，高效筛选氧化物半导体掺杂剂，发现Cu共掺杂ZnO为可见光波段最优候选。",
+        "research_motivation": "掺杂氧化物半导体的带隙工程对光催化和光电子学至关重要，但掺杂组合空间远超典型DFT计算预算，亟需高效筛选方法。",
+        "problem": "如何在大规模掺杂候选空间中，以有限计算资源准确识别具有可见光波段带隙的氧化物半导体掺杂体系。",
+        "phenomenon_analysis": "不同理论水平（PBE、PBE+U、离子弛豫）对掺杂体系带隙预测差异显著，如V掺杂ZnO在Hubbard U校正后从近金属态变为宽禁带，Cu掺杂SrTiO3仅在校正d电子局域化后进入可见光窗口。",
+        "main_method": "采用多保真度上下文赌博机策略，用廉价替代预测替代81%的DFT计算，结合三级DFT验证漏斗（PBE、PBE+U、离子弛豫）进行筛选。",
+        "key_experiments": "在5种氧化物宿主（ZnO、TiO2、SrTiO3、SnO2、MgO）中筛选，最终对529个ZnO共掺杂候选进行闭环实验，仅用62 CPU小时找到全局最优解，50次独立试验100%成功。",
+        "contributions": "提出高效多保真度筛选框架，发现Cu共掺杂ZnO为可见光波段最优候选，揭示掺杂性能仅由两个潜在化学维度决定，并公开所有DFT计算和代码作为基准。",
+        "limitations": "方法依赖预定义的掺杂候选空间，未考虑非平衡掺杂或缺陷态影响；三级DFT验证漏斗仍可能遗漏某些复杂电子关联效应。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 8,
+        "technical_depth": 9,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10021",
+      "title": "Masked Contrastive Pre-Training Improves Music Audio Key Detection",
+      "authors": [
+        "Ori Yonay",
+        "Tracy Hammond",
+        "Tianbao Yang"
+      ],
+      "abstract": "Self-supervised music foundation models underperform on key detection, which requires pitch-sensitive representations. In this work, we present the first systematic study showing that the design of self-supervised pretraining directly impacts pitch sensitivity, and demonstrate that masked contrastive embeddings uniquely enable state-of-the-art (SOTA) performance in key detection in the supervised setting. First, we discover that linear evaluation after masking-based contrastive pretraining on Mel spectrograms leads to competitive performance on music key detection out of the box. This leads us to train shallow but wide multi-layer perceptrons (MLPs) on features extracted from our base model, leading to SOTA performance without the need for sophisticated data augmentation policies. We further analyze robustness and show empirically that the learned representations naturally encode common augmentations. Our study establishes self-supervised pretraining as an effective approach for pitch-sensitive MIR tasks and provides insights for designing and probing music foundation models.",
+      "categories": [
+        "cs.SD",
+        "cs.LG"
+      ],
+      "primary_category": "cs.SD",
+      "published": "2026-04-11T04:22:17Z",
+      "updated": "2026-04-11T04:22:17Z",
+      "entry_url": "https://arxiv.org/abs/2604.10021",
+      "pdf_url": "https://arxiv.org/pdf/2604.10021",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "首次系统证明掩码对比预训练能提升音高敏感性，在音乐调性检测任务上达到SOTA，无需复杂数据增强。",
+        "research_motivation": "现有自监督音乐基础模型在调性检测任务上表现不佳，因为该任务需要音高敏感的表征，而现有预训练设计对此缺乏系统研究。",
+        "problem": "如何通过自监督预训练设计提升模型对音高信息的敏感性，从而改善音乐调性检测性能。",
+        "phenomenon_analysis": "基于梅尔频谱图的掩码对比预训练在线性评估中即展现出竞争力的调性检测性能，且学到的表征天然编码了常见数据增强。",
+        "main_method": "在掩码对比预训练模型提取的特征上训练浅层宽MLP分类器，无需复杂数据增强策略即可达到SOTA。",
+        "key_experiments": "在多个音乐调性检测基准上评估线性探测和微调性能，并与现有自监督模型及监督方法对比，同时分析了对常见增强的鲁棒性。",
+        "contributions": "首次系统证明掩码对比预训练能提升音高敏感性；提出简单有效的调性检测方法达到SOTA；揭示了自监督预训练对音高敏感MIR任务的有效性。",
+        "limitations": "仅验证了调性检测单一任务，未在其他音高敏感任务（如和弦识别）上测试；方法依赖梅尔频谱图输入，可能限制其他音频表征的适用性。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 7,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.09970",
+      "title": "LoDAdaC: a unified local training-based decentralized framework with adaptive gradients and compressed communication",
+      "authors": [
+        "Wei Liu",
+        "Anweshit Panda",
+        "Ujwal Pandey",
+        "Haven Cook",
+        "George M. Slota",
+        "Naigang Wang",
+        "Jie Chen",
+        "Yangyang Xu"
+      ],
+      "abstract": "In the decentralized distributed learning, achieving fast convergence and low communication cost is essential for scalability and high efficiency. Adaptive gradient methods, such as Adam, have demonstrated strong practical performance in deep learning and centralized distributed settings. However, their convergence properties remain largely unexplored in decentralized settings involving multiple local training steps, such as federated learning. To address this limitation, we propose LoDAdaC, a unified multiple Local Training (MLT) Decentralized framework with Adam-type updates and Compressed communication (CC). LoDAdaC accommodates a broad class of optimizers for its local adaptive updates, including AMSGrad, Adam, and AdaGrad; it is compatible with standard (possibly biased) compressors such as low-bit quantization and sparsification. MLT and CC enable LoDAdaC to achieve multiplied reduction of communication cost, while the technique of adaptive updates enables fast convergence. We rigorously prove the combined advantage through complexity analysis. In addition, experiments on image classification and GPT-style language model training validate our theoretical findings and show that LoDAdaC significantly outperforms existing decentralized algorithms in terms of convergence speed and communication efficiency.",
+      "categories": [
+        "cs.LG",
+        "cs.DC",
+        "math.OC"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T01:02:47Z",
+      "updated": "2026-04-11T01:02:47Z",
+      "entry_url": "https://arxiv.org/abs/2604.09970",
+      "pdf_url": "https://arxiv.org/pdf/2604.09970",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出LoDAdaC，一种统一去中心化学习框架，结合局部训练、自适应梯度与压缩通信，显著提升收敛速度和通信效率。",
+        "research_motivation": "去中心化分布式学习中，快速收敛和低通信成本对可扩展性和高效率至关重要，但现有自适应梯度方法在去中心化多局部训练场景下的收敛性质尚未充分探索。",
+        "problem": "解决去中心化分布式学习中，自适应梯度方法（如Adam）在多局部训练步骤和压缩通信下的收敛性分析缺失问题。",
+        "phenomenon_analysis": "自适应梯度方法在深度学习和集中式分布式设置中表现优异，但在去中心化多局部训练设置中其收敛性质未知，限制了其应用。",
+        "main_method": "提出LoDAdaC框架，集成多种自适应优化器（如AMSGrad、Adam、AdaGrad）和标准（可能带偏）压缩器（如低比特量化、稀疏化），通过多局部训练和压缩通信降低通信成本，同时利用自适应更新加速收敛。",
+        "key_experiments": "在图像分类和GPT风格语言模型训练任务上进行实验，验证理论结果，显示LoDAdaC在收敛速度和通信效率上显著优于现有去中心化算法。",
+        "contributions": "首次为去中心化多局部训练框架提供自适应梯度与压缩通信的严格收敛性分析，并实验证明其实际优势。",
+        "limitations": "未讨论框架在异构数据或动态网络拓扑下的表现，且压缩器可能引入偏差影响收敛精度。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.10016",
+      "title": "Predicting Associations between Solar Flares and Coronal Mass Ejections Using SDO/HMI Magnetograms and a Hybrid Neural Network",
+      "authors": [
+        "Jialiang Li",
+        "Vasyl Yurchyshyn",
+        "Jason T. L. Wang",
+        "Haimin Wang",
+        "Manolis K. Georgoulis",
+        "Wen He",
+        "Yasser Abduallah",
+        "Hameedullah A. Farooki",
+        "Yan Xu"
+      ],
+      "abstract": "Solar eruptions, including flares and coronal mass ejections (CMEs), have a significant impact on Earth. Some flares are associated with CMEs, and some flares are not. The association between flares and CMEs is not always obvious. In this study, we propose a new deep learning method, specifically a hybrid neural network (HNN) that combines a vision transformer with long short-term memory, to predict associations between flares and CMEs. HNN finds spatio-temporal patterns in the time series of line-of-sight magnetograms of solar active regions (ARs) collected by the Helioseismic and Magnetic Imager on board the Solar Dynamics Observatory and uses the patterns to predict whether a flare projected to occur within the next 24 hours will be eruptive (i.e., CME-associated) or confined (i.e., not CME-associated). Our experimental results demonstrate the good performance of the HNN method. Furthermore, the results show that magnetic flux cancellation in polarity inversion line regions may well play a role in triggering flare-associated CMEs, a finding consistent with literature.",
+      "categories": [
+        "astro-ph.SR",
+        "cs.LG"
+      ],
+      "primary_category": "astro-ph.SR",
+      "published": "2026-04-11T04:01:54Z",
+      "updated": "2026-04-11T04:01:54Z",
+      "entry_url": "https://arxiv.org/abs/2604.10016",
+      "pdf_url": "https://arxiv.org/pdf/2604.10016",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出混合神经网络（HNN）结合视觉Transformer与LSTM，利用SDO/HMI磁图预测太阳耀斑是否伴随日冕物质抛射（CME）。",
+        "research_motivation": "太阳耀斑与CME的关联不明确，现有方法难以准确预测，需提升空间天气预警能力。",
+        "problem": "如何从太阳活动区磁图时间序列中预测未来24小时内耀斑是否伴随CME（爆发性或受限）。",
+        "phenomenon_analysis": "磁极性反转线区域的磁通量抵消可能触发耀斑相关的CME，与文献一致。",
+        "main_method": "混合神经网络（HNN），融合视觉Transformer提取空间特征和LSTM捕捉时间序列模式。",
+        "key_experiments": "使用SDO/HMI视线方向磁图时间序列，预测耀斑- CME关联性，实验显示HNN性能良好。",
+        "contributions": "首次将视觉Transformer与LSTM结合用于耀斑-CME关联预测，验证磁通量抵消的关键作用。",
+        "limitations": "仅依赖视线方向磁图，未考虑矢量磁场；预测窗口限于24小时，泛化性待验证。",
+        "score": 7,
+        "relevance": 8,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 7,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.09988",
+      "title": "Engineering Resource-constrained Software Systems with DNN Components: a Concept-based Pruning Approach",
+      "authors": [
+        "Federico Formica",
+        "Andrea Rota",
+        "Aurora Francesca Zanenga",
+        "Andrea Bombarda",
+        "Mark Lawford",
+        "Lionel C. Briand",
+        "Claudio Menghi"
+      ],
+      "abstract": "Deep Neural Networks (DNNs) are widely used by engineers to solve difficult problems that require predictive modeling from data. However, these models are often massive, with millions or billions of parameters, and require substantial computational power, RAM, and storage. This becomes a limitation in practical scenarios where strict size and resource constraints must be respected. In this paper, we present a novel concept-based pruning technique for DNNs that guides pruning decisions using human-interpretable concepts, such as features, colors, and classes. This is particularly important in a software engineering context, as DNNs are integrated into systems and must be pruned according to specific system requirements. Our concept-based pruning solution analyzes neuron activations to identify important neurons from a system requirements viewpoint and uses this information to guide the DNN pruning. We assess our solution using the VGG-19 network and a dataset of 26'384 RGB images, focusing on its ability to produce small, effective pruned DNNs and on the computational complexity and performance of these pruned DNNs. We also analyzed the pruning efficiency of our solution and compared alternative configurations. Our results show that concept-based pruning efficiently generates much smaller, effective pruned DNNs. Pruning greatly improves the computational efficiency and performance of DNNs, properties that are particularly useful for practical applications with stringent memory and computational time constraints. Finally, alternative configuration options enable engineers to identify trade-offs adapted to different practical situations.",
+      "categories": [
+        "cs.SE",
+        "cs.LG"
+      ],
+      "primary_category": "cs.SE",
+      "published": "2026-04-11T02:16:33Z",
+      "updated": "2026-04-11T02:16:33Z",
+      "entry_url": "https://arxiv.org/abs/2604.09988",
+      "pdf_url": "https://arxiv.org/pdf/2604.09988",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出基于概念剪枝的DNN压缩方法，利用人类可解释概念指导剪枝，在VGG-19上验证了高效生成小型有效模型的能力。",
+        "research_motivation": "DNN模型庞大，在资源受限的软件系统中难以部署，需要满足严格的尺寸和资源约束。",
+        "problem": "如何在软件工程背景下，根据系统需求对DNN进行剪枝，同时保持模型有效性。",
+        "phenomenon_analysis": "传统剪枝方法缺乏对系统需求的考虑，而基于概念的剪枝能利用神经元激活模式识别重要特征。",
+        "main_method": "分析神经元激活，从系统需求视角识别重要概念相关神经元，并据此指导剪枝。",
+        "key_experiments": "使用VGG-19和26,384张RGB图像数据集，评估剪枝后模型大小、计算效率和性能，并比较不同配置。",
+        "contributions": "提出概念驱动的剪枝框架，实现高效压缩，支持工程师根据实际需求权衡性能与资源。",
+        "limitations": "仅验证了VGG-19单一架构，概念定义依赖人工标注，泛化性需进一步验证。",
+        "score": 7,
+        "relevance": 8,
+        "novelty": 7,
+        "technical_depth": 7,
+        "impact": 7,
+        "reading_priority": "high"
+      }
+    },
+    {
+      "arxiv_id": "2604.09964",
+      "title": "From Recency Bias to Stable Convergence Block Kaczmarz Methods for Online Preference Learning in Matchmaking Applications",
+      "authors": [
+        "James Nguyen"
+      ],
+      "abstract": "We present a family of Kaczmarz-based preference learning algorithms for real-time personalized matchmaking in reciprocal recommender systems. Post-step L2 normalization, common in Kaczmarz-inspired online learners, induces exponential recency bias: the influence of the t-th interaction decays as eta^(n - t), reaching approximately 1e-6 after just 20 swipes at eta = 0.5. We resolve this by replacing the normalization step with a Tikhonov-regularized projection denominator that bounds step size analytically without erasing interaction history. When candidate tag vectors are not pre-normalized, as in realistic deployments where candidates vary in tag density, the Tikhonov denominator ||a||^2 + alpha produces genuinely per-candidate adaptive step sizes, making it structurally distinct from online gradient descent with any fixed learning rate. We further derive a block variant that processes full swipe sessions as a single Gram matrix solve. Population-scale simulation over 6,400 swipes reveals that Block Normalized Kaczmarz (BlockNK), which combines the batch Gram solve with post-session L2 normalization, achieves the highest preference alignment (Align@20 = 0.698), the strongest inter-session direction stability (delta = 0.994), and the flattest degradation profile under label noise across flip ratios p_flip in [0.10, 0.35]. Experiments under cosine similarity subsampling further show that adaptively filtering the candidate pool toward the current preference direction substantially improves asymptotic alignment, at the cost of introducing a feedback loop that may slow recovery from miscalibration. The sequential Tikhonov-Kaczmarz method performs comparably to K-NoNorm under our simulation conditions, suggesting the dominant practical gain over normalized Kaczmarz is the removal of per-step normalization rather than the Tikhonov constant alpha itself.",
+      "categories": [
+        "cs.LG"
+      ],
+      "primary_category": "cs.LG",
+      "published": "2026-04-11T00:18:20Z",
+      "updated": "2026-04-11T00:18:20Z",
+      "entry_url": "https://arxiv.org/abs/2604.09964",
+      "pdf_url": "https://arxiv.org/pdf/2604.09964",
+      "source_date": "2026-04-11",
+      "analysis": {
+        "tldr": "提出基于Kaczmarz的偏好学习算法，通过Tikhonov正则化替代L2归一化，消除指数级近因偏差，实现稳定收敛的在线匹配学习。",
+        "research_motivation": "在线匹配系统中，传统Kaczmarz方法的L2归一化导致指数级近因偏差，使早期交互影响迅速衰减，影响长期偏好学习效果。",
+        "problem": "解决Kaczmarz在线学习中的近因偏差问题，以及非归一化候选标签向量下的自适应步长调整问题。",
+        "phenomenon_analysis": "L2归一化后，第t次交互的影响按η^(n-t)指数衰减，20次滑动后衰减至约1e-6（η=0.5），导致历史信息快速丢失。",
+        "main_method": "用Tikhonov正则化投影分母（||a||^2+α）替代L2归一化，并推导块变体（BlockNK），通过Gram矩阵求解处理整批滑动会话。",
+        "key_experiments": "在6400次滑动的人口规模模拟中，BlockNK达到最高偏好对齐（Align@20=0.698）和最强会话间方向稳定性（δ=0.994），并在噪声比0.10-0.35下保持最平缓退化曲线。",
+        "contributions": "提出消除近因偏差的Tikhonov-Kaczmarz方法，证明块变体在偏好对齐和稳定性上的优势，揭示主要增益来自去除归一化而非Tikhonov常数本身。",
+        "limitations": "余弦相似度子采样引入反馈循环，可能延缓校准恢复；Tikhonov-Kaczmarz在模拟条件下与K-NoNorm性能相当，实际增益有限。",
+        "score": 8,
+        "relevance": 9,
+        "novelty": 7,
+        "technical_depth": 8,
+        "impact": 8,
+        "reading_priority": "high"
       }
     }
   ]

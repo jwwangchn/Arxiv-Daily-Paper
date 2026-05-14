@@ -47,18 +47,11 @@
           "Self-Referential Optimization",
           "Closed-Loop"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法新颖且实验显示有效，但应用场景有限，值得精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出闭环自指优化框架Escher-Loop，通过任务智能体与优化智能体的互演化突破静态性能上限。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -112,18 +105,11 @@
           "Lean",
           "球堆积问题"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 2,
-        "score_raw": 3.35,
-        "score": 3,
-        "reason": "形式化验证数学里程碑，但非ML核心方向，技术细节有限，推荐保存以备后续参考。",
         "recommended_action": "save_for_later",
         "reading_priority": "medium",
         "one_sentence_summary": "使用Lean定理证明器与AI模型Gauss合作，形式化验证了8维球堆积问题。",
         "legacy_reading_priority": "medium",
-        "archive_reading_priority": "low_priority"
+        "archive_reading_priority": "recommended"
       }
     },
     {
@@ -171,18 +157,11 @@
           "JIT Compilation",
           "Latency Optimization"
         ],
-        "novelty": 3,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.7,
-        "score": 4,
-        "reason": "方法创新且实验效果显著，但场景有限，适合关注LLM推理加速的读者。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出混合JIT-CUDA图执行框架，将LLM推理划分为静态和动态部分，显著降低短序列推理延迟。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -236,18 +215,11 @@
           "隐私",
           "安全"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "基于实证数据的风险分类法具有较强新颖性和应用价值，但摘要未提供实验验证。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "基于实证数据构建合成语音生成风险分类法V.O.I.C.E，揭示隐私、安全与治理风险。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -297,13 +269,6 @@
           "Hopper",
           "Blackwell"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.0,
-        "score": 3,
-        "reason": "首次独立评估CuTile，但仅覆盖有限工作负载，贡献偏实证，适合关注GPU编程工具的读者。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "首次独立评估NVIDIA CuTile在Hopper和Blackwell GPU上的AI工作负载性能，发现其效果高度依赖工作负载和架构，在B200上融合注意力达1007 TFLOP/s，但跨架构优化存在显著差距。",
@@ -355,18 +320,11 @@
           "Safety Alignment",
           "Latent Reasoning"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 4.2,
-        "score": 4,
-        "reason": "针对连续思维模型的安全对齐检测问题新颖且重要，方法有创新性，但实验细节未提供。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "连续思维模型在隐空间推理中可能隐藏对齐错误，但可通过线性探针检测早期规划阶段的异常。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -412,18 +370,11 @@
           "Probing",
           "Causal Intervention"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "方法创新（因果干预+探针）且揭示重要现象，但实验规模有限，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "ViT在分类训练中自发形成空间层级结构，边界信息早于深度信息出现，且深度信号在各层主动重建。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -476,18 +427,11 @@
           "Grouping",
           "Generative AI"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 2,
-        "score_raw": 2.8,
-        "score": 3,
-        "reason": "方法有创新但应用领域较窄，实验为模拟，推荐阅读摘要。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "ArguAgent 利用生成式 AI 实时分组，促进 STEM 课堂中包容、基于证据的论证讨论。",
         "legacy_reading_priority": "medium",
-        "archive_reading_priority": "skim"
+        "archive_reading_priority": "recommended"
       }
     },
     {
@@ -534,13 +478,6 @@
           "MedSAM",
           "Multi-modal"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.45,
-        "score": 3,
-        "reason": "方法创新性中等（LoRA 在医学分割中的应用），但实验充分且应用价值高，推荐阅读摘要。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "CRC-SAM 是一个基于 MedSAM 和 LoRA 的多模态结直肠癌分割框架，在 CT、结肠镜和病理图像上均优于现有方法。",
@@ -592,18 +529,11 @@
           "Industrial Maintenance",
           "Knowledge Graph"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 3,
-        "score_raw": 3.8,
-        "score": 4,
-        "reason": "方法创新（神经符号+知识图谱）且实验充分，但应用领域较专，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出神经符号系统IndustryAssetEQA，结合遥测表示与故障知识图谱，提升工业资产维护中具身问答的结构有效性、反事实准确性和解释可靠性。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -655,13 +585,6 @@
           "Mental Health",
           "RLHF"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 5,
-        "relevance": 5,
-        "score_raw": 4.2,
-        "score": 4,
-        "reason": "问题重要且发现具有临床意义，但方法为评估而非新算法，技术深度中等。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "RLHF安全对齐会破坏心理治疗机制，导致AI在临床场景中产生有害行为。",
@@ -718,13 +641,6 @@
           "YOLO",
           "RT-DETR"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.0,
-        "score": 3,
-        "reason": "系统评估了多种模型在边缘设备上的性能，但方法创新有限，适合相关领域参考。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出面向资源受限无人机平台的杂草检测框架，评估YOLO和RT-DETR模型在边缘设备上的精度-延迟权衡。",
@@ -781,18 +697,11 @@
           "KL Grading",
           "Medical Image Analysis"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 4.0,
-        "score": 4,
-        "reason": "方法创新且实验充分，医学图像可解释性方向有价值，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出可解释的KL分级框架，独立量化关节间隙狭窄、骨赘和软骨下硬化三个特征，实现透明且高性能的膝骨关节炎分级。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -841,18 +750,11 @@
           "Benchmark",
           "Robustness"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "基准构建系统，实验揭示重要现象，但方法增量有限，适合关注深度估计鲁棒性的读者。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出Sphere-Depth基准，系统评估球面相机姿态变化对深度估计模型鲁棒性的影响。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -903,13 +805,6 @@
           "In-Context Learning",
           "Prompt Chaining"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.0,
-        "score": 3,
-        "reason": "方法创新性中等，实验系统但主题分类效果有限，对自动分类领域有参考价值。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "利用大语言模型和提示链技术自动分类科学文本，在领域和学科层面表现优异，但主题层面准确率仅约50%。",
@@ -961,13 +856,6 @@
           "自适应量化",
           "通信效率"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.2,
-        "score": 3,
-        "reason": "方法结合了差分隐私和自适应量化，实验充分，但创新性中等，适合关注联邦学习隐私与效率的读者。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "结合自适应量化和差分隐私，在非独立同分布联邦学习中同时提升通信效率和隐私保护。",
@@ -1018,13 +906,6 @@
           "异构架构",
           "融合策略"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 2,
-        "relevance": 3,
-        "score_raw": 2.75,
-        "score": 3,
-        "reason": "方法有一定创新性，但实验规模较小，贡献偏增量，适合相关方向研究者阅读。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出异构双流框架DualStreamHybrid，为RGB和光流分别使用不同骨干网络，并比较五种融合策略，发现交叉注意力在小数据集上最优，加权融合在大数据集上更稳定。",
@@ -1080,18 +961,11 @@
           "Repetition Counting",
           "Benchmark"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "基准新颖且揭示重要现象，但仅单一动作，实验细节有限。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "PushupBench 揭示 VLM 在视频重复计数任务上表现极差，且微调计数可提升通用视频理解。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -1141,18 +1015,11 @@
           "Training Efficiency",
           "Layer Dropping"
         ],
-        "novelty": 3,
-        "technical_depth": 2,
-        "impact": 3,
-        "relevance": 2,
-        "score_raw": 2.55,
-        "score": 3,
-        "reason": "方法有一定创新性，但实验规模较小，且与当前重点方向（VLM/生成模型等）关联较弱，适合保存稍后阅读。",
         "recommended_action": "save_for_later",
         "reading_priority": "medium",
         "one_sentence_summary": "提出Learn&Drop方法，通过评估层参数变化分数在训练中动态丢弃层，减少前向传播计算量，使CNN训练时间减半且精度损失小。",
         "legacy_reading_priority": "medium",
-        "archive_reading_priority": "low_priority"
+        "archive_reading_priority": "recommended"
       }
     },
     {
@@ -1202,18 +1069,11 @@
           "State Space Model",
           "Efficient Architecture"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法创新（几何引导 SSM）且实验充分，但仅限语义分割，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出 DGM-Net，通过几何引导的线性复杂度序列建模实现高效语义分割，无需大模型或大算力。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -1260,13 +1120,6 @@
           "Prompt Design",
           "Overcaution"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.0,
-        "score": 3,
-        "reason": "实验设计严谨，但问题领域较窄，贡献增量，适合关注LLM安全对齐的读者。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "在OWL~2~DL推理器引导的LLM过度谨慎修复中，提示设计比纠正内容更重要，且错误的提示（如开放世界假设提示）反而会降低性能。",
@@ -1323,13 +1176,6 @@
           "前瞻先验",
           "鲁棒性"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.0,
-        "score": 3,
-        "reason": "复现工作并揭示鲁棒性问题，方法增量但诊断工具实用，适合相关领域研究者参考。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "复现并压力测试了生成式检索中的前瞻先验方法PAG，发现其规划信号在查询扰动下脆弱，但查询翻译可有效恢复。",
@@ -1384,18 +1230,11 @@
           "Sports Analytics",
           "RAG"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法新颖，结合多智能体与RAG解决具体应用问题，实验显示显著提升，但应用领域较专，影响范围有限。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出多智能体裁判系统SoccerRef-Agents，结合多模态大模型与裁判知识库，提升足球判罚的准确性与可解释性。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -1444,18 +1283,11 @@
           "持续学习",
           "参数化记忆"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "方法新颖，针对生成式检索的持续学习问题有明确贡献，实验验证有效，但应用场景较窄。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出参数化记忆头（PMH）和事后适应记忆调优（PAMT），缓解生成式检索在连续文档增量中的灾难性遗忘。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -1504,13 +1336,6 @@
           "6-DoF Pose Tracking",
           "Keypoint Detection"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.2,
-        "score": 3,
-        "reason": "方法结合事件相机和关键点跟踪，在动态物体位姿估计上有应用价值，但创新性中等，实验信息有限。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出基于事件相机和关键点的动态物体6-DoF位姿跟踪方法，在模拟和真实环境中均优于现有方法。",
@@ -1563,13 +1388,6 @@
           "Client Disagreements",
           "Multi-Track Resolution"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.3,
-        "score": 3,
-        "reason": "方法新颖且实用，但实验规模有限，适合关注联邦学习实际部署的读者。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出联邦学习中客户端级分歧的分类法及多轨解决策略，实现严格客户端隔离并验证其可扩展性。",
@@ -1624,13 +1442,6 @@
           "Reinforcement Learning",
           "Text-to-Image"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法创新且实验效果好，与扩散模型对齐方向强相关。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "V-GRPO通过ELBO代理与GRPO结合，实现高效稳定的扩散模型在线强化学习对齐。",
@@ -1683,18 +1494,11 @@
           "Reasoning Shortcuts",
           "Constraint Satisfaction"
         ],
-        "novelty": 4,
-        "technical_depth": 5,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 4.25,
-        "score": 4,
-        "reason": "理论贡献扎实，实验验证充分，但应用范围较窄。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "将推理捷径形式化为约束满足问题，提出检测与修复的ASP算法。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -1747,13 +1551,6 @@
           "医学图像分析",
           "CNN"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.0,
-        "score": 3,
-        "reason": "方法有创新但实验规模有限，推荐阅读摘要。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出层次化时空通道聚类低秩压缩框架，在脑肿瘤MRI分类中实现81.1% FLOPs减少和精度提升。",
@@ -1811,18 +1608,11 @@
           "Fluid Interpolation",
           "Physics-Informed"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "方法有创新，实验效果好，但应用领域较窄，推荐阅读。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出物理信息时间U-Net，结合感知损失和物理信息桥，实现高保真流体插值。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -1875,18 +1665,11 @@
           "control-affine",
           "nonlinear PDE"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 2,
-        "score_raw": 3.35,
-        "score": 3,
-        "reason": "方法有理论创新，但属于控制理论领域，与主流机器学习方向关联较弱，实验信息缺失。",
         "recommended_action": "save_for_later",
         "reading_priority": "medium",
         "one_sentence_summary": "提出带记忆的Sinkhorn递归算法，解决控制仿射薛定谔桥问题中输入与噪声通道不匹配的非线性情况。",
         "legacy_reading_priority": "medium",
-        "archive_reading_priority": "low_priority"
+        "archive_reading_priority": "recommended"
       }
     },
     {
@@ -1932,18 +1715,11 @@
           "Hallucination Detection",
           "Grounding"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法新颖，形式化程度高，实验验证充分，但应用场景较窄，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "GSAR 提出一种带类型标注的 grounding 评估与重规划框架，通过四类证据划分、加权评分和三级决策循环，提升多智能体 LLM 系统的可信度。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -1989,13 +1765,6 @@
           "Bug Detection",
           "Local Deployment"
         ],
-        "novelty": 3,
-        "technical_depth": 2,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 2.75,
-        "score": 3,
-        "reason": "实证评估有实际意义，但方法较简单，贡献增量，适合了解本地模型在bug检测上的现状。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "本地部署的LLM在Python代码bug检测中准确率约43%-45%，能识别部分问题区域但精确定位困难。",
@@ -2051,13 +1820,6 @@
           "Skill-Based",
           "RTL Generation"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 4.0,
-        "score": 4,
-        "reason": "方法创新性强，实验效果显著，且开源，与 LLM Agent 方向高度相关。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "LEGO 将前端设计流程分解为标准化技能，通过可组合电路技能库实现 RTL 自动生成，在 VerilogEval v2 困难子集上 Pass@1 从 0 提升至 0.805。",
@@ -2110,18 +1872,11 @@
           "Speaker Recognition",
           "Hierarchical Clustering"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 2,
-        "relevance": 2,
-        "score_raw": 2.55,
-        "score": 3,
-        "reason": "方法有一定新意，但应用场景较窄且缺乏实验细节，适合保存后续参考。",
         "recommended_action": "save_for_later",
         "reading_priority": "medium",
         "one_sentence_summary": "通过层次聚类和匹配算法揭示说话人识别网络表示中的层次组织模式，提升可解释性。",
         "legacy_reading_priority": "medium",
-        "archive_reading_priority": "low_priority"
+        "archive_reading_priority": "recommended"
       }
     },
     {
@@ -2169,18 +1924,11 @@
           "Mechanistic Interpretability",
           "Activation Patching"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 4.0,
-        "score": 4,
-        "reason": "方法新颖，因果分析深入，对理解CoT机制有重要贡献，但实验仅限单一数据集。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "通过激活修补分析发现，链式思维(CoT)的隐藏状态编码了可恢复的解题信息，即使CoT轨迹错误也能从中提取正确答案。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -2233,18 +1981,11 @@
           "Video Understanding",
           "Benchmark"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "该基准填补了情绪动态理解评估的空白，任务设计递进合理，对 MLLM 研究有参考价值，但实验细节未在摘要中充分展示。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "EmoTrans 是一个评估多模态大模型理解视频中情绪动态变化的新基准，包含四个递进任务，发现现有模型在细粒度情绪建模和多人社交场景上表现不足。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -2292,13 +2033,6 @@
           "Vision-Language Models",
           "Pseudo Labeling"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 4.0,
-        "score": 4,
-        "reason": "方法创新性强，实验充分且达到SOTA，与VLM方向高度相关。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出层次一致性校准和LoCLIP解决开放词汇目标检测中伪标签不准确和物体性分数不可靠的问题。",
@@ -2353,18 +2087,11 @@
           "Smart Grid",
           "NERC Standards"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "针对关键基础设施的LLM安全评估，方法系统，结果有实际意义，但实验细节有限。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "评估LLM在智能电网操作中的越狱漏洞，发现DeepInception攻击最有效，Claude 3.5 Haiku完全抵抗。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -2420,18 +2147,11 @@
           "Ocean Science",
           "Foundation Model"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "数据集创新性强，填补领域空白，但技术细节和实验信息有限，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "构建大规模多模态海洋语料库OceanPile，填补海洋科学领域基础模型的数据空白。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -2481,13 +2201,6 @@
           "Self-Supervised Learning",
           "Medical Image Classification"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.0,
-        "score": 3,
-        "reason": "方法有创新但属于医学图像应用，与核心方向中等相关，实验充分但未提供具体数值。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出H-SemiS框架，通过层次化半监督与自监督融合，在有限标注数据下提升膝骨关节炎严重程度分级性能。",
@@ -2543,13 +2256,6 @@
           "Emotion-Aware",
           "Temporal Coherence"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 4.2,
-        "score": 4,
-        "reason": "方法创新性强，结合扩散模型、注意力机制和图推理，实验充分，与视频生成方向高度相关。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出EAD-Net，通过扩散模型、SyncNet监督、时空方向注意力和时序图推理，实现高唇同步、强时间一致性和情感准确的表情说话头视频生成。",
@@ -2605,18 +2311,11 @@
           "Heterophily",
           "Over-smoothing"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 4.0,
-        "score": 4,
-        "reason": "方法创新性较强，实验验证充分，对异配图GNN研究有重要贡献。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出LEDF-GNN，通过层嵌入深度融合和双拓扑并行策略解决图神经网络在异配图上的过平滑和长程依赖问题。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -2664,18 +2363,11 @@
           "CNN",
           "Vision Recognition"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法创新性高，理论对齐，但实验细节不足，适合关注KAN与CNN结合的读者。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出KAConvNet，将KAN与卷积深度融合，在视觉识别任务上达到与主流ViT/CNN竞争的性能。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -2731,13 +2423,6 @@
           "提示蒸馏",
           "显著性引导"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 4.2,
-        "score": 4,
-        "reason": "方法创新性强，针对临床实际问题，实验充分且效果显著，与医学图像分割方向高度相关。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出SPD框架，通过显著性引导的提示蒸馏将临床中常见的噪声提示转化为鲁棒引导，提升SAM在医学图像分割中的可靠性。",
@@ -2788,13 +2473,6 @@
           "Stability",
           "Fine-tuning"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.0,
-        "score": 3,
-        "reason": "方法有实际意义，但摘要未提供实验细节，创新性中等。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "GIFT通过内在微调提升深度强化学习策略的全局稳定性，同时保持任务性能。",
@@ -2853,18 +2531,11 @@
           "Change Captioning",
           "Disambiguation"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法创新性强，系统解决遥感变化描述中的歧义问题，但摘要未提供实验细节，影响评估。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出语义锚定约束与双粒度消歧方法，逐步解决遥感图像变化描述中的视角、尺度和先验知识歧义。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -2913,13 +2584,6 @@
           "蒙特卡洛树搜索",
           "药物发现"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.3,
-        "score": 3,
-        "reason": "方法创新性较高（Pareto MTS用于分子生成），但实验细节有限，应用领域较专。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出CombiMOTS框架，利用Pareto蒙特卡洛树搜索在可合成片段空间中生成双靶点分子，兼顾靶点亲和力与理化性质。",
@@ -2974,13 +2638,6 @@
           "Tool Use",
           "Retrieval"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 4.2,
-        "score": 4,
-        "reason": "方法创新性强，针对医学VLM的迭代式推理，实验充分，对罕见病诊断有实际价值。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "GAZE框架通过工具调用和文献检索，在罕见脑MRI诊断中显著提升VLM性能。",
@@ -3035,18 +2692,11 @@
           "Large Language Models",
           "Syntax Integration"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法创新性较高，实验验证有效，但技术细节和局限性需进一步阅读确认。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出逐步语法集成微调框架S²IT，通过多步训练将句法结构知识融入大语言模型，显著提升方面情感四元组预测性能。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -3093,13 +2743,6 @@
           "印地语",
           "口语对话系统"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.3,
-        "score": 3,
-        "reason": "针对低资源语言的全双工对话系统有创新性，但方法基于现有架构，实验信息有限。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "首个面向印地语的全双工口语对话系统，基于Moshi架构和真实对话数据训练，支持打断、重叠等自然交互行为。",
@@ -3154,13 +2797,6 @@
           "Noisy Oracles",
           "Text Classification"
         ],
-        "novelty": 3,
-        "technical_depth": 2,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 2.75,
-        "score": 3,
-        "reason": "提供了真实众包标注数据，但方法为现有技术组合，实验细节未在摘要中体现。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "通过真实众包文本标注实验，系统评估了8种主动学习算法在存在噪声标注者时的表现。",
@@ -3213,18 +2849,11 @@
           "Meta-Learning",
           "Deep Neural Networks"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 2,
-        "score_raw": 2.8,
-        "score": 3,
-        "reason": "方法简单有效，但问题领域较窄，实验规模有限。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出MetaErr框架，通过元模型预测深度神经网络在单个样本上的错误，无需了解基模型架构。",
         "legacy_reading_priority": "medium",
-        "archive_reading_priority": "skim"
+        "archive_reading_priority": "recommended"
       }
     },
     {
@@ -3274,18 +2903,11 @@
           "Medical Audio",
           "ASR"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法创新性较高，实验显示显著性能提升，但技术细节和泛化性信息有限。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出Au-M-ol多模态架构，将LLM扩展至医疗音频理解，在医学转录任务上WER降低56%。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -3338,18 +2960,11 @@
           "Multi-Agent",
           "Cascade Framework"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法创新性高，结合多智能体与级联检索解决实际鸿沟问题，但实验细节有限，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出结构-语义解耦级联框架SSDC，通过两阶段检索弥合姿态-语义鸿沟，在文本人员异常搜索任务中实现效率与语义推理的平衡。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -3399,18 +3014,11 @@
           "Human Activity Recognition",
           "Limited Labeled Data"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "方法设计新颖，两阶段训练策略有技术深度，实验验证有效，但应用领域较窄。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出CLMM对比学习框架，利用少量标注数据实现多模态人体活动识别，在三个数据集上提升准确率和收敛性能。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -3459,18 +3067,11 @@
           "Accountability",
           "Safety"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "问题新颖且重要，但未提供实验验证，适合精读以了解研究方向。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "AI代理缺乏身份基础设施，本文通过调查和差距分析，识别了五个关键缺口，呼吁基础研究。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -3522,18 +3123,11 @@
           "AI Governance",
           "Phenotyping"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "方法新颖，但实验简单且摘要未提供具体结果，适合精读以评估实际效果。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "用主动推理框架定义AI系统能动性表型，并通过T-maze实验验证赋能度作为量化指标。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -3587,18 +3181,11 @@
           "Graph Priors",
           "Training-free"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.5,
-        "score": 4,
-        "reason": "方法新颖且无需训练，实验显示在长文档上有效，但摘要未提供详细实验结果，适合精读。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出一种无需训练、模型无关的上下文压缩方法，利用混合图先验选择句子，在长文档基准上取得有竞争力的结果。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -3648,13 +3235,6 @@
           "Visual Element Detection",
           "Multimodal RAG"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.45,
-        "score": 3,
-        "reason": "方法实用且效果显著，但创新性中等，适合实际部署场景。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出轻量级生产级PDF视觉元素解析框架，检测准确率≥96%，字幕关联准确率93%，延迟降低2倍以上。",
@@ -3707,18 +3287,11 @@
           "Medical Image Segmentation",
           "Distribution Alignment"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 4.2,
-        "score": 4,
-        "reason": "方法创新性较高，针对半监督医学图像分割的分布对齐问题提出新框架，实验验证有效，与医学图像方向高度相关。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出生成式双分布对齐框架SemiGDA，通过特征与语义分布对齐提升半监督医学图像分割性能。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -3766,13 +3339,6 @@
           "kNN",
           "LoRA"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.2,
-        "score": 3,
-        "reason": "方法结合记忆增强和分层集成，但实验信息有限，仅排名前十，适合阅读摘要。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出一种记忆增强的分层集成推理流水线，用于在域偏移下鲁棒地分类白细胞。",
@@ -3828,13 +3394,6 @@
           "Adversarial Prompting",
           "LLM Reasoning"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 4.2,
-        "score": 4,
-        "reason": "方法新颖且实验充分，与LLM推理核心方向强相关，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出循环对抗提示优化框架CAP-CoT，通过对抗生成有缺陷推理链并对比反馈，提升LLM思维链推理的准确性和稳定性。",
@@ -3888,13 +3447,6 @@
           "Hexadeca-Bayer Pattern",
           "CIS"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.0,
-        "score": 3,
-        "reason": "方法针对特定硬件模式，创新性中等，实验验证有效但未提供量化结果，适合相关领域读者。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出一种针对十六拜耳模式CIS图像的快速高效多帧超分辨率网络LatentBurst。",
@@ -3949,18 +3501,11 @@
           "Flow Matching",
           "Hierarchical Generation"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 4.0,
-        "score": 4,
-        "reason": "方法创新（分层流匹配）且实验充分（SOTA），与生成模型方向高度相关。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出分层流匹配框架 MotionHiFlow，从低到高时间尺度逐步生成文本驱动的 3D 人体运动，在 HumanML3D 和 KIT-ML 上达到 SOTA。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -4012,18 +3557,11 @@
           "Semantic Ambiguity",
           "Small Language Model"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.5,
-        "score": 4,
-        "reason": "方法新颖且实用，实验显示成本低、效果好，与LLM提示优化方向高度相关。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出一种预推理提示消歧机制，利用小语言模型显式解决LLM提示中的语义歧义，提升推理性能。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -4071,18 +3609,11 @@
           "Software Engineering",
           "Stochastic Modeling"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 2,
-        "relevance": 1,
-        "score_raw": 2.35,
-        "score": 2,
-        "reason": "与机器学习核心方向关联弱，属于软件工程知识管理，方法创新中等，模拟实验有限。",
         "recommended_action": "skip",
         "reading_priority": "low",
         "one_sentence_summary": "提出知识杠杆风险管理框架，通过随机建模量化知识资本，模拟显示完全激活可提升63.8%知识资本并消除知识危机概率。",
         "legacy_reading_priority": "low",
-        "archive_reading_priority": "skip"
+        "archive_reading_priority": "low_priority"
       }
     },
     {
@@ -4129,18 +3660,11 @@
           "Architecture Choice",
           "Gradient Descent"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 2,
-        "score_raw": 3.1,
-        "score": 3,
-        "reason": "实验设计系统，发现反直觉现象，但领域较窄，对当前重点方向（VLM/LLM等）直接相关性低。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "符号回归中，树结构的选择比表达能力更关键，梯度下降的优化景观决定了恢复效果。",
         "legacy_reading_priority": "medium",
-        "archive_reading_priority": "skim"
+        "archive_reading_priority": "recommended"
       }
     },
     {
@@ -4194,13 +3718,6 @@
           "提示设计",
           "批处理策略"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.2,
-        "score": 3,
-        "reason": "方法创新性中等，但针对实际应用场景（医疗模拟）的实时编码需求有实用价值，实验数据充分。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "研究如何通过优化提示设计和批处理策略，平衡LLM在医疗模拟团队对话编码中的准确性、处理时间和环境影响。",
@@ -4257,13 +3774,6 @@
           "Education",
           "Self-Regulated Learning"
         ],
-        "novelty": 3,
-        "technical_depth": 2,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 2.75,
-        "score": 3,
-        "reason": "方法创新性中等，但教育应用场景有价值，实验设计扎实，适合教育技术领域读者。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "将LLM作为代码审查助手集成到GitHub PR中，在两年课程中验证其对学生代码质量和自我调节学习的促进作用。",
@@ -4316,18 +3826,11 @@
           "Micro-Expression",
           "Inter-Frame Feature Differencing"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.3,
-        "score": 3,
-        "reason": "方法有创新性，但实验规模较小，应用场景较窄。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出基于帧间特征差分的微表情感知头像指纹识别方法，无需预处理即可端到端优化。",
         "legacy_reading_priority": "medium",
-        "archive_reading_priority": "skim"
+        "archive_reading_priority": "recommended"
       }
     },
     {
@@ -4374,13 +3877,6 @@
           "Safety",
           "Denial of Service"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "发现新颖的安全漏洞，实验系统，对LLM机器人安全有重要启示。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "LLM控制机器人中，安全指令遵循机制被利用为语义拒绝服务攻击，注入短安全短语即可中断执行。",
@@ -4433,13 +3929,6 @@
           "Privacy-Preserving ML",
           "CKKS"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.0,
-        "score": 3,
-        "reason": "方法创新性中等，实验验证了可行性但未解决核心效率问题，适合关注隐私保护的研究者。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出基于同态加密的隐私保护框架，在加密数据上训练KNN和线性回归模型，性能与明文训练相当。",
@@ -4496,13 +3985,6 @@
           "Mamba",
           "Frequency Analysis"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 4.2,
-        "score": 4,
-        "reason": "方法创新性强，将频域分析与Mamba结合，实验充分且效果显著，与时间序列预测方向高度相关。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "AdaMamba通过自适应频率门控机制将频域分析融入Mamba状态空间模型，提升长期时间序列预测精度。",
@@ -4558,18 +4040,11 @@
           "机制可解释性",
           "推理模型"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法新颖，结合博弈论与可解释性解决反蒸馏中的检测性问题，但缺乏实验验证，适合精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出一种可检测性感知的反蒸馏方法TraceGuard，通过稀疏扰动推理轨迹中的关键句（thought anchors）来保护教师模型，同时保持输出自然性。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -4623,18 +4098,11 @@
           "中毒训练",
           "鲁棒防御"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "提出多态后门攻击新范式，方法有创新性且包含理论防御，但实验细节有限，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出一种基于强度中毒的多态后门攻击方法SemBugger，通过动态调整触发强度实现对语义通信系统的细粒度恶意控制。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -4680,13 +4148,6 @@
           "Safety",
           "Reflection"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 3.95,
-        "score": 4,
-        "reason": "方法新颖，实验充分，对安全对齐方向有重要启示，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出EPO-Safe框架，仅凭1比特危险信号即可让LLM智能体自主发现安全规范。",
@@ -4741,13 +4202,6 @@
           "Narrative Understanding",
           "VLM"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "创新性高（首个ToM视频检索基准），实验显示显著提升，但方法细节有限，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出首个需要心智理论推理的视频时刻检索基准StoryTR，并构建ToM引导数据训练模型，显著提升叙事理解能力。",
@@ -4804,18 +4258,11 @@
           "Vision-Language Model",
           "Graph Neural Network"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "方法创新（三模态统一检索+课程对比学习）且实验充分，但领域较专，推荐精读。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出统一三模态检索框架AnalogRetriever，用于模拟电路跨模态搜索，显著提升检索性能并增强下游任务。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -4864,13 +4311,6 @@
           "Hierarchical Planning",
           "Adaptive Planning"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 3.95,
-        "score": 4,
-        "reason": "与LLM Agent规划方向强相关，方法有创新性且实验显示有效，值得精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出自适应分层规划机制AdaPlan-H，从粗到细逐步细化任务计划，平衡简单与复杂任务的规划粒度。",
@@ -4926,18 +4366,11 @@
           "Environment Configuration",
           "Software Engineering"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "方法创新性强（语言无关、多阶段流水线），实验显示显著提升，但属于软件工程应用，与核心方向中等相关。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "RAT提出全自动环境配置框架，无需预定义工件或语言限制，显著提升仓库级软件工程任务的环境配置成功率。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -4988,18 +4421,11 @@
           "Dynamic MRI",
           "Benchmark"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "首个动态腹部MRI肌肉分割基准，具有临床价值，但方法创新有限，实验信息较简略。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "首个动态腹部MRI肌肉分割基准DyABD，揭示现有模型在极端解剖变异下性能不足。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -5049,18 +4475,11 @@
           "事件响应",
           "国际协调"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "框架设计新颖，识别漏检模式有实践价值，但缺乏实证验证。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出AI国际事件升级响应标准框架，识别系统漏检模式。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -5115,13 +4534,6 @@
           "Active Perception",
           "Indoor Monitoring"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.0,
-        "score": 3,
-        "reason": "方法有创新但实验限于仿真，与重点方向中等相关。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "用多智能体强化学习训练机器人团队协作感知，直接优化室内人体监测精度。",
@@ -5171,13 +4583,6 @@
           "Bias Mitigation",
           "Evaluation"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 3.95,
-        "score": 4,
-        "reason": "系统评估去偏策略，发现风格偏见主导，实验充分，对 LLM 评估可靠性有重要价值。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "系统评估 LLM-as-a-Judge 中九种去偏策略，发现风格偏见是主要问题，去偏效果因模型而异。",
@@ -5230,13 +4635,6 @@
           "Entity Coreference",
           "Situation Recognition"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 3.95,
-        "score": 4,
-        "reason": "方法创新且实验提升显著，与VLM方向高度相关，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出多模态实体共指方法CineMEC，统一视频中实体描述与视觉定位，提升视频情境识别的一致性。",
@@ -5288,18 +4686,11 @@
           "形状梯度",
           "拓扑控制"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 2,
-        "relevance": 2,
-        "score_raw": 2.55,
-        "score": 3,
-        "reason": "方法有创新但实验信息不足，与当前重点方向（VLM/视频生成等）关联较弱。",
         "recommended_action": "save_for_later",
         "reading_priority": "medium",
         "one_sentence_summary": "提出一种无水平集的混合图像分割方法，通过离散曲线演化和拓扑控制实现复杂边界提取。",
         "legacy_reading_priority": "medium",
-        "archive_reading_priority": "low_priority"
+        "archive_reading_priority": "recommended"
       }
     },
     {
@@ -5352,13 +4743,6 @@
           "Wealth Monitoring",
           "Self-Supervised Learning"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 5,
-        "relevance": 4,
-        "score_raw": 4.25,
-        "score": 4,
-        "reason": "方法创新性强，实验充分且应用价值高，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出卫星基础模型Tempov，通过自监督预训练和参数高效微调，实现高分辨率财富监测和动态变化追踪。",
@@ -5410,18 +4794,11 @@
           "Vision Transformer",
           "Event-based Vision"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "方法创新性较强，实验显示性能提升，但能效优势需进一步验证。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "BSViT通过爆发脉冲编码和双通道自注意力机制，在保持低能耗的同时提升了脉冲视觉Transformer的表达能力。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -5475,18 +4852,11 @@
           "推理优化",
           "专家激活模式"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "针对MoE推理通信瓶颈提出系统分析和新优化，实验规模大，但摘要未提供具体结果，故推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "通过分析MoE专家激活模式，提出工作负载感知的微批分组和专家放置策略，减少多节点部署中的全对全通信开销。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -5538,18 +4908,11 @@
           "VLM",
           "Psychological Framework"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "针对新兴安全威胁提出创新框架，方法结合VLM和心理学理论，但实验细节有限，推荐精读。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出PhySE框架，通过VLM预训练和自适应心理策略解决AR-LLM社交工程攻击中的冷启动延迟和静态策略问题。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -5598,18 +4961,11 @@
           "Explicit Reasoning",
           "Modular Framework"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.5,
-        "score": 4,
-        "reason": "方法新颖，模块化显式推理思路有价值，但实验规模有限，推荐精读。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出UpstreamQA模块化框架，通过显式推理模块提升视频问答的可解释性和性能。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -5663,18 +5019,11 @@
           "AR-LLM",
           "Access Control"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 4.0,
-        "score": 4,
-        "reason": "针对新兴AR-LLM社交工程攻击提出跨栈防御方案，方法新颖且实验设计合理，但用户研究规模有限。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出UNSEEN跨栈防御框架，通过AR访问控制、LLM遗忘和智能体护栏抵御AR-LLM社交工程攻击。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -5726,13 +5075,6 @@
           "Adaptive Attention Gate",
           "Medical Image Analysis"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.2,
-        "score": 3,
-        "reason": "方法有一定创新性，但实验规模较小，且为医学图像分类的增量改进，推荐阅读摘要。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "提出CNN-ViT混合模型，通过自适应注意力门动态融合局部和全局特征，在脑肿瘤MRI分类上取得97.60%准确率。",
@@ -5785,18 +5127,11 @@
           "CNN",
           "Vision Transformer"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 2,
-        "relevance": 2,
-        "score_raw": 2.55,
-        "score": 3,
-        "reason": "系统比较实验设计有参考价值，但应用领域较窄，创新性中等。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "系统比较加密货币K线图视觉表示方法，发现简单CNN在原始K线图上表现最佳，优于复杂模型。",
         "legacy_reading_priority": "medium",
-        "archive_reading_priority": "skim"
+        "archive_reading_priority": "recommended"
       }
     },
     {
@@ -5843,18 +5178,11 @@
           "Jailbreak",
           "SAE"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法新颖，聚焦机制可解释性，但实验规模有限，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "通过机制性操控LLM中间层特征，发现对抗性脆弱性集中在特定层特征子群。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -5905,13 +5233,6 @@
           "人机协作",
           "交互式可视化"
         ],
-        "novelty": 3,
-        "technical_depth": 2,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 2.75,
-        "score": 3,
-        "reason": "方法有创新但技术深度一般，实验规模小，适合关注人机协作知识构建的读者。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "MindTrellis通过交互式可视化知识图谱，支持用户与AI共同构建结构化知识，优于纯检索基线。",
@@ -5966,18 +5287,11 @@
           "视觉-语言模型",
           "弱监督"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法新颖，利用VLM解决长尾噪声标签问题，实验充分，代码开源，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "利用预训练视觉-语言模型的跨模态对齐，提出弱教师监督信号，解决长尾分布下高噪声标签的标签-图像不匹配问题。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -6030,18 +5344,11 @@
           "Argumentation",
           "Requirements Negotiation"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "方法创新性强，实验充分，但应用领域较窄，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "ArgRE将Dung式抽象论证嵌入多智能体需求协商，实现可审计的冲突消解。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -6095,13 +5402,6 @@
           "Post-training",
           "Contrastive Guidance"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 5,
-        "score_raw": 3.95,
-        "score": 4,
-        "reason": "方法创新且实用，实验充分，与VLA方向高度相关，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出DeLock方法，通过保留视觉基础能力和测试时对比提示引导，解决VLA策略在低数据后训练中的锁定现象。",
@@ -6160,18 +5460,11 @@
           "Language Modeling",
           "Efficient Inference"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法创新性较高，针对MoE部署痛点提出系统解决方案，但实验细节有限，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出混合异构分组专家（MoHGE）架构，通过两级路由和分组辅助损失实现资源高效的MoE语言建模。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -6220,18 +5513,11 @@
           "Knowledge Distillation",
           "Scientific Workflows"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.5,
-        "score": 4,
-        "reason": "针对科学工作流代码生成的无测试用例问题提出创新蒸馏框架，实验验证有效，但技术细节和泛化性待进一步评估。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出无测试用例的多智能体代码生成框架MOSAIC，通过知识蒸馏和结构化分解提升科学工作流代码质量。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -6282,18 +5568,11 @@
           "Object Detection",
           "Transferability"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法创新性较高，针对自动驾驶安全关键问题，实验验证了迁移性提升，值得关注。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出一种针对自动驾驶目标检测的物理对抗补丁攻击方法，通过多模型联合优化提升跨模型迁移性。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -6344,13 +5623,6 @@
           "Gaussian Process",
           "Failure Discovery"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 4.0,
-        "score": 4,
-        "reason": "方法创新性强，理论有保证，实验效率提升显著，与生成式AI评估核心问题高度相关。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "ProEval通过迁移学习和贝叶斯方法主动发现生成式AI模型的失败案例并高效估计性能。",
@@ -6404,18 +5676,11 @@
           "公共安全",
           "零标注迁移"
         ],
-        "novelty": 4,
-        "technical_depth": 4,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 4.0,
-        "score": 4,
-        "reason": "方法创新性强（零标注2D→3D迁移），实验充分，应用价值高，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "INSIGHT通过2D到3D语义迁移实现零标注室内场景理解，生成紧凑场景图用于公共安全。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -6466,18 +5731,11 @@
           "Knowledge Distillation",
           "Domain Adaptation"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 3,
-        "score_raw": 3.55,
-        "score": 4,
-        "reason": "方法创新性较高，实验显示显著加速效果，但摘要未提供详细对比，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出混合域知识融合范式，融合合成、OLAT和真实数据集，实现6-240倍加速的人像重光照。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -6526,18 +5784,11 @@
           "Content Moderation",
           "Latent Space Probing"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 4,
-        "relevance": 4,
-        "score_raw": 3.75,
-        "score": 4,
-        "reason": "方法新颖（潜空间探测），实验充分（高F1、低延迟），但仅针对单一模型，推荐精读。",
         "recommended_action": "read_deeply",
         "reading_priority": "high",
         "one_sentence_summary": "提出在视频扩散模型的潜空间嵌入轻量分类器，实现高效、低开销的成人内容实时检测。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -6583,18 +5834,11 @@
           "Multi-Agent",
           "Ontology Generation"
         ],
-        "novelty": 4,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.5,
-        "score": 4,
-        "reason": "方法有创新性，实验设计系统，但领域特定且未提供具体数值结果。",
         "recommended_action": "read_abstract",
         "reading_priority": "high",
         "one_sentence_summary": "提出一种多智能体LLM架构，通过分解角色和前置规划提升非结构化文本的自动本体生成质量。",
         "legacy_reading_priority": "high",
-        "archive_reading_priority": "recommended"
+        "archive_reading_priority": "must_read"
       }
     },
     {
@@ -6643,13 +5887,6 @@
           "LLM",
           "Static Analysis"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 2,
-        "relevance": 3,
-        "score_raw": 2.75,
-        "score": 3,
-        "reason": "系统设计有层次化智能体协作和 LLM+静态分析融合的亮点，但实验为初步定性，贡献偏工程报告，适合关注多智能体代码分析的研究者阅读。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "Code Broker 是一个基于多智能体架构的代码质量自动评估系统，通过分层协作与 LLM+静态分析融合生成结构化报告。",
@@ -6703,18 +5940,11 @@
           "Decentralized Systems",
           "Overlay Networks"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 2,
-        "relevance": 2,
-        "score_raw": 2.55,
-        "score": 3,
-        "reason": "研究问题新颖但实验信息不足，与核心方向相关性一般。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "研究去中心化AI系统中双层节点与代理变动下的代理发现机制，比较结构化与八卦式覆盖网络的性能。",
         "legacy_reading_priority": "medium",
-        "archive_reading_priority": "skim"
+        "archive_reading_priority": "recommended"
       }
     },
     {
@@ -6766,13 +5996,6 @@
           "Vision-Language Model",
           "Ensemble"
         ],
-        "novelty": 3,
-        "technical_depth": 3,
-        "impact": 3,
-        "relevance": 4,
-        "score_raw": 3.2,
-        "score": 3,
-        "reason": "方法系统但增量改进有限，实验充分但混合融合未显著提升，适合关注可解释医学图像分析的读者。",
         "recommended_action": "read_abstract",
         "reading_priority": "medium",
         "one_sentence_summary": "结合CNN-Transformer集成与VLM，实现可解释的糖尿病视网膜病变分级。",
