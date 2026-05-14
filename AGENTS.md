@@ -17,13 +17,18 @@ Keep the MVP simple:
 ## Important Paths
 
 - `config.yaml`: site title, arXiv categories, max papers, topic keywords.
-- `scripts/run_daily.py`: full pipeline entrypoint.
-- `scripts/fetch_arxiv.py`: arXiv metadata fetcher.
-- `scripts/analyze_deepseek.py`: DeepSeek analysis and resume logic.
-- `scripts/build_site.py`: static site renderer.
-- `scripts/utils.py`: shared filesystem/config/logging helpers.
-- `data/raw/`: fetched arXiv JSON by date.
-- `data/analyzed/`: analyzed JSON by date.
+- `scripts/01_daily.py`: full pipeline entrypoint (alias for `scripts/commands/daily.py`).
+- `scripts/02_fetch.py`: arXiv metadata fetcher (alias for `scripts/commands/fetch.py`).
+- `scripts/03_analyze.py`: DeepSeek analysis and resume logic (alias for `scripts/commands/analyze.py`).
+- `scripts/04_build.py`: static site renderer (alias for `scripts/commands/build.py`).
+- `scripts/lib/`: shared modules — `config.py`, `archive.py`, `progress.py`, `taxonomy.py`.
+- `scripts/commands/`: pipeline command modules — `daily.py`, `fetch.py`, `analyze.py`, `build.py`.
+- `scripts/batch/backfill_arxiv.py`: backfills metadata into `data/archive/papers.jsonl`.
+- `scripts/batch/analyze_archive.py`: analyzes archived papers date by date.
+- `scripts/merge_analyzed_to_archive.py`: one-off importer for legacy analyzed JSON bundles.
+- `data/archive/papers.jsonl`: canonical archive of all papers, unique by `arxiv_id`.
+- `data/archive/analyses.jsonl`: canonical archive of all analyses, unique by `arxiv_id`.
+- `data/raw/` and `data/analyzed/`: deprecated local caches; do not use as source data or commit new files.
 - `data/mock/analyzed_sample.json`: mock analyzed data for offline preview.
 - `data/iclr_taxonomy.json`: ICLR-style primary area/category taxonomy.
 - `docs/`: generated GitHub Pages site.
@@ -33,10 +38,15 @@ Keep the MVP simple:
 
 JSON files must be UTF-8 and written with `ensure_ascii=False`.
 
+Canonical data lives in `data/archive/`:
+
+- `data/archive/papers.jsonl`: paper metadata, unique by `arxiv_id`.
+- `data/archive/analyses.jsonl`: analysis results, unique by `arxiv_id`.
+
 The site is generated, not hand-authored:
 
-- Edit templates and rendering logic in `scripts/build_site.py`.
-- Then run `python scripts/build_site.py`.
+- Edit templates and rendering logic in `scripts/commands/build.py`.
+- Then run `python scripts/04_build.py`.
 - Generated files in `docs/` may have large diffs after sorting/layout/rendering changes.
 
 Do not manually patch generated HTML unless the user explicitly asks for a one-off emergency fix. Prefer changing the generator and regenerating.
@@ -52,33 +62,41 @@ pip install -r requirements.txt
 Mock/offline site build:
 
 ```bash
-python scripts/run_daily.py --mock
-python scripts/build_site.py --mock
+python scripts/01_daily.py --mock
+python scripts/04_build.py --mock
 ```
 
 Normal pipeline:
 
 ```bash
 export DEEPSEEK_API_KEY="your_api_key_here"
-python scripts/run_daily.py
-python scripts/run_daily.py --date 2026-05-10 --max-papers 30
-python scripts/run_daily.py --date 2026-05-10 --max-papers 30 --concurrency 2
+python scripts/01_daily.py
+python scripts/01_daily.py --date 2026-05-10 --max-papers 30
+python scripts/01_daily.py --date 2026-05-10 --max-papers 30 --concurrency 2
 ```
 
 Individual steps:
 
 ```bash
-python scripts/fetch_arxiv.py --date 2026-05-10 --max-papers 30
-python scripts/fetch_arxiv.py --latest-with-papers --max-papers 30
-python scripts/analyze_deepseek.py --date 2026-05-10 --concurrency 2
-python scripts/build_site.py
+python scripts/02_fetch.py --date 2026-05-10 --max-papers 30
+python scripts/02_fetch.py --latest-with-papers --max-papers 30
+python scripts/03_analyze.py --date 2026-05-10 --concurrency 2
+python scripts/04_build.py
+```
+
+Maintenance scripts:
+
+```bash
+python scripts/backfill_all.py                      # backfill metadata 2026-04-01 to today
+python scripts/analyze_missing.py                   # analyze all papers missing DeepSeek analysis
+python scripts/merge_analyzed_to_archive.py         # merge analyzed/ into archive/analyses.jsonl
 ```
 
 Lightweight checks:
 
 ```bash
-python -m py_compile scripts/*.py
-python scripts/build_site.py
+python -m py_compile scripts/*.py scripts/lib/*.py scripts/commands/*.py
+python scripts/04_build.py
 test -f docs/index.html
 test -f docs/assets/style.css
 test -f docs/assets/app.js
@@ -102,13 +120,14 @@ ALL_PROXY=socks5://127.0.0.1:1082 HTTPS_PROXY=socks5://127.0.0.1:1082 python scr
 
 ## Archive Store
 
-Paper and analysis data are persisted in `data/archive/` as JSONL files, managed by `scripts/archive_store.py`:
+Paper and analysis data are persisted in `data/archive/` as JSONL files, managed by `scripts/lib/archive.py`:
 
-- `data/archive/papers.jsonl`: one JSON object per paper with `arxiv_id`, metadata, and `source_date`. This is the canonical source for `build_site.py` when rendering pages.
-- `data/archive/analyses.jsonl`: one JSON object per analysis keyed by `(arxiv_id, analysis_version)`. The default analysis version is `v2_score_2026_05` in `analyze_deepseek.py`.
+- `data/archive/papers.jsonl`: one JSON object per paper with `arxiv_id`, metadata, and `source_date`. This is the canonical paper source.
+- `data/archive/analyses.jsonl`: one JSON object per analyzed paper keyed by `arxiv_id`. `analysis_version` is metadata only, not part of the uniqueness key.
 - The archive store provides append-only, index-based deduplication. Functions like `append_new_papers`, `append_new_analyses`, `papers_for_date`, and `available_dates` are the public API.
-- `analyze_deepseek.py` reads from the archive first, falls back to `data/raw/` JSON files, and writes new analyses back to the archive. Legacy `data/analyzed/` JSON files are still used for backward compatibility and backfill.
-- Additional scripts: `scripts/analyze_archive.py` (re-analyze archived papers), `scripts/backfill_arxiv.py` (backfill metadata for date ranges).
+- `commands/analyze.py` reads papers only from `data/archive/papers.jsonl` and writes successful analyses only to `data/archive/analyses.jsonl`.
+- `data/raw/` and `data/analyzed/` are deprecated compatibility caches. Do not add new pipeline dependencies on them.
+- Additional scripts: `scripts/batch/backfill_arxiv.py` (bulk metadata backfill), `scripts/batch/analyze_archive.py` (bulk analysis), `scripts/merge_analyzed_to_archive.py` (one-off import from a legacy analyzed JSON file).
 
 ## SPA Frontend Architecture
 
@@ -116,7 +135,7 @@ The deployed site (`docs/index.html`) is a single-page application that lazily l
 
 - `docs/data/dates.json` lists all available dates with paper counts and a `latest` date pointer.
 - `docs/data/by-month/YYYY-MM.json` contains month-bundled paper data. The SPA loads month data on demand as the user scrolls or navigates.
-- Month files are generated by `build_site.py` from the archive + legacy analyzed data. Stale month files are deleted during rebuild.
+- Month files are generated by `build_site.py` from `data/archive/papers.jsonl` plus `data/archive/analyses.jsonl`. Stale month files are deleted during rebuild.
 - `docs/daily/YYYY-MM-DD.html` pages are simple HTTP redirects to `../index.html?date=YYYY-MM-DD` for backward compatibility with existing links.
 - `docs/assets/app.js` handles all client-side filtering, search, lazy loading, and rendering. No framework or build step.
 
@@ -126,41 +145,45 @@ The deployed site (`docs/index.html`) is a single-page application that lazily l
 
 ## Pipeline Behavior
 
-`run_daily.py` should:
+`commands/daily.py` (`scripts/01_daily.py`) should:
 
-- Reuse existing raw/analyzed JSON when possible.
+- Reuse existing archive JSONL records when possible.
 - If no date is provided, pick the most recent date with available papers.
 - Skip DeepSeek calls when all papers for the selected date are already analyzed.
 - Continue site generation when individual paper analyses fail.
 
-`fetch_arxiv.py` should:
+`commands/fetch.py` (`scripts/02_fetch.py`) should:
 
 - Use arXiv OAI-PMH (`oaipmh.arxiv.org`) as the primary metadata source, with `arxiv.py` API and browse-page HTML as fallbacks.
 - Respect categories and max paper settings from `config.yaml` unless CLI args override them.
 - Apply reasonable retry/timeout/rate-limit behavior.
-- Write a valid raw JSON file even when no papers are found.
-- Append new papers to the archive store (`data/archive/papers.jsonl`) via `archive_store.append_new_papers`.
+- Append new papers to the archive store (`data/archive/papers.jsonl`) via `append_new_papers`.
 - Support `--backfill` for bulk metadata harvesting over date ranges and `--oai-check` for finding papers missed by prior fetches.
 
-`analyze_deepseek.py` should:
+`commands/analyze.py` (`scripts/03_analyze.py`) should:
 
 - Analyze only `title + abstract`.
-- Load raw papers from the archive store first (`data/archive/papers.jsonl`), falling back to `data/raw/YYYY-MM-DD.json`.
-- Skip papers already analyzed in the archive (`data/archive/analyses.jsonl`) by `(arxiv_id, analysis_version)` key.
+- Load papers from the archive store (`data/archive/papers.jsonl`).
+- Skip papers already analyzed in the archive (`data/archive/analyses.jsonl`) by `arxiv_id`.
 - Record `analysis_error` per paper instead of failing the whole date when one request fails.
 - Preserve raw model response only when useful for parse failure debugging, and never include secrets.
 - Use ICLR-style taxonomy fields where available: `primary_area_en`, `primary_area`, and `category`.
-- Append successful analyses to the archive store immediately after each paper completes, and also write an updated `data/analyzed/YYYY-MM-DD.json` for backward compatibility.
-- `--cache-only` skips DeepSeek API calls and only backfills from existing archive/legacy cache.
+- Append successful analyses to the archive store immediately after each paper completes.
+- `--cache-only` reports missing archive analyses without calling DeepSeek.
 
-`build_site.py` should:
+`commands/build.py` (`scripts/04_build.py`) should:
 
-- Read paper data from the archive store (`data/archive/papers.jsonl`) and merge with legacy `data/analyzed/` JSON for backward-compatible analysis fields.
+- Read paper data from `data/archive/papers.jsonl` and merge with `data/archive/analyses.jsonl` by `arxiv_id`.
 - Work with real analyzed data or mock data.
 - Generate `docs/index.html` (SPA entry point), `docs/daily/YYYY-MM-DD.html` (redirect pages), `docs/data/dates.json` (date index), `docs/data/by-month/YYYY-MM.json` (month bundles), `docs/assets/style.css`, and `docs/assets/app.js`.
 - Use only relative links so GitHub Pages works under `/Arxiv-Daily-Paper/`.
 - Keep generated pages static and CDN-free.
 - Delete stale month files and daily pages that no longer correspond to available dates.
+
+`merge_analyzed_to_archive.py` should:
+
+- Import explicitly provided legacy analyzed JSON bundle files.
+- Normalize analysis via `commands.analyze.normalize_analysis()` and append new records via `lib.archive.append_new_analyses()`.
 
 ## Site UX Rules
 
