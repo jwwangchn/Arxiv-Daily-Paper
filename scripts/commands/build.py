@@ -12,7 +12,7 @@ from datetime import date as Date
 from datetime import datetime
 from typing import Any
 
-from lib.archive import available_dates, paper_id, paper_source_date, read_jsonl
+from lib.archive import available_dates, load_analysis_index, paper_id, paper_source_date, read_jsonl
 from lib.config import PROJECT_ROOT, ensure_dirs, load_config, read_json, setup_logging, write_json
 from lib.taxonomy import (
     TAXONOMY_PATH,
@@ -43,41 +43,12 @@ def ht(value: Any) -> str:
     return h(cjk_spacing(value))
 
 
-def load_analyzed_data(use_mock: bool = False) -> list[dict[str, Any]]:
-    ensure_dirs()
-    files: list[Path] = []
-    month_dir = PROJECT_ROOT / "data" / "analyzed"
-    if month_dir.is_dir():
-        for sub in sorted(month_dir.iterdir()):
-            if sub.is_dir() and sub.name.count("-") == 1:
-                files.extend(sorted(sub.glob("*.json")))
-    if not files:
-        files = sorted((PROJECT_ROOT / "data" / "analyzed").glob("*.json"))
-    if use_mock or not files:
-        mock_path = PROJECT_ROOT / "data" / "mock" / "analyzed_sample.json"
-        if mock_path.exists():
-            LOGGER.info("Using mock analyzed data from %s", mock_path)
-            return [read_json(mock_path)]
-    return [read_json(path) for path in files]
-
-
-def load_legacy_analysis_by_id() -> dict[str, dict[str, Any]]:
-    legacy: dict[str, dict[str, Any]] = {}
-    month_dir = PROJECT_ROOT / "data" / "analyzed"
-    paths: list[Path] = []
-    if month_dir.is_dir():
-        for sub in sorted(month_dir.iterdir()):
-            if sub.is_dir() and sub.name.count("-") == 1:
-                paths.extend(sorted(sub.glob("*.json")))
-    if not paths:
-        paths = sorted((PROJECT_ROOT / "data" / "analyzed").glob("*.json"))
-    for path in paths:
-        bundle = read_json(path)
-        for paper in bundle.get("papers", []):
-            aid = paper_id(paper)
-            if aid and paper.get("analysis"):
-                legacy[aid] = paper
-    return legacy
+def load_mock_data() -> list[dict[str, Any]]:
+    mock_path = PROJECT_ROOT / "data" / "mock" / "analyzed_sample.json"
+    if mock_path.exists():
+        LOGGER.info("Using mock analyzed data from %s", mock_path)
+        return [read_json(mock_path)]
+    return []
 
 
 def legacy_priority_for_site(analysis: dict[str, Any]) -> str:
@@ -97,12 +68,13 @@ def remove_score_fields(analysis: dict[str, Any]) -> None:
         analysis.pop(key, None)
 
 
-def paper_for_site(paper: dict[str, Any], legacy_by_id: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def paper_for_site(paper: dict[str, Any], analysis_by_id: dict[str, dict[str, Any]]) -> dict[str, Any]:
     item = dict(paper)
-    if not item.get("analysis"):
-        legacy = legacy_by_id.get(paper_id(item))
-        if legacy and legacy.get("analysis"):
-            item["analysis"] = dict(legacy["analysis"])
+    analysis_record = analysis_by_id.get(paper_id(item))
+    if analysis_record and analysis_record.get("analysis"):
+        item["analysis"] = dict(analysis_record["analysis"])
+        item["analysis_version"] = analysis_record.get("analysis_version")
+        item["analyzed_at"] = analysis_record.get("analyzed_at")
     if item.get("analysis"):
         item["analysis"]["reading_priority"] = legacy_priority_for_site(item["analysis"])
         remove_score_fields(item["analysis"])
@@ -111,18 +83,18 @@ def paper_for_site(paper: dict[str, Any], legacy_by_id: dict[str, dict[str, Any]
 
 def archive_bundles(use_mock: bool = False) -> list[dict[str, Any]]:
     if use_mock:
-        return load_analyzed_data(use_mock=True)
+        return load_mock_data()
 
     dates = available_dates()
     if not dates:
-        return load_analyzed_data(use_mock=False)
+        return []
 
-    legacy_by_id = load_legacy_analysis_by_id()
+    analysis_by_id = load_analysis_index()
     papers_by_date: dict[str, list[dict[str, Any]]] = {date: [] for date in dates}
     for paper in read_jsonl(PROJECT_ROOT / "data" / "archive" / "papers.jsonl"):
         source_date = paper_source_date(paper)
         if source_date in papers_by_date:
-            papers_by_date[source_date].append(paper_for_site(paper, legacy_by_id))
+            papers_by_date[source_date].append(paper_for_site(paper, analysis_by_id))
 
     return [
         {"date": date, "source": "archive", "papers": sorted_papers_for_export(papers)}

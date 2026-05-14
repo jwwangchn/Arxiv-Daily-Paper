@@ -21,7 +21,7 @@ def date_range_filter(dates: list[str], start_date: str, end_date: str) -> list[
 def analyzed_count_for_date(source_date: str, analysis_version: str) -> tuple[int, int]:
     papers = papers_for_date(source_date)
     analysis_index = load_analysis_index()
-    analyzed = sum(1 for paper in papers if (paper_id(paper), analysis_version) in analysis_index)
+    analyzed = sum(1 for paper in papers if paper_id(paper) in analysis_index)
     return analyzed, len(papers)
 
 

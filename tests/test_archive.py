@@ -206,18 +206,19 @@ class TestAppendNewAnalyses:
         assert appended == 1
         assert seen == 1
 
-    def test_deduplicates_by_key(self, tmp_path: Path):
+    def test_deduplicates_by_arxiv_id(self, tmp_path: Path):
         p = tmp_path / "analyses.jsonl"
         record = {"arxiv_id": "2605.12345", "analysis_version": "v1", "analysis": {}}
         append_new_analyses([record], path=p)
-        appended, _ = append_new_analyses([record], path=p)
+        appended, _ = append_new_analyses(
+            [{"arxiv_id": "2605.12345", "analysis_version": "v2", "analysis": {}}],
+            path=p,
+        )
         assert appended == 0
 
     def test_skips_missing_arxiv_id(self, tmp_path: Path):
         p = tmp_path / "analyses.jsonl"
-        appended, _ = append_new_analyses(
-            [{"arxiv_id": "", "analysis_version": "v1"}], path=p
-        )
+        appended, _ = append_new_analyses([{"arxiv_id": "", "analysis_version": "v1"}], path=p)
         assert appended == 0
 
     def test_sets_analyzed_at(self, tmp_path: Path):
@@ -231,9 +232,9 @@ class TestAppendNewAnalyses:
 # --- analysis_key ---
 
 class TestAnalysisKey:
-    def test_extracts_tuple(self):
+    def test_extracts_arxiv_id(self):
         record = {"arxiv_id": "2605.12345", "analysis_version": "v2"}
-        assert analysis_key(record) == ("2605.12345", "v2")
+        assert analysis_key(record) == "2605.12345"
 
 
 # --- papers_for_date ---
@@ -271,24 +272,24 @@ class TestAvailableDates:
 # --- latest_analysis_by_arxiv_id ---
 
 class TestLatestAnalysisByArxivId:
-    def test_returns_latest_per_arxiv_id(self, tmp_path: Path):
+    def test_returns_record_per_arxiv_id(self, tmp_path: Path):
         p = tmp_path / "analyses.jsonl"
         write_jsonl(p, [
-            {"arxiv_id": "2605.12345", "analysis_version": "v1", "analysis": {"score": 3}},
-            {"arxiv_id": "2605.12345", "analysis_version": "v2", "analysis": {"score": 4}},
+            {"arxiv_id": "2605.12345", "analysis_version": "v1", "analysis": {"tldr": "first"}},
         ])
         result = latest_analysis_by_arxiv_id(path=p)
-        assert result["2605.12345"]["analysis"]["score"] == 4
+        assert result["2605.12345"]["analysis"]["tldr"] == "first"
 
     def test_filters_by_version(self, tmp_path: Path):
         p = tmp_path / "analyses.jsonl"
         write_jsonl(p, [
             {"arxiv_id": "2605.12345", "analysis_version": "v1", "analysis": {}},
-            {"arxiv_id": "2605.12345", "analysis_version": "v2", "analysis": {}},
+            {"arxiv_id": "2605.99999", "analysis_version": "v2", "analysis": {}},
         ])
         result = latest_analysis_by_arxiv_id(version="v1", path=p)
         assert "2605.12345" in result
         assert result["2605.12345"]["analysis_version"] == "v1"
+        assert "2605.99999" not in result
 
 
 # --- unanalyzed_papers_for_date ---
@@ -304,7 +305,7 @@ class TestUnanalyzedPapersForDate:
             {"arxiv_id": "2605.12345", "analysis_version": "v1"},
         ])
         result = unanalyzed_papers_for_date(
-            "2026-05-10", analysis_version="v1",
+            "2026-05-10", analysis_version="v2",
             papers_path=papers_path, analyses_path=analyses_path,
         )
         assert len(result) == 1
@@ -375,4 +376,4 @@ class TestLoadIndexes:
             {"arxiv_id": "2605.12345", "analysis_version": "v1"},
         ])
         index = load_analysis_index(p)
-        assert ("2605.12345", "v1") in index
+        assert "2605.12345" in index

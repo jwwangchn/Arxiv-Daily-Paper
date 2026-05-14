@@ -60,20 +60,17 @@ def load_paper_index(path: Path = PAPERS_JSONL) -> dict[str, dict[str, Any]]:
     return {paper_id(record): record for record in read_jsonl(path) if paper_id(record)}
 
 
-def load_analysis_index(path: Path = ANALYSES_JSONL) -> dict[tuple[str, str], dict[str, Any]]:
-    index: dict[tuple[str, str], dict[str, Any]] = {}
+def load_analysis_index(path: Path = ANALYSES_JSONL) -> dict[str, dict[str, Any]]:
+    index: dict[str, dict[str, Any]] = {}
     for record in read_jsonl(path):
         arxiv_id = str(record.get("arxiv_id") or "").strip()
-        version = str(record.get("analysis_version") or "").strip()
-        if arxiv_id and version:
-            index[(arxiv_id, version)] = record
+        if arxiv_id:
+            index[arxiv_id] = record
     return index
 
 
-def analysis_key(record: dict[str, Any]) -> tuple[str, str]:
-    arxiv_id = str(record.get("arxiv_id") or "").strip()
-    version = str(record.get("analysis_version") or "").strip()
-    return arxiv_id, version
+def analysis_key(record: dict[str, Any]) -> str:
+    return str(record.get("arxiv_id") or "").strip()
 
 
 def normalize_archive_paper(paper: dict[str, Any], source_date: str, fetched_at: str | None = None) -> dict[str, Any]:
@@ -112,15 +109,15 @@ def append_new_analyses(
     analyses: Iterable[dict[str, Any]],
     *,
     path: Path = ANALYSES_JSONL,
-    existing_index: dict[tuple[str, str], dict[str, Any]] | None = None,
+    existing_index: dict[str, dict[str, Any]] | None = None,
 ) -> tuple[int, int]:
     index = existing_index if existing_index is not None else load_analysis_index(path)
     new_records: list[dict[str, Any]] = []
-    seen_in_batch: set[tuple[str, str]] = set()
+    seen_in_batch: set[str] = set()
 
     for analysis in analyses:
         key = analysis_key(analysis)
-        if not key[0] or not key[1] or key in index or key in seen_in_batch:
+        if not key or key in index or key in seen_in_batch:
             continue
         record = dict(analysis)
         if not record.get("analyzed_at"):
@@ -149,8 +146,9 @@ def latest_analysis_by_arxiv_id(
 ) -> dict[str, dict[str, Any]]:
     latest: dict[str, dict[str, Any]] = {}
     for record in read_jsonl(path):
-        arxiv_id, analysis_version = analysis_key(record)
-        if not arxiv_id or not analysis_version:
+        arxiv_id = analysis_key(record)
+        analysis_version = str(record.get("analysis_version") or "").strip()
+        if not arxiv_id:
             continue
         if version and analysis_version != version:
             continue
@@ -169,7 +167,7 @@ def unanalyzed_papers_for_date(
     return [
         paper
         for paper in papers_for_date(source_date, papers_path)
-        if (paper_id(paper), analysis_version) not in analyzed
+        if paper_id(paper) not in analyzed
     ]
 
 

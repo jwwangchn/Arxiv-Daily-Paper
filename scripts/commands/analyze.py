@@ -7,19 +7,19 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import logging
 import os
-from pathlib import Path
 from typing import Any
 
 from openai import OpenAI
 
 from lib.archive import (
+    ANALYSES_JSONL,
     append_new_analyses,
     load_analysis_index,
     paper_id,
     papers_for_date,
     utc_now_iso,
 )
-from lib.config import PROJECT_ROOT, ensure_dirs, parse_date, read_json, setup_logging, write_json
+from lib.config import ensure_dirs, parse_date, setup_logging
 from lib.progress import progress_bar
 from lib.taxonomy import (
     AREA_CATEGORIES_MAP as _AREA_CATEGORIES_MAP,
@@ -276,38 +276,12 @@ def paper_with_analysis_record(paper: dict[str, Any], record: dict[str, Any]) ->
     return enriched
 
 
-def _raw_path(target_date: str) -> Path:
-    month = target_date[:7]
-    monthly = PROJECT_ROOT / "data" / "raw" / month / f"{target_date}.json"
-    legacy = PROJECT_ROOT / "data" / "raw" / f"{target_date}.json"
-    if monthly.exists():
-        return monthly
-    return legacy
-
-
 def load_raw_papers(target_date: str) -> tuple[list[dict[str, Any]], str]:
     archive_papers = papers_for_date(target_date)
     if archive_papers:
         LOGGER.info("Loaded %d paper(s) for %s from archive.", len(archive_papers), target_date)
         return archive_papers, "archive"
-
-    raw_path = _raw_path(target_date)
-    if not raw_path.exists():
-        raise FileNotFoundError(f"Archive and raw data not found for {target_date}: {raw_path}")
-    raw = read_json(raw_path)
-    return raw.get("papers", []), raw.get("source", "arxiv")
-
-
-def load_existing(output_path: Path) -> dict[str, dict[str, Any]]:
-    if not output_path.exists():
-        return {}
-    existing = read_json(output_path)
-    return {paper.get("arxiv_id"): paper for paper in existing.get("papers", []) if paper.get("arxiv_id")}
-
-
-def write_analyzed(output_path: Path, target_date: str, source: str, papers: list[dict[str, Any] | None]) -> None:
-    completed = [paper for paper in papers if paper is not None]
-    write_json(output_path, {"date": target_date, "source": source, "papers": completed})
+    raise FileNotFoundError(f"Archive papers not found for {target_date}. Run fetch/backfill first.")
 
 
 def analyze_date(
@@ -317,53 +291,30 @@ def analyze_date(
     cache_only: bool = False,
 ) -> Path:
     ensure_dirs()
-    raw_papers, source = load_raw_papers(target_date)
-    month = target_date[:7]
-    output_path = PROJECT_ROOT / "data" / "analyzed" / month / f"{target_date}.json"
-    existing_by_id = load_existing(output_path)
+    raw_papers, _source = load_raw_papers(target_date)
     archive_analysis_index = load_analysis_index()
 
     if not raw_papers:
-        write_json(output_path, {"date": target_date, "source": source, "papers": []})
-        LOGGER.info("No papers to analyze for %s; wrote empty analyzed JSON.", target_date)
-        return output_path
+        LOGGER.info("No papers to analyze for %s.", target_date)
+        return ANALYSES_JSONL
 
     model = os.environ.get("DEEPSEEK_MODEL", DEFAULT_DEEPSEEK_MODEL)
     worker_count = parse_concurrency(concurrency if concurrency is not None else os.environ.get("DEEPSEEK_CONCURRENCY"))
-    analyzed_papers: list[dict[str, Any] | None] = [None] * len(raw_papers)
     pending: list[tuple[int, dict[str, Any]]] = []
 
     for index, paper in enumerate(raw_papers):
         arxiv_id = paper_id(paper)
-        archive_existing = archive_analysis_index.get((arxiv_id, analysis_version))
+        archive_existing = archive_analysis_index.get(arxiv_id)
         if archive_existing:
             LOGGER.info("Skipping archive-analyzed paper %s", arxiv_id)
-            analyzed_papers[index] = paper_with_analysis_record(paper, archive_existing)
             continue
 
-        existing = existing_by_id.get(arxiv_id)
-        if existing and "analysis" in existing:
-            LOGGER.info("Backfilling legacy analyzed paper %s into archive", arxiv_id)
-            archived = dict(existing)
-            archived["analysis"] = normalize_analysis(dict(archived["analysis"]))
-            append_new_analyses(
-                [archive_analysis_record(archived, analysis_version=analysis_version, model=model)],
-                existing_index=archive_analysis_index,
-            )
-            analyzed_papers[index] = paper_with_analysis_record(paper, archive_analysis_index[(arxiv_id, analysis_version)])
-            continue
-        if existing and "analysis_error" in existing:
-            LOGGER.info("Legacy analysis for %s has only an error; retrying instead of archiving it.", arxiv_id)
         pending.append((index, paper))
 
     if pending:
         if cache_only:
             LOGGER.info("Cache-only mode: %d paper(s) are missing analysis and will not call DeepSeek.", len(pending))
-            if any(paper is not None for paper in analyzed_papers):
-                write_analyzed(output_path, target_date, source, analyzed_papers)
-            else:
-                LOGGER.info("Cache-only mode found no completed papers for %s; leaving legacy analyzed JSON untouched.", target_date)
-            return output_path
+            return ANALYSES_JSONL
         client = get_client()
         LOGGER.info("Analyzing %d pending paper(s) with concurrency=%d.", len(pending), worker_count)
         with ThreadPoolExecutor(max_workers=worker_count) as executor:
@@ -383,18 +334,10 @@ def analyze_date(
                         [archive_analysis_record(enriched, analysis_version=analysis_version, model=model)],
                         existing_index=archive_analysis_index,
                     )
-                    analyzed_papers[index] = paper_with_analysis_record(
-                        enriched,
-                        archive_analysis_index[(paper_id(enriched), analysis_version)],
-                    )
-                else:
-                    analyzed_papers[index] = enriched
                 LOGGER.info("Completed pending analysis %d/%d.", completed_count, len(pending))
-                write_analyzed(output_path, target_date, source, analyzed_papers)
 
-    write_analyzed(output_path, target_date, source, analyzed_papers)
-    LOGGER.info("Wrote %s", output_path)
-    return output_path
+    LOGGER.info("Updated %s", ANALYSES_JSONL)
+    return ANALYSES_JSONL
 
 
 def parse_args() -> argparse.Namespace:
@@ -410,7 +353,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--cache-only",
         action="store_true",
-        help="Only use archive or legacy analyzed cache; do not call DeepSeek for missing papers.",
+        help="Report missing archive analyses without calling DeepSeek.",
     )
     return parser.parse_args()
 

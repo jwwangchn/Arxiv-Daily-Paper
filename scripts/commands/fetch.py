@@ -10,7 +10,6 @@ import logging
 import re
 import time
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from typing import Any
 import xml.etree.ElementTree as ET
 
@@ -19,13 +18,11 @@ import requests
 
 from lib.archive import append_new_papers, load_paper_index
 from lib.config import (
-    PROJECT_ROOT,
     ensure_dirs,
     load_config,
     normalize_space,
     parse_date,
     setup_logging,
-    write_json,
 )
 from lib.progress import progress_bar
 
@@ -824,14 +821,6 @@ def merge_papers(existing: list[dict[str, Any]], new_papers: list[dict[str, Any]
     return list(existing_map.values())
 
 
-def save_raw(target_date: str, papers: list[dict[str, Any]]) -> Path:
-    month = target_date[:7]
-    output = PROJECT_ROOT / "data" / "raw" / month / f"{target_date}.json"
-    write_json(output, {"date": target_date, "source": "arxiv", "papers": papers})
-    LOGGER.info("Wrote %s", output)
-    return output
-
-
 def parse_args() -> argparse.Namespace:
     config = load_config()
 
@@ -950,9 +939,10 @@ def main() -> None:
             )
 
     if not papers:
-        LOGGER.info("No papers found for %s; skipping raw file write.", target_date)
+        LOGGER.info("No papers found for %s; archive was not modified.", target_date)
         return
-    save_raw(target_date, papers)
+    appended, _ = append_new_papers(papers, source_date=target_date, existing_index=load_paper_index())
+    LOGGER.info("Fetched %d paper(s) for %s, appended %d to archive.", len(papers), target_date, appended)
 
 
 if __name__ == "__main__":

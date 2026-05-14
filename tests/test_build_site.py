@@ -273,22 +273,32 @@ class TestLegacyPriorityForSite:
 # --- paper_for_site ---
 
 class TestPaperForSite:
-    def test_backfills_legacy_analysis(self, sample_paper):
-        legacy = {sample_paper["arxiv_id"]: {"analysis": {"tldr": "legacy", "reading_priority": "recommended"}}}
-        result = paper_for_site(sample_paper, legacy)
-        assert result["analysis"]["tldr"] == "legacy"
+    def test_merges_archive_analysis(self, sample_paper):
+        analysis_by_id = {
+            sample_paper["arxiv_id"]: {
+                "analysis_version": "v3",
+                "analyzed_at": "now",
+                "analysis": {"tldr": "archive", "reading_priority": "recommended"},
+            }
+        }
+        result = paper_for_site(sample_paper, analysis_by_id)
+        assert result["analysis"]["tldr"] == "archive"
+        assert result["analysis_version"] == "v3"
 
-    def test_does_not_overwrite_existing_analysis(self, sample_analyzed_paper):
-        legacy = {sample_analyzed_paper["arxiv_id"]: {"analysis": {"tldr": "wrong"}}}
-        result = paper_for_site(sample_analyzed_paper, legacy)
-        assert result["analysis"]["tldr"] == sample_analyzed_paper["analysis"]["tldr"]
+    def test_uses_archive_analysis_as_source_of_truth(self, sample_analyzed_paper):
+        analysis_by_id = {sample_analyzed_paper["arxiv_id"]: {"analysis": {"tldr": "archive", "reading_priority": "recommended"}}}
+        result = paper_for_site(sample_analyzed_paper, analysis_by_id)
+        assert result["analysis"]["tldr"] == "archive"
 
     def test_sets_legacy_priority(self, sample_analyzed_paper):
-        result = paper_for_site(sample_analyzed_paper, {})
+        analysis_by_id = {sample_analyzed_paper["arxiv_id"]: {"analysis": sample_analyzed_paper["analysis"]}}
+        result = paper_for_site(sample_analyzed_paper, analysis_by_id)
         assert result["analysis"]["reading_priority"] == "high"  # must_read→high
 
     def test_removes_score_fields(self, sample_analyzed_paper):
-        result = paper_for_site(sample_analyzed_paper, {})
+        analysis = dict(sample_analyzed_paper["analysis"], score=4, reason="old")
+        analysis_by_id = {sample_analyzed_paper["arxiv_id"]: {"analysis": analysis}}
+        result = paper_for_site(sample_analyzed_paper, analysis_by_id)
         for key in ("novelty", "technical_depth", "impact", "relevance", "score_raw", "score", "reason"):
             assert key not in result["analysis"]
 

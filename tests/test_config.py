@@ -151,8 +151,6 @@ class TestEnsureDirs:
     def test_creates_all_expected_dirs(self, mock_root, tmp_path: Path):
         mock_root.__truediv__ = lambda self, other: tmp_path / other
         ensure_dirs()
-        assert (tmp_path / "data" / "raw").is_dir()
-        assert (tmp_path / "data" / "analyzed").is_dir()
         assert (tmp_path / "data" / "archive").is_dir()
         assert (tmp_path / "data" / "mock").is_dir()
         assert (tmp_path / "docs" / "daily").is_dir()

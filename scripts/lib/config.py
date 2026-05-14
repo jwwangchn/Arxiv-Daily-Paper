@@ -23,8 +23,6 @@ def setup_logging() -> None:
 
 def ensure_dirs() -> None:
     for path in [
-        PROJECT_ROOT / "data" / "raw",
-        PROJECT_ROOT / "data" / "analyzed",
         PROJECT_ROOT / "data" / "archive",
         PROJECT_ROOT / "data" / "mock",
         PROJECT_ROOT / "docs" / "daily",

@@ -5,12 +5,12 @@ from __future__ import annotations
 import argparse
 import logging
 from datetime import datetime, timedelta
-from pathlib import Path
 
 from commands.analyze import analyze_date
 from commands.build import build_site
-from commands.fetch import fetch_papers, merge_papers, save_raw
-from lib.config import PROJECT_ROOT, ensure_dirs, load_config, parse_date, read_json, setup_logging
+from commands.fetch import fetch_papers
+from lib.archive import append_new_papers, load_analysis_index, load_paper_index, paper_id, papers_for_date
+from lib.config import ensure_dirs, load_config, parse_date, setup_logging
 
 LOGGER = logging.getLogger("commands.daily")
 
@@ -27,40 +27,18 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _date_path(folder: str, target_date: str) -> Path:
-    month = target_date[:7]
-    monthly = PROJECT_ROOT / "data" / folder / month / f"{target_date}.json"
-    legacy = PROJECT_ROOT / "data" / folder / f"{target_date}.json"
-    if monthly.exists():
-        return monthly
-    return legacy
-
-
 def is_fully_analyzed(target_date: str, papers: list[dict]) -> bool:
     if not papers:
         return False
-    output_path = _date_path("analyzed", target_date)
-    if not output_path.exists():
-        return False
-    existing = read_json(output_path)
-    existing_by_id = {paper.get("arxiv_id"): paper for paper in existing.get("papers", []) if paper.get("arxiv_id")}
-    for paper in papers:
-        existing_paper = existing_by_id.get(paper.get("arxiv_id"))
-        if not existing_paper or ("analysis" not in existing_paper and "analysis_error" not in existing_paper):
-            return False
-    return True
+    analysis_index = load_analysis_index()
+    return all(paper_id(paper) in analysis_index for paper in papers if paper_id(paper))
 
 
 def load_existing_papers(target_date: str) -> tuple[list[dict], str]:
-    for folder in ["raw", "analyzed"]:
-        path = _date_path(folder, target_date)
-        if not path.exists():
-            continue
-        bundle = read_json(path)
-        papers = bundle.get("papers", [])
-        if papers:
-            LOGGER.info("Reusing existing %s data for %s (%d papers).", folder, target_date, len(papers))
-            return papers, folder
+    papers = papers_for_date(target_date)
+    if papers:
+        LOGGER.info("Reusing archive papers for %s (%d papers).", target_date, len(papers))
+        return papers, "archive"
     return [], ""
 
 
@@ -80,6 +58,7 @@ def find_latest_existing_or_fetch(
         papers = fetch_papers(target_date, categories, max_papers)
         if papers:
             LOGGER.info("Selected latest non-empty arXiv date: %s (%d papers)", target_date, len(papers))
+            append_new_papers(papers, source_date=target_date, existing_index=load_paper_index())
             return target_date, papers, "fetched"
         LOGGER.info("No papers found for %s; checking previous day", target_date)
     raise RuntimeError(f"No arXiv papers found in the last {lookback_days + 1} days from {cursor.isoformat()}.")
@@ -97,16 +76,11 @@ def main() -> None:
 
     if args.date:
         target_date = parse_date(args.date)
-        papers, source = load_existing_papers(target_date)
         new_papers = fetch_papers(target_date, args.categories, args.max_papers)
         if new_papers:
-            if papers and source:
-                papers = merge_papers(papers, new_papers)
-                LOGGER.info("Merged %d new paper(s) into existing %d for %s.", len(new_papers), len(papers), target_date)
-                source = "raw"
-            else:
-                papers = new_papers
-                source = "fetched"
+            appended, _ = append_new_papers(new_papers, source_date=target_date, existing_index=load_paper_index())
+            LOGGER.info("Fetched %d paper(s) for %s, appended %d to archive.", len(new_papers), target_date, appended)
+        papers, source = load_existing_papers(target_date)
     else:
         target_date, papers, source = find_latest_existing_or_fetch(
             args.categories,
@@ -115,10 +89,7 @@ def main() -> None:
         )
 
     LOGGER.info("Starting daily pipeline for %s", target_date)
-    if source in {"fetched", "raw"}:
-        save_raw(target_date, papers)
-    else:
-        LOGGER.info("Using existing analyzed data for %s; raw save is not needed.", target_date)
+    LOGGER.info("Using %s paper data for %s.", source or "empty archive", target_date)
 
     analysis_failed = False
     if is_fully_analyzed(target_date, papers):
