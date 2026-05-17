@@ -4,37 +4,31 @@
 
 ## 功能
 
-- 从 arXiv Atom API 抓取指定日期、指定分类（cs.CV / cs.AI / cs.CL / cs.LG）的论文 metadata
-- arXiv API 限流时自动降级到 browse 页面抓取
+- 通过 OAI-PMH 协议从 arXiv 抓取指定日期、指定分类（cs.CV / cs.AI / cs.CL / cs.LG）的论文 metadata
 - 基于 `title + abstract` 调用 DeepSeek 生成中文导读（TL;DR、研究动机、解决问题、现象分析、主要方法、实验信息、贡献与局限）
 - 基于 ICLR 2026 分类体系自动标注 primary_area / category
-- 数据双写：本地 JSONL archive + SQLite（开发） + Cloudflare D1（生产）
-- 前端 SPA 从 Worker API 实时加载数据，支持搜索、分类导航、日历切换、优先级/标签过滤
+- 数据存储在 Cloudflare D1（生产）/ SQLite（本地开发），SPA 从 Worker API 实时加载
+- 前端 SPA 支持搜索、分类导航、日历切换、优先级/标签过滤
 
 ## 架构
 
 ```
 ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
-│  GitHub Actions   │────▶│  Cloudflare       │────▶│  GitHub Pages    │
+│  GitHub Actions   │────▶│  Cloudflare       │◀────│  GitHub Pages    │
 │  (daily.yml)      │     │  Worker + D1      │     │  (SPA frontend)  │
-│                   │     │  (API)            │     │  (static docs/)  │
-│  fetch_arxiv.py   │     │                   │     │                  │
-│  analyze_*.py     │     │  arxiv-daily-api  │     │  index.html      │
-│  export_to_worker │     │  .workers.dev     │     │  assets/app.js   │
+│                   │     │                   │     │                   │
+│  fetch_arxiv.py   │     │  GET /api/*       │     │  index.html      │
+│  analyze_*.py     │     │  POST /api/*      │     │  assets/app.js   │
+│  export_to_worker │     │                   │     │  assets/style.css│
 └──────────────────┘     └──────────────────┘     └──────────────────┘
-         │                         │                        ▲
-         ▼                         │                        │
-   data/archive/                   └────────────────────────┘
-   *.jsonl (git-tracked)              all data from API
 ```
 
-**三层数据存储**（保持同步）：
+**两层数据存储**：
 
 | 层 | 位置 | 用途 |
 |---|---|---|
 | Cloudflare D1 | 远程数据库 | 生产环境权威数据源，Worker API 查询 |
 | 本地 SQLite | `data/archive/papers.db` | 本地开发，D1 schema 镜像 |
-| JSONL archive | `data/archive/` | git 追踪备份，用于一次性 seed / 回退 |
 
 ## 目录结构
 
@@ -42,16 +36,17 @@
 .
 ├── config.yaml                    # 站点配置（分类、max_papers、主题关键词）
 ├── scripts/
-│   ├── fetch_arxiv.py             # arXiv 元数据抓取（双写 JSONL + SQLite）
-│   ├── analyze_deepseek.py        # DeepSeek 分析（双写 JSONL + SQLite）
-│   ├── export_to_worker.py        # 将 SQLite/JSONL 数据同步到 Worker API
+│   ├── fetch_arxiv.py             # arXiv OAI-PMH 抓取入口
+│   ├── analyze_deepseek.py        # DeepSeek 分析入口
+│   ├── export_to_worker.py        # 将 SQLite 数据同步到 Worker API
 │   ├── lib/                       # 共享模块
-│   │   ├── archive.py             # JSONL archive 读写
-│   │   ├── db.py                  # SQLite 本地数据库层
+│   │   ├── db.py                  # SQLite 本地数据库层（唯一数据层）
 │   │   ├── config.py              # 配置加载
-│   │   ├── progress.py            # 进度条
-│   ├── fetchers/                  # 多源抓取插件（AAAI, ACL, CVF, OpenReview）
-│   └── commands/                  # 兼容命令模块
+│   │   └── progress.py            # 进度条
+│   └── commands/                  # 核心命令模块
+│       ├── fetch.py               # OAI-PMH 抓取逻辑
+│       ├── analyze.py             # DeepSeek 分析逻辑
+│       └── daily.py               # 完整 pipeline（fetch → analyze）
 ├── worker/
 │   ├── src/index.ts               # Cloudflare Worker（Hono API）
 │   ├── package.json
@@ -59,18 +54,18 @@
 ├── migrations/
 │   └── 0001_create_papers_table.sql  # D1 数据库 schema
 ├── wrangler.toml                  # Cloudflare 部署配置
+├── tools/
+│   └── dev-server.js              # 本地开发服务器（SPA + Worker 代理）
 ├── data/
-│   └── archive/
-│       ├── papers.jsonl           # 所有论文元数据
-│       ├── analyses.jsonl         # 所有分析结果
-│       └── papers.db              # 本地 SQLite 镜像
+│   ├── archive/
+│   │   └── papers.db              # 本地 SQLite（gitignored）
+│   └── iclr_taxonomy.json         # ICLR 2026 分类体系
 ├── docs/
 │   ├── index.html                 # SPA 入口
-│   ├── assets/
-│   │   ├── app.js                 # SPA 前端逻辑
-│   │   └── style.css              # 样式
-│   └── data/                      # 静态数据缓存（向后兼容）
-├── dev-server.js                  # 本地开发服务器（SPA + Worker 代理）
+│   └── assets/
+│       ├── app.js                 # SPA 前端逻辑
+│       └── style.css              # 样式
+├── tests/                         # 单元测试
 └── .github/workflows/daily.yml    # GitHub Actions 定时任务
 ```
 
@@ -83,14 +78,20 @@ pip install -r requirements.txt
 cd worker && npm install && cd ..
 ```
 
+### 初始化本地数据库
+
+```bash
+npx wrangler d1 execute arxiv-daily-db --local --file migrations/0001_create_papers_table.sql
+```
+
 ### 启动服务
 
 ```bash
-# 1. 本地 Worker（端口 8787）
+# 终端 1: 本地 Worker（端口 8787）
 cd worker && npx wrangler dev
 
-# 2. Dev server（端口 3000，代理 /api 到 Worker）
-node dev-server.js
+# 终端 2: Dev server（端口 3000，代理 /api 到 Worker）
+node tools/dev-server.js
 ```
 
 访问 `http://127.0.0.1:3000`
@@ -109,25 +110,20 @@ python scripts/analyze_deepseek.py --date 2026-05-14 --concurrency 2
 # 同步单日数据到 Worker API
 python scripts/export_to_worker.py --url http://127.0.0.1:8787 --token your_token --date 2026-05-14
 
-# 一次性全量 seed（通常只在手动维护时运行）
-python scripts/export_to_worker.py --url http://127.0.0.1:8787 --token your_token --full --source jsonl
+# 全量同步
+python scripts/export_to_worker.py --url http://127.0.0.1:8787 --token your_token --full
 ```
 
-### D1 本地操作
+### 运行测试
 
 ```bash
-# 应用迁移到本地数据库
-npx wrangler d1 execute arxiv-daily-db --local --file migrations/0001_create_papers_table.sql
-
-# 查询本地数据
-npx wrangler d1 execute arxiv-daily-db --local --command "SELECT COUNT(*) FROM papers"
+PYTHONPATH=scripts pytest tests/ -v --cov=scripts --cov-report=term-missing
 ```
 
 ### 部署 Worker
 
 ```bash
-cd worker
-npx wrangler deploy
+cd worker && npx wrangler deploy
 ```
 
 ## GitHub 配置
@@ -150,10 +146,9 @@ Settings → Pages → Source: main 分支, Folder: /docs
 
 每天北京时间 04:00 自动运行：
 
-1. 抓取 arXiv 论文 → JSONL + SQLite
-2. DeepSeek 分析 → JSONL + SQLite
-3. 同步新数据到 Worker API
-4. Commit 并 push `data/` 变更
+1. 通过 OAI-PMH 抓取 arXiv 论文 → 写入本地 SQLite
+2. DeepSeek 分析 → 写入本地 SQLite
+3. 同步新数据到 Worker API → 写入远程 D1
 
 ## config.yaml
 
@@ -167,23 +162,27 @@ arxiv:
   max_papers: 2000
 ```
 
-## 已知限制
-
-1. 只基于 `title + abstract` 分析，不读取 PDF
-2. 不下载 arXiv source 或提取图片
-3. 前端搜索仅在当前加载的论文中完成
-4. SPA 依赖 Worker API 可用性
-
 ## Worker API
 
 | 端点 | 说明 |
 |---|---|
 | `GET /api/dates` | 日期索引（论文数） |
 | `GET /api/papers?date=YYYY-MM-DD` | 指定日期论文 |
+| `GET /api/papers?month=YYYY-MM` | 指定月份论文 |
 | `GET /api/papers?id=arxiv_id` | 单篇论文 |
+| `GET /api/papers?source=all` | 所有来源论文 |
+| `GET /api/facets?date=&month=&source=` | 分面统计（优先级、标签、领域） |
 | `GET /api/search?q=query` | 全文搜索 |
+| `GET /api/stats` | 总体统计 |
 | `POST /api/papers` | 批量写入论文（需 token） |
 | `POST /api/analyses` | 批量写入分析（需 token） |
+
+## 已知限制
+
+1. 只基于 `title + abstract` 分析，不读取 PDF
+2. 前端搜索仅在当前加载的论文中完成
+3. SPA 依赖 Worker API 可用性
+4. OAI-PMH 是唯一抓取方式，失败即报错，无 fallback
 
 ## 参考
 

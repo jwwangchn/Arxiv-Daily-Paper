@@ -1,20 +1,37 @@
+# Secrets
 .env
+
+# Python
 __pycache__/
 *.pyc
-.DS_Store
+*.pyo
 .venv/
 venv/
+.pytest_cache/
+
+# Node
+node_modules/
+
+# Wrangler local state
+.wrangler/
+
+# macOS
+.DS_Store
+
+# Claude Code
+.claude/
+
+# Database (local dev only, D1 is production)
+data/archive/papers.db
+
+# Deprecated data directories
 data/raw/
 data/analyzed/
-data/archive/*.bak-*
+data/mock/
 data/archive/raw/
 data/archive/analyzed/
 data/archive/daily/
 data/archive/data/
 data/archive/scripts/
-data/archive/papers.db
 data/archive/sources/
-.claude/
-
-
-node_modules/
+data/archive/*.bak-*

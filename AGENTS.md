@@ -4,9 +4,11 @@ Project-level guidance for coding agents working in this repository.
 
 ## Project Overview
 
-Daily arXiv paper guide with AI-powered Chinese summaries. Pipeline: fetch arXiv metadata → DeepSeek analysis → store in Cloudflare D1 → serve via Worker API → SPA frontend on GitHub Pages.
+Daily arXiv paper guide with AI-powered Chinese summaries. Pipeline: fetch arXiv metadata via OAI-PMH → DeepSeek analysis → store in Cloudflare D1 → serve via Worker API → SPA frontend.
 
-**Architecture principle: database-first.** All data flows through D1/SQLite. JSONL files in `data/archive/` are git-tracked backup and seed data, not the primary runtime data source.
+**Architecture principle: database-first.** All data flows through SQLite (local) / D1 (production). No JSONL or static HTML generation. The SPA reads exclusively from the Worker API.
+
+Fetch uses **OAI-PMH only** — if OAI fails, the pipeline errors out. No arxiv.py fallback, no browse-page scraping.
 
 Core stack:
 
@@ -29,34 +31,37 @@ Core stack:
 └──────────────────┘     └──────────────────┘     └──────────────────┘
 ```
 
-**Three data layers (kept in sync):**
+**Two data layers:**
 
 | Layer | Location | Purpose |
 |---|---|---|
 | **Cloudflare D1** | Remote (`ac0b5b96-...`) | Production data store, queried by Worker |
 | **Local SQLite** | `data/archive/papers.db` | Local dev mirror of D1 schema |
-| **JSONL archive** | `data/archive/*.jsonl` | Git-tracked backup, used for seeding |
 
 ## Important Paths
 
 - `config.yaml` — categories, max papers, topic keywords
-- `scripts/fetch_arxiv.py` — arXiv metadata fetcher, dual-writes SQLite + JSONL
+- `scripts/fetch_arxiv.py` — arXiv OAI-PMH fetcher entry point, writes to SQLite
 - `scripts/analyze_deepseek.py` — thin wrapper, delegates to `commands.analyze`
-- `scripts/export_to_worker.py` — syncs local data to remote D1 via Worker API
-- `scripts/lib/db.py` — SQLite layer mirroring D1 schema
-- `scripts/lib/archive.py` — JSONL archive layer (append-only)
+- `scripts/export_to_worker.py` — syncs local SQLite to remote D1 via Worker API
+- `scripts/lib/db.py` — SQLite layer mirroring D1 schema (sole data layer)
 - `scripts/lib/config.py` — config loading from `config.yaml`
-- `scripts/commands/analyze.py` — DeepSeek analysis logic
-- `scripts/commands/build.py` — SPA build (reads JSONL → writes `docs/`)
-- `scripts/fetchers/` — multi-source fetch plugins (AAAI, ACL, CVF, OpenReview)
-- `worker/src/index.ts` — Cloudflare Worker (Hono API, ~500 lines)
+- `scripts/lib/progress.py` — progress bar utility
+- `scripts/commands/analyze.py` — DeepSeek analysis logic, reads/writes SQLite only
+- `scripts/commands/fetch.py` — OAI-PMH fetch logic (sole fetch method)
+- `scripts/commands/daily.py` — full pipeline (fetch → analyze, no build step)
+- `scripts/fetchers/base.py` — base fetcher class (framework for future fetchers)
+- `scripts/fetchers/registry.py` — fetcher registry (framework for future fetchers)
+- `worker/src/index.ts` — Cloudflare Worker (Hono API)
 - `migrations/0001_create_papers_table.sql` — D1 schema definition
 - `wrangler.toml` — Cloudflare deployment config with D1 binding
-- `dev-server.js` — local dev server (port 3000, proxies `/api/*` to Worker)
+- `tools/dev-server.js` — local dev server (port 3000, proxies `/api/*` to Worker)
 - `data/archive/papers.db` — local SQLite database (gitignored)
+- `data/iclr_taxonomy.json` — ICLR 2026 classification taxonomy
 - `docs/assets/app.js` — SPA frontend, all data from Worker API
+- `tests/` — unit tests (pytest)
 
-**Deprecated paths — do not use:** `data/raw/`, `data/analyzed/`, `scripts/commands/daily.py`, `scripts/commands/fetch.py`.
+**Removed paths — do not use:** `scripts/lib/archive.py`, `scripts/commands/build.py`, `data/raw/`, `data/analyzed/`, `data/mock/`, `data/archive/papers.jsonl`, `data/archive/analyses.jsonl`, `db/schema.sql`, `scripts/fetchers/aaai_ojs.py`, `scripts/fetchers/acl_anthology.py`, `scripts/fetchers/cvf.py`, `scripts/fetchers/openreview.py`.
 
 ## Commands
 
@@ -67,6 +72,12 @@ pip install -r requirements.txt
 cd worker && npm install && cd ..
 ```
 
+### Initialize Local Database
+
+```bash
+npx wrangler d1 execute arxiv-daily-db --local --file migrations/0001_create_papers_table.sql
+```
+
 ### Local Development
 
 ```bash
@@ -74,7 +85,7 @@ cd worker && npm install && cd ..
 cd worker && npx wrangler dev
 
 # Terminal 2: dev server (port 3000, proxies /api/* to Worker)
-node dev-server.js
+node tools/dev-server.js
 ```
 
 ### Pipeline
@@ -87,17 +98,20 @@ python scripts/analyze_deepseek.py --date 2026-05-14 --concurrency 2
 python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN"
 ```
 
+### Tests
+
+```bash
+PYTHONPATH=scripts pytest tests/ -v --cov=scripts --cov-report=term-missing
+```
+
 ### D1 Management
 
 ```bash
-# Apply migration to local SQLite
-npx wrangler d1 execute arxiv-daily-db --local --file migrations/0001_create_papers_table.sql
-
 # Query local database
 npx wrangler d1 execute arxiv-daily-db --local --command "SELECT COUNT(*) FROM papers"
 
-# Seed from JSONL backup
-python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN" --full --source jsonl
+# Full export to remote D1
+python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN" --full
 
 # Deploy Worker
 cd worker && npx wrangler deploy
@@ -107,15 +121,14 @@ cd worker && npx wrangler deploy
 
 ### Production (GitHub Actions, daily at 04:00 Beijing time)
 
-1. `fetch_arxiv.py` → fetches arXiv metadata, writes SQLite + JSONL
-2. `analyze_deepseek.py` → calls DeepSeek API, writes SQLite + JSONL
+1. `fetch_arxiv.py` → fetches arXiv metadata via OAI-PMH, writes to SQLite
+2. `analyze_deepseek.py` → calls DeepSeek API, writes analysis to SQLite
 3. `export_to_worker.py` → reads local SQLite, pushes new records to D1 via Worker API
-4. Git commits JSONL changes for backup
 
 ### Local Development
 
 1. `wrangler dev` → local Worker on :8787, uses local SQLite
-2. `node dev-server.js` → SPA on :3000, proxies `/api/*` to Worker
+2. `node tools/dev-server.js` → SPA on :3000, proxies `/api/*` to Worker
 3. Run fetch/analyze scripts → data written to local SQLite immediately visible in SPA
 
 ## D1 Schema
@@ -144,7 +157,6 @@ Cloudflare D1 free tier is limited by **daily read/write rows** (not storage). F
 7. **All queries use LIMIT** — no unbounded SELECT.
 8. **Local dev uses local D1** — `wrangler dev` uses local SQLite, not remote.
 9. **Idempotent runs** — same-day re-runs must not duplicate writes.
-10. **Use `--force` to override** — default behavior skips existing records.
 
 ## Worker API Endpoints
 
@@ -175,7 +187,6 @@ Priority mapping in Worker: `must_read→high`, `recommended→medium`, `skim→
 - On init: fetches `/api/dates` → calendar + date list.
 - On date selection: fetches `/api/papers?date=YYYY-MM-DD`.
 - Unanalyzed papers display as "未分析" category with abstract only.
-- `docs/data/` files are backward-compat only, not primary data source.
 
 ## Environment Variables
 
@@ -186,8 +197,8 @@ Priority mapping in Worker: `must_read→high`, `recommended→medium`, `skim→
 | `DEEPSEEK_CONCURRENCY` | analyze.py | Override concurrency (default: 2, max: 4) |
 | `ARXIV_DAILY_WORKER_URL` | export_to_worker.py | Worker URL (default: `https://arxiv-daily-api.jwwangchn.workers.dev`) |
 | `ARXIV_DAILY_WORKER_TOKEN` | export_to_worker.py | Worker API Bearer token (required) |
-| `WORKER_PORT` | dev-server.js | Local Worker port (default: 8787) |
-| `PORT` | dev-server.js | Dev server port (default: 3000) |
+| `WORKER_PORT` | tools/dev-server.js | Local Worker port (default: 8787) |
+| `PORT` | tools/dev-server.js | Dev server port (default: 3000) |
 
 `.env` file is git-ignored — never commit secrets.
 
@@ -204,7 +215,7 @@ Uses `openai` Python package with base URL `https://api.deepseek.com`. Output is
 | Tag | Description |
 |---|---|
 | `v1.0.0` | Old version (JSONL + static HTML, pre-migration) |
-| `v2.0.0` | Current version (D1/Worker/SPA) |
+| `v2.0.0` | D1/Worker/SPA version |
 
 ## Known Limitations
 
@@ -212,4 +223,5 @@ Uses `openai` Python package with base URL `https://api.deepseek.com`. Output is
 2. Frontend search limited to currently loaded date's papers.
 3. SPA depends on Worker API availability.
 4. DeepSeek output may not be strict JSON (fallback parsing handles this).
-5. No linter, formatter, or typecheck configured for this repo.
+5. OAI-PMH is the sole fetch method — no fallback if it fails.
+6. No linter, formatter, or typecheck configured for this repo.
