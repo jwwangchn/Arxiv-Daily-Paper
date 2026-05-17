@@ -470,7 +470,7 @@ def candidate_browse_urls(category: str, target_date: str) -> list[str]:
     """Prefer monthly archive page because recent pages can be paginated."""
     month = browse_month_for_date(target_date)
     return [
-        f"{ARXIV_BASE_URL}/list/{category}/{month}?show=all",
+        f"{ARXIV_BASE_URL}/list/{category}/{month}?show=2000",
         f"{ARXIV_BASE_URL}/list/{category}/recent?show=2000",
     ]
 

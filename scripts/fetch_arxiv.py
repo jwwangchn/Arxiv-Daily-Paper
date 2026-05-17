@@ -12,6 +12,10 @@ from typing import Any
 import arxiv
 import requests
 
+from commands.fetch import (
+    fetch_papers as canonical_fetch_papers,
+    find_latest_date_with_papers as canonical_find_latest_date_with_papers,
+)
 from lib.config import (
     PROJECT_ROOT,
     ensure_dirs,
@@ -238,7 +242,7 @@ def candidate_browse_urls(category: str, target_date: str) -> list[str]:
     """
     month = browse_month_for_date(target_date)
     return [
-        f"{ARXIV_BASE_URL}/list/{category}/{month}?show=all",
+        f"{ARXIV_BASE_URL}/list/{category}/{month}?show=2000",
         f"{ARXIV_BASE_URL}/list/{category}/recent?show=2000",
     ]
 
@@ -553,7 +557,7 @@ def main() -> None:
     args = parse_args()
 
     if args.latest_with_papers:
-        target_date, papers = find_latest_date_with_papers(
+        target_date, papers = canonical_find_latest_date_with_papers(
             args.categories,
             args.max_papers,
             start_date=args.date,
@@ -561,7 +565,7 @@ def main() -> None:
         )
     else:
         target_date = parse_date(args.date)
-        papers = fetch_papers(target_date, args.categories, args.max_papers)
+        papers = canonical_fetch_papers(target_date, args.categories, args.max_papers)
 
     save_raw(target_date, papers)
 
