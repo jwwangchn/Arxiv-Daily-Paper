@@ -280,19 +280,15 @@ def analyze_date(target_date: str, concurrency: int | str | None = None) -> None
         pending.append((index, paper))
 
     if pending:
-        LOGGER.info("Analyzing %d pending paper(s) with concurrency=%d.", len(pending), worker_count)
+        pending_ids = [paper_id(p) for _, p in pending]
+        LOGGER.info("Analyzing %d pending paper(s) with concurrency=%d: %s", len(pending), worker_count, ", ".join(pending_ids))
         with ThreadPoolExecutor(max_workers=worker_count) as executor:
             futures = {}
             for index, paper in pending:
-                LOGGER.info("Queueing paper %d/%d: %s", index + 1, len(papers), paper_id(paper))
                 futures[executor.submit(analyze_one_paper, client, paper, model)] = index
-            for completed_count, future in enumerate(
-                progress_bar(as_completed(futures), total=len(futures), desc="DeepSeek analysis", unit="paper"),
-                start=1,
-            ):
+            for future in progress_bar(as_completed(futures), total=len(futures), desc="DeepSeek analysis", unit="paper"):
                 index = futures[future]
                 analyzed_papers[index] = future.result()
-                LOGGER.info("Completed pending analysis %d/%d.", completed_count, len(pending))
 
     new_analyses = _extract_analyses(analyzed_papers)
     if new_analyses:
