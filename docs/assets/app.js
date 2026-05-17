@@ -1,5 +1,4 @@
 (function () {
-  // Production Worker API URL (fallback when static JSON has no data)
   const WORKER_URL = "https://arxiv-daily-api.jwwangchn.workers.dev";
 
   const state = {
@@ -10,7 +9,6 @@
     area: "",
     subarea: "",
     subareaParent: "",
-    monthCache: new Map(),
     dateIndex: null,
     papers: [],
     expandedAreas: new Set(),
@@ -96,25 +94,6 @@
     });
   }
 
-  async function loadJson(url) {
-    const response = await fetch(url, { cache: "no-store" });
-    if (!response.ok) throw new Error(`Failed to load ${url}`);
-    return response.json();
-  }
-
-  async function loadMonth(month) {
-    if (!state.monthCache.has(month)) {
-      // Use date index data (already loaded from API or static) to build a lightweight month view
-      const entries = dateEntries().filter(e => e.month === month);
-      const dates = {};
-      for (const e of entries) {
-        dates[e.date] = [{ source_date: e.date }]; // placeholder, papers loaded via selectDate
-      }
-      state.monthCache.set(month, Promise.resolve({ month, dates }));
-    }
-    return state.monthCache.get(month);
-  }
-
   function updateUrl(date) {
     const url = new URL(window.location.href);
     url.searchParams.set("date", date);
@@ -157,7 +136,7 @@
     const firstDay = new Date(year, month - 1, 1);
     const lastDay = new Date(year, month, 0);
     const prevLastDay = new Date(year, month - 1, 0);
-    let startDow = firstDay.getDay() || 7; // Mon=1
+    let startDow = firstDay.getDay() || 7;
     const cells = [];
     for (let i = startDow - 1; i > 0; i--) {
       cells.push({ day: prevLastDay.getDate() - i + 1, outside: true });
@@ -177,19 +156,19 @@
     for (let i = 0; i < cells.length; i += 7) {
       const week = cells.slice(i, i + 7);
       const dayCells = week
-      .map((item) => {
-        if (item.outside) {
-          return `<span class="calendar-day outside disabled" aria-hidden="true"><span>${item.day}</span></span>`;
-        }
-        const classes = ["calendar-day"];
-        if (item.date === activeDate) classes.push("active");
-        if (item.count > 0) {
-          return `<a class="${classes.join(" ")}" href="?date=${escapeHtml(item.date)}" data-date="${escapeHtml(item.date)}" title="${escapeHtml(item.date)} · ${item.count} 篇"><span>${item.day}</span><em>${item.count}</em></a>`;
-        }
-        classes.push("disabled");
-        return `<span class="${classes.join(" ")}" title="${escapeHtml(item.date)}"><span>${item.day}</span></span>`;
-      })
-      .join("");
+        .map((item) => {
+          if (item.outside) {
+            return `<span class="calendar-day outside disabled" aria-hidden="true"><span>${item.day}</span></span>`;
+          }
+          const classes = ["calendar-day"];
+          if (item.date === activeDate) classes.push("active");
+          if (item.count > 0) {
+            return `<a class="${classes.join(" ")}" href="?date=${escapeHtml(item.date)}" data-date="${escapeHtml(item.date)}" title="${escapeHtml(item.date)} · ${item.count} 篇"><span>${item.day}</span><em>${item.count}</em></a>`;
+          }
+          classes.push("disabled");
+          return `<span class="${classes.join(" ")}" title="${escapeHtml(item.date)}"><span>${item.day}</span></span>`;
+        })
+        .join("");
       weekRows.push(`<div class="calendar-week">${dayCells}</div>`);
     }
 
@@ -330,15 +309,15 @@
       <div class="paper-links">
         <a href="${escapeHtml(paper.entry_url)}" target="_blank" rel="noopener">arXiv</a>
         <a href="${escapeHtml(paper.pdf_url)}" target="_blank" rel="noopener">PDF</a>
-        <span>${escapeHtml(paper.primary_category)}</span>
+        <span>${escapeHtml(paper.display_category || paper.primary_category)}</span>
       </div>
       <div class="paper-tldr"><b>TL;DR:</b> ${escapeHtml(analysis.tldr || analysis.one_sentence_summary || "暂无中文导读。")}</div>
       <div class="analysis-grid">
         <div class="analysis-row"><div class="analysis-label"><span>🎯</span>研究动机</div><div class="analysis-content"><p>${escapeHtml(analysis.research_motivation || "暂无")}</p></div></div>
         <div class="analysis-row"><div class="analysis-label"><span>❓</span>解决问题</div><div class="analysis-content"><p>${escapeHtml(analysis.problem || "暂无")}</p></div></div>
-        <div class="analysis-row"><div class="analysis-label"><span>🔎</span>现象分析</div><div class="analysis-content"><p>${escapeHtml(analysis.phenomenon_analysis || analysis.phenomena || "摘要未提供明确现象分析。")}</p></div></div>
+        <div class="analysis-row"><div class="analysis-label"><span></span>现象分析</div><div class="analysis-content"><p>${escapeHtml(analysis.phenomenon_analysis || analysis.phenomena || "摘要未提供明确现象分析。")}</p></div></div>
         <div class="analysis-row"><div class="analysis-label"><span>🛠️</span>主要方法</div><div class="analysis-content"><p>${escapeHtml(analysis.method || "暂无")}</p></div></div>
-        <div class="analysis-row"><div class="analysis-label"><span>📊</span>实验结果</div><div class="analysis-content"><p>${escapeHtml(analysis.experiments || "摘要未提供具体实验结果")}</p></div></div>
+        <div class="analysis-row"><div class="analysis-label"><span></span>实验结果</div><div class="analysis-content"><p>${escapeHtml(analysis.experiments || "摘要未提供具体实验结果")}</p></div></div>
         <div class="analysis-row"><div class="analysis-label"><span>⭐</span>主要贡献</div><div class="analysis-content">${list(analysis.contributions)}</div></div>
         <div class="analysis-row"><div class="analysis-label"><span>⚠️</span>方法局限</div><div class="analysis-content">${list(analysis.limitations)}</div></div>
       </div>
@@ -423,6 +402,14 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  // All data from Worker API
+  async function fetchFromWorker(date) {
+    const res = await fetch(`${WORKER_URL}/api/papers?date=${date}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  }
+
   async function selectDate(date) {
     const entry = entryForDate(date);
     if (!entry) return;
@@ -430,33 +417,10 @@
     state.calendarMonth = date.slice(0, 7);
     els.loading.classList.remove("hidden");
     els.currentDateLabel.textContent = `📅 ${date}`;
-    // Try static JSON first, fallback to Worker API
-    try {
-      const monthData = await loadJson(`data/by-month/${entry.month}.json`);
-      const staticPapers = (monthData.dates && monthData.dates[date]) || [];
-      if (staticPapers.length > 0) {
-        state.papers = staticPapers;
-      } else {
-        state.papers = await fetchFromWorker(date);
-      }
-    } catch {
-      state.papers = await fetchFromWorker(date);
-    }
+    state.papers = await fetchFromWorker(date);
     clearFilters();
     renderDates();
     updateUrl(date);
-  }
-
-  async function fetchFromWorker(date) {
-    try {
-      const res = await fetch(`${WORKER_URL}/api/papers?date=${date}`);
-      if (!res.ok) return [];
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
-    } catch (e) {
-      console.warn("Worker fetch failed:", e);
-      return [];
-    }
   }
 
   function bindEvents() {
@@ -525,17 +489,13 @@
 
   async function init() {
     bindEvents();
-    // Try Worker API for live date index, fallback to static JSON
-    try {
-      const apiDates = await fetch(`${WORKER_URL}/api/dates`);
-      if (apiDates.ok) {
-        state.dateIndex = await apiDates.json();
-      } else {
-        state.dateIndex = await loadJson("data/dates.json");
-      }
-    } catch {
-      state.dateIndex = await loadJson("data/dates.json");
+    // Date index from Worker API
+    const apiDates = await fetch(`${WORKER_URL}/api/dates`);
+    if (!apiDates.ok) {
+      els.loading.textContent = "无法连接数据源，请检查网络。";
+      return;
     }
+    state.dateIndex = await apiDates.json();
     renderDates();
     els.content?.addEventListener("scroll", updateBackToTop);
     window.addEventListener("scroll", updateBackToTop);
