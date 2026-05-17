@@ -35,3 +35,5 @@ data/archive/data/
 data/archive/scripts/
 data/archive/sources/
 data/archive/*.bak-*
+
+.vscode/
