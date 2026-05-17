@@ -19,6 +19,9 @@ def setup_logging() -> None:
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s - %(message)s",
     )
+    # Suppress verbose HTTP logs from openai/httpx clients
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("openai").setLevel(logging.WARNING)
 
 
 def ensure_dirs() -> None:
