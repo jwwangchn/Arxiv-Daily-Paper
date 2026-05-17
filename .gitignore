@@ -3,5 +3,8 @@ __pycache__/
 *.pyc
 .DS_Store
 .venv/
+.wrangler/
+data/archive/*.db
+node_modules/
+worker/dist/
 venv/
-

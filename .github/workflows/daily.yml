@@ -36,12 +36,10 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run daily pipeline
+      - name: Fetch today's arXiv papers
         env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           REQUESTED_DATE: ${{ github.event.inputs.date }}
           REQUESTED_MAX_PAPERS: ${{ github.event.inputs.max_papers }}
-          REQUESTED_CONCURRENCY: ${{ github.event.inputs.concurrency }}
         run: |
           args=()
           if [ -n "$REQUESTED_DATE" ]; then
@@ -50,19 +48,61 @@ jobs:
           if [ -n "$REQUESTED_MAX_PAPERS" ]; then
             args+=(--max-papers "$REQUESTED_MAX_PAPERS")
           fi
-          if [ -n "$REQUESTED_CONCURRENCY" ]; then
-            args+=(--concurrency "$REQUESTED_CONCURRENCY")
+          python scripts/fetch_arxiv.py "${args[@]}"
+
+      - name: Analyze papers with DeepSeek
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_CONCURRENCY: ${{ github.event.inputs.concurrency }}
+        run: |
+          args=()
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            args+=(--date "${{ github.event.inputs.date }}")
           fi
-          python scripts/run_daily.py "${args[@]}"
+          if [ -n "$DEEPSEEK_CONCURRENCY" ]; then
+            args+=(--concurrency "$DEEPSEEK_CONCURRENCY")
+          fi
+          python scripts/analyze_deepseek.py "${args[@]}"
+
+      - name: Sync new data to Worker API
+        if: ${{ secrets.WORKER_URL != '' && secrets.WORKER_TOKEN != '' }}
+        env:
+          WORKER_URL: ${{ secrets.WORKER_URL }}
+          WORKER_TOKEN: ${{ secrets.WORKER_TOKEN }}
+        run: |
+          python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN"
 
       - name: Commit generated files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data docs
+          git add data
           if git diff --cached --quiet; then
             echo "No changes"
           else
             git commit -m "Update daily arXiv guide"
             git push
           fi
+
+      - name: Setup Node
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install wrangler and deploy Worker
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          npm install -g wrangler
+          npx wrangler deploy
+
+      - name: Deploy to Cloudflare Pages
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          wrangler pages deploy docs/ --project-name=arxiv-daily-paper --branch=main

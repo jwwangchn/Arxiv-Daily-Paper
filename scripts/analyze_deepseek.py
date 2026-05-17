@@ -13,6 +13,13 @@ from openai import OpenAI
 from progress import progress_bar
 from utils import PROJECT_ROOT, ensure_dirs, parse_date, read_json, setup_logging, write_json
 
+try:
+    from lib.archive import append_new_analyses, load_analysis_index
+    from lib.db import DB_PATH
+    _HAS_ARCHIVE = True
+except ImportError:
+    _HAS_ARCHIVE = False
+
 
 LOGGER = logging.getLogger("analyze_deepseek")
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
@@ -237,9 +244,41 @@ def load_existing(output_path: Path) -> dict[str, dict[str, Any]]:
     return {paper.get("arxiv_id"): paper for paper in existing.get("papers", []) if paper.get("arxiv_id")}
 
 
+def _extract_analyses(papers: list[dict[str, Any] | None]) -> list[dict[str, Any]]:
+    """Convert analyzed papers into the format expected by archive.append_new_analyses."""
+    analyses = []
+    for paper in papers:
+        if paper is None:
+            continue
+        arxiv_id = paper.get("arxiv_id")
+        if not arxiv_id:
+            continue
+        analyses.append({
+            "arxiv_id": arxiv_id,
+            "analysis_version": str(paper.get("analysis_version", "1")),
+            "model": os.environ.get("DEEPSEEK_MODEL", DEFAULT_DEEPSEEK_MODEL),
+            "analyzed_at": paper.get("analyzed_at", ""),
+            "analysis": paper.get("analysis", {}),
+            "raw_response": paper.get("raw_response", ""),
+        })
+    return analyses
+
+
 def write_analyzed(output_path: Path, target_date: str, source: str, papers: list[dict[str, Any] | None]) -> None:
     completed = [paper for paper in papers if paper is not None]
     write_json(output_path, {"date": target_date, "source": source, "papers": completed})
+
+    # Also write new analyses to the local SQLite database (JSONL files preserved as backup)
+    if _HAS_ARCHIVE:
+        try:
+            new_analyses = _extract_analyses(papers)
+            if new_analyses:
+                index = load_analysis_index() if DB_PATH.exists() else None
+                inserted, skipped = append_new_analyses(new_analyses, existing_index=index)
+                if inserted:
+                    LOGGER.info("DB: inserted %d new analysis record(s) (skipped %d duplicates)", inserted, skipped)
+        except Exception as exc:
+            LOGGER.warning("Failed to write analyses to database: %s", exc)
 
 
 def analyze_date(target_date: str, concurrency: int | str | None = None) -> Path:

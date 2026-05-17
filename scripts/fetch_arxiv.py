@@ -23,6 +23,13 @@ from utils import (
     write_json,
 )
 
+try:
+    from lib.archive import append_new_papers, load_paper_index
+    from lib.db import DB_PATH
+    _HAS_ARCHIVE = True
+except ImportError:
+    _HAS_ARCHIVE = False
+
 LOGGER = logging.getLogger("fetch_arxiv")
 
 ARXIV_BASE_URL = "https://arxiv.org"
@@ -461,6 +468,17 @@ def save_raw(target_date: str, papers: list[dict[str, Any]]) -> Path:
     output = PROJECT_ROOT / "data" / "raw" / f"{target_date}.json"
     write_json(output, {"date": target_date, "source": "arxiv", "papers": papers})
     LOGGER.info("Wrote %s", output)
+
+    # Also write new papers to the local SQLite database (JSONL files are preserved as backup)
+    if _HAS_ARCHIVE and papers:
+        try:
+            index = load_paper_index() if DB_PATH.exists() else None
+            inserted, skipped = append_new_papers(papers, source_date=target_date, existing_index=index)
+            if inserted:
+                LOGGER.info("DB: inserted %d new paper(s) into SQLite archive (skipped %d duplicates)", inserted, skipped)
+        except Exception as exc:
+            LOGGER.warning("Failed to write papers to database: %s", exc)
+
     return output
 
 
