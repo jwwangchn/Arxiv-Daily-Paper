@@ -104,9 +104,26 @@
 
   async function loadMonth(month) {
     if (!state.monthCache.has(month)) {
-      state.monthCache.set(month, loadJson(`data/by-month/${month}.json`));
+      // Try Worker API first for fresh dates not in static JSON
+      state.monthCache.set(month, loadMonthFromApi(month).catch(() => loadJson(`data/by-month/${month}.json`)));
     }
     return state.monthCache.get(month);
+  }
+
+  async function loadMonthFromApi(month) {
+    const res = await fetch(`${WORKER_URL}/api/papers?month=${month}`);
+    if (!res.ok) throw new Error(`API fetch failed for ${month}`);
+    const papers = await res.json();
+    // Group by date for calendar compatibility
+    const dates = {};
+    for (const p of papers) {
+      const d = p.source_date;
+      if (d && d.startsWith(month)) {
+        if (!dates[d]) dates[d] = [];
+        dates[d].push(p);
+      }
+    }
+    return { month, dates };
   }
 
   function updateUrl(date) {
@@ -511,14 +528,24 @@
 
   async function init() {
     bindEvents();
-    state.dateIndex = await loadJson("data/dates.json");
+    // Try Worker API first for date index, fallback to static JSON
+    try {
+      const apiDates = await fetch(`${WORKER_URL}/api/dates`);
+      if (apiDates.ok) {
+        const data = await apiDates.json();
+        state.dateIndex = data;
+      } else {
+        state.dateIndex = await loadJson("data/dates.json");
+      }
+    } catch (e) {
+      state.dateIndex = await loadJson("data/dates.json");
+    }
     renderDates();
     els.content?.addEventListener("scroll", updateBackToTop);
     window.addEventListener("scroll", updateBackToTop);
     updateBackToTop();
     const requestedDate = new URLSearchParams(window.location.search).get("date");
     const initialDate = entryForDate(requestedDate) ? requestedDate : state.dateIndex.latest;
-    // If date exists in URL but not in static index, try Worker API
     if (requestedDate && !entryForDate(requestedDate)) {
       const apiPapers = await fetchFromWorker(requestedDate);
       if (apiPapers.length > 0) {
