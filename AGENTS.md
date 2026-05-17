@@ -117,6 +117,34 @@ python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN" -
 cd worker && npx wrangler deploy
 ```
 
+### Trigger GitHub Action
+
+The `daily.yml` workflow runs automatically at 04:00 Beijing time (20:00 UTC). By default it processes the past 3 weekdays (excluding Sat/Sun). Individual papers/analyses that already exist in the database are automatically skipped.
+
+```bash
+# Trigger default (past 3 weekdays)
+gh workflow run daily.yml --ref main
+
+# Trigger for a single specific date
+gh workflow run daily.yml --ref main -f date=2026-05-15
+
+# Trigger with custom max papers and concurrency
+gh workflow run daily.yml --ref main -f date=2026-05-15 -f max_papers=50 -f concurrency=4
+
+# Process more past days (e.g. 7 weekdays)
+gh workflow run daily.yml --ref main -f backfill_days=7
+
+# Full export all local data to D1
+gh workflow run daily.yml --ref main -f full_export=true
+```
+
+Workflow inputs:
+- `date` (YYYY-MM-DD) — single target date, overrides auto date computation
+- `max_papers` — max number of papers to fetch per date
+- `concurrency` — DeepSeek API concurrency (max: 4)
+- `backfill_days` — number of past weekdays to process (default: 3)
+- `full_export` — export all local SQLite records to D1 instead of just the target dates
+
 ## Data Flow
 
 ### Production (GitHub Actions, daily at 04:00 Beijing time)

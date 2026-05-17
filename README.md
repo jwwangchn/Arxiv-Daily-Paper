@@ -144,11 +144,12 @@ Settings → Pages → Source: main 分支, Folder: /docs
 
 ### GitHub Actions
 
-每天北京时间 04:00 自动运行：
+每天北京时间 04:00 自动运行（默认处理过去 3 个工作日）：
 
-1. 通过 OAI-PMH 抓取 arXiv 论文 → 写入本地 SQLite
-2. DeepSeek 分析 → 写入本地 SQLite
-3. 同步新数据到 Worker API → 写入远程 D1
+1. 计算目标日期（跳过周六日），逐个日期执行 pipeline
+2. 通过 OAI-PMH 抓取 arXiv 论文 → 自动跳过已存在于数据库的论文，仅插入新数据
+3. DeepSeek 分析 → 自动跳过已有分析结果的论文，仅分析未分析的
+4. 同步新数据到 Worker API → 写入远程 D1
 
 ## config.yaml
 
