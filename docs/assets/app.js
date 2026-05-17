@@ -415,6 +415,9 @@
     if (!entry) return;
     state.date = date;
     state.calendarMonth = date.slice(0, 7);
+    // Clear old papers and show loading immediately
+    state.papers = [];
+    els.paperList.innerHTML = "";
     els.loading.classList.remove("hidden");
     els.currentDateLabel.textContent = `📅 ${date}`;
     state.papers = await fetchFromWorker(date);
