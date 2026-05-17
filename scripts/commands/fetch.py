@@ -602,18 +602,13 @@ def fetch_papers(
     categories: list[str],
     max_papers: int,
     retries: int = 2,
-    use_fallback: bool = True,
-    prefer_oai: bool = True,
+    use_fallback: bool = False,
+    prefer_oai: bool = False,
 ) -> list[dict[str, Any]]:
     if prefer_oai:
-        try:
-            papers = fetch_papers_for_date_oai(target_date, categories, max_papers=max_papers)
-            if papers:
-                LOGGER.info("Fetched %d paper(s) via OAI-PMH for %s", len(papers), target_date)
-                return papers
-            LOGGER.info("OAI-PMH returned 0 papers for %s; falling back to arxiv.py.", target_date)
-        except Exception as exc:
-            LOGGER.warning("OAI-PMH fetch failed for %s: %s; falling back to arxiv.py.", target_date, exc)
+        papers = fetch_papers_for_date_oai(target_date, categories, max_papers=max_papers)
+        LOGGER.info("Fetched %d paper(s) via OAI-PMH for %s", len(papers), target_date)
+        return papers
 
     query = build_query(categories, target_date)
 
@@ -727,7 +722,7 @@ def find_latest_date_with_papers(
 
     for offset in range(lookback_days + 1):
         target_date = (cursor - timedelta(days=offset)).isoformat()
-        papers = fetch_papers(target_date, categories, max_papers)
+        papers = fetch_papers_for_date_oai(target_date, categories, max_papers=max_papers)
 
         if papers:
             LOGGER.info("Selected latest non-empty arXiv date: %s (%d papers)", target_date, len(papers))
@@ -756,7 +751,10 @@ def fetch_one_date_for_backfill(
     use_browse_fallback: bool,
 ) -> tuple[str, list[dict[str, Any]], str | None]:
     try:
-        papers = fetch_papers(target_date, categories, max_papers, use_fallback=use_browse_fallback)
+        if use_browse_fallback:
+            papers = fetch_papers(target_date, categories, max_papers, use_fallback=True)
+        else:
+            papers = fetch_papers_for_date_oai(target_date, categories, max_papers=max_papers)
         return target_date, papers, None
     except Exception as exc:
         return target_date, [], str(exc)
@@ -869,9 +867,9 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--source",
-        choices=["auto", "oai", "api"],
-        default="auto",
-        help="Metadata source. auto uses OAI-PMH first and arxiv.py as fallback.",
+        choices=["oai", "api"],
+        default="oai",
+        help="Metadata source. Defaults to OAI-PMH; api uses arxiv.py without browse fallback.",
     )
     parser.add_argument("--backfill", action="store_true", help="Backfill a date range into data/archive/papers.jsonl.")
     parser.add_argument("--workers", type=int, default=DEFAULT_BACKFILL_WORKERS, help="Concurrent workers for --backfill.")
@@ -953,7 +951,8 @@ def main() -> None:
                 target_date,
                 args.categories,
                 args.max_papers,
-                prefer_oai=args.source == "auto",
+                prefer_oai=False,
+                use_fallback=False,
             )
 
     if not papers:

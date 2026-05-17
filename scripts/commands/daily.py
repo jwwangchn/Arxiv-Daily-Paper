@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 from commands.analyze import analyze_date
 from commands.build import build_site
-from commands.fetch import fetch_papers
+from commands.fetch import fetch_papers_for_date_oai
 from lib.archive import append_new_papers, load_analysis_index, load_paper_index, paper_id, papers_for_date
 from lib.config import ensure_dirs, load_config, parse_date, setup_logging
 
@@ -55,7 +55,7 @@ def find_latest_existing_or_fetch(
         if existing:
             return target_date, existing, source
 
-        papers = fetch_papers(target_date, categories, max_papers)
+        papers = fetch_papers_for_date_oai(target_date, categories, max_papers=max_papers)
         if papers:
             LOGGER.info("Selected latest non-empty arXiv date: %s (%d papers)", target_date, len(papers))
             append_new_papers(papers, source_date=target_date, existing_index=load_paper_index())
@@ -76,7 +76,7 @@ def main() -> None:
 
     if args.date:
         target_date = parse_date(args.date)
-        new_papers = fetch_papers(target_date, args.categories, args.max_papers)
+        new_papers = fetch_papers_for_date_oai(target_date, args.categories, max_papers=args.max_papers)
         if new_papers:
             appended, _ = append_new_papers(new_papers, source_date=target_date, existing_index=load_paper_index())
             LOGGER.info("Fetched %d paper(s) for %s, appended %d to archive.", len(new_papers), target_date, appended)
