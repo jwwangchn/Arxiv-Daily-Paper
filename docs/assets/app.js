@@ -104,26 +104,15 @@
 
   async function loadMonth(month) {
     if (!state.monthCache.has(month)) {
-      // Try Worker API first for fresh dates not in static JSON
-      state.monthCache.set(month, loadMonthFromApi(month).catch(() => loadJson(`data/by-month/${month}.json`)));
+      // Use date index data (already loaded from API or static) to build a lightweight month view
+      const entries = dateEntries().filter(e => e.month === month);
+      const dates = {};
+      for (const e of entries) {
+        dates[e.date] = [{ source_date: e.date }]; // placeholder, papers loaded via selectDate
+      }
+      state.monthCache.set(month, Promise.resolve({ month, dates }));
     }
     return state.monthCache.get(month);
-  }
-
-  async function loadMonthFromApi(month) {
-    const res = await fetch(`${WORKER_URL}/api/papers?month=${month}`);
-    if (!res.ok) throw new Error(`API fetch failed for ${month}`);
-    const papers = await res.json();
-    // Group by date for calendar compatibility
-    const dates = {};
-    for (const p of papers) {
-      const d = p.source_date;
-      if (d && d.startsWith(month)) {
-        if (!dates[d]) dates[d] = [];
-        dates[d].push(p);
-      }
-    }
-    return { month, dates };
   }
 
   function updateUrl(date) {
@@ -441,10 +430,18 @@
     state.calendarMonth = date.slice(0, 7);
     els.loading.classList.remove("hidden");
     els.currentDateLabel.textContent = `📅 ${date}`;
-    const monthData = await loadMonth(entry.month);
-    const staticPapers = (monthData.dates && monthData.dates[date]) || [];
-    // Fallback to Worker API if static JSON has no data for this date
-    state.papers = staticPapers.length > 0 ? staticPapers : await fetchFromWorker(date);
+    // Try static JSON first, fallback to Worker API
+    try {
+      const monthData = await loadJson(`data/by-month/${entry.month}.json`);
+      const staticPapers = (monthData.dates && monthData.dates[date]) || [];
+      if (staticPapers.length > 0) {
+        state.papers = staticPapers;
+      } else {
+        state.papers = await fetchFromWorker(date);
+      }
+    } catch {
+      state.papers = await fetchFromWorker(date);
+    }
     clearFilters();
     renderDates();
     updateUrl(date);
@@ -528,16 +525,15 @@
 
   async function init() {
     bindEvents();
-    // Try Worker API first for date index, fallback to static JSON
+    // Try Worker API for live date index, fallback to static JSON
     try {
       const apiDates = await fetch(`${WORKER_URL}/api/dates`);
       if (apiDates.ok) {
-        const data = await apiDates.json();
-        state.dateIndex = data;
+        state.dateIndex = await apiDates.json();
       } else {
         state.dateIndex = await loadJson("data/dates.json");
       }
-    } catch (e) {
+    } catch {
       state.dateIndex = await loadJson("data/dates.json");
     }
     renderDates();
@@ -546,19 +542,6 @@
     updateBackToTop();
     const requestedDate = new URLSearchParams(window.location.search).get("date");
     const initialDate = entryForDate(requestedDate) ? requestedDate : state.dateIndex.latest;
-    if (requestedDate && !entryForDate(requestedDate)) {
-      const apiPapers = await fetchFromWorker(requestedDate);
-      if (apiPapers.length > 0) {
-        state.date = requestedDate;
-        state.calendarMonth = requestedDate.slice(0, 7);
-        els.currentDateLabel.textContent = ` ${requestedDate}`;
-        state.papers = apiPapers;
-        clearFilters();
-        renderDates();
-        updateUrl(requestedDate);
-        return;
-      }
-    }
     await selectDate(initialDate);
   }
 
