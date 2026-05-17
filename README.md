@@ -1,232 +1,190 @@
-# arXiv Daily Paper Guide
+# arXiv Daily Paper
 
-每天从 arXiv 抓取最新论文 metadata，调用 DeepSeek 生成中文论文导读，并输出可部署到 GitHub Pages 的静态网站。第一版 MVP 不使用数据库、不需要后端服务，所有数据都保存为 JSON。
+每天从 arXiv 抓取最新论文 metadata，调用 DeepSeek 生成中文导读，通过 Cloudflare Worker API 和 GitHub Pages 提供在线浏览。
 
 ## 功能
 
-- 从 arXiv Atom API 抓取指定日期、指定分类的论文 metadata；未指定日期时自动回溯到最近一个有论文更新的日期。
-- arXiv API 临时限流时，会退回到官方 browse 页面读取同一天条目，并从 abs 页面补充摘要。
-- 基于 `title + abstract` 调用 DeepSeek OpenAI-compatible API 生成中文导读，默认使用 `deepseek-v4-flash` 非思考模式。
-- 基于 ICLR 2026 分类体系生成 `primary_area_en`、`primary_area`、`category`；分类 taxonomy 固定放在 system prompt 中，便于 DeepSeek prefix/KV cache 复用。
-- 支持断点续跑，已分析论文不会重复请求 API。
-- 抓取 arXiv 和调用 DeepSeek 时使用 `tqdm` 显示进度、速度和预计剩余时间；GitHub Actions 日志中也会保留进度输出。
-- 生成 `docs/` 静态网站，包含首页、历史日期页、日期索引和静态资源。
-- 前端支持实时搜索、大类/小类导航、日历日期切换、tag 过滤、priority 过滤、分类过滤和折叠 abstract。
-- 提供 mock 模式，无需 API key 即可预览页面。
-- 提供 GitHub Actions 定时任务，每天北京时间 04:00 运行。
+- 从 arXiv Atom API 抓取指定日期、指定分类（cs.CV / cs.AI / cs.CL / cs.LG）的论文 metadata
+- arXiv API 限流时自动降级到 browse 页面抓取
+- 基于 `title + abstract` 调用 DeepSeek 生成中文导读（TL;DR、研究动机、解决问题、现象分析、主要方法、实验信息、贡献与局限）
+- 基于 ICLR 2026 分类体系自动标注 primary_area / category
+- 数据双写：本地 JSONL archive + SQLite（开发） + Cloudflare D1（生产）
+- 前端 SPA 从 Worker API 实时加载数据，支持搜索、分类导航、日历切换、优先级/标签过滤
+
+## 架构
+
+```
+┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│  GitHub Actions   │────▶│  Cloudflare       │────▶│  GitHub Pages    │
+│  (daily.yml)      │     │  Worker + D1      │     │  (SPA frontend)  │
+│                   │     │  (API)            │     │  (static docs/)  │
+│  fetch_arxiv.py   │     │                   │     │                  │
+│  analyze_*.py     │     │  arxiv-daily-api  │     │  index.html      │
+│  export_to_worker │     │  .workers.dev     │     │  assets/app.js   │
+└──────────────────┘     └──────────────────┘     └──────────────────┘
+         │                         │                        ▲
+         ▼                         │                        │
+   data/archive/                   └────────────────────────┘
+   *.jsonl (git-tracked)              all data from API
+```
+
+**三层数据存储**（保持同步）：
+
+| 层 | 位置 | 用途 |
+|---|---|---|
+| JSONL archive | `data/archive/` | 权威数据源，git 追踪 |
+| 本地 SQLite | `data/archive/papers.db` | 本地开发，D1 schema 镜像 |
+| Cloudflare D1 | 远程数据库 | 生产环境，Worker API 查询 |
 
 ## 目录结构
 
-```text
+```
 .
-├── README.md
-├── AGENTS.md
-├── requirements.txt
-├── config.yaml
+├── config.yaml                    # 站点配置（分类、max_papers、主题关键词）
 ├── scripts/
-│   ├── 01_daily.py            # 全流程入口 (→ commands/daily.py)
-│   ├── 02_fetch.py            # 抓取 (→ commands/fetch.py)
-│   ├── 03_analyze.py          # DeepSeek 分析 (→ commands/analyze.py)
-│   ├── 04_build.py            # 静态站点构建 (→ commands/build.py)
-│   ├── merge_analyzed_to_archive.py  # 一次性导入 legacy 分析结果
-│   ├── lib/                   # 共享模块
-│   │   ├── config.py
-│   │   ├── archive.py
-│   │   ├── progress.py
-│   │   └── taxonomy.py
-│   ├── commands/              # 管道命令模块
-│   │   ├── daily.py
-│   │   ├── fetch.py
-│   │   ├── analyze.py
-│   │   └── build.py
-│   └── batch/                 # 批量维护脚本
-│       ├── backfill_arxiv.py  # 批量回填元数据
-│       ├── analyze_archive.py # 批量分析 archive 中的论文
-│       └── clean_archive.py   # 清理 archive 重复记录
+│   ├── fetch_arxiv.py             # arXiv 元数据抓取（双写 JSONL + SQLite）
+│   ├── analyze_deepseek.py        # DeepSeek 分析（双写 JSONL + SQLite）
+│   ├── export_to_worker.py        # 将新数据同步到 Worker API
+│   ├── 01_daily.py ~ 05_*.py      # 旧版入口脚本（部分兼容）
+│   ├── lib/                       # 共享模块
+│   │   ├── archive.py             # JSONL archive 读写
+│   │   ├── db.py                  # SQLite 本地数据库层
+│   │   ├── config.py              # 配置加载
+│   │   ├── progress.py            # 进度条
+│   │   ├── taxonomy.py            # 分类体系
+│   │   └── source_archive.py      # 非 arXiv 数据源存储
+│   ├── fetchers/                  # 多源抓取插件（AAAI, ACL, CVF, OpenReview）
+│   ├── commands/                  # 旧版命令模块（部分兼容）
+│   └── batch/                     # 批量维护脚本
+├── worker/
+│   ├── src/index.ts               # Cloudflare Worker（Hono API）
+│   ├── package.json
+│   └── tsconfig.json
+├── migrations/
+│   └── 0001_create_papers_table.sql  # D1 数据库 schema
+├── wrangler.toml                  # Cloudflare 部署配置
 ├── data/
-│   ├── archive/               # 归档存储（JSONL，权威数据源）
-│   │   ├── papers.jsonl       # 所有论文元数据（按 arxiv_id 去重）
-│   │   └── analyses.jsonl     # 所有分析结果（按 arxiv_id 去重）
-│   ├── raw/                   # 已弃用，兼容缓存
-│   ├── analyzed/              # 已弃用，兼容缓存
-│   └── mock/
+│   └── archive/
+│       ├── papers.jsonl           # 所有论文元数据
+│       ├── analyses.jsonl         # 所有分析结果
+│       └── papers.db              # 本地 SQLite 镜像
 ├── docs/
-│   ├── index.html
-│   ├── daily/
-│   ├── data/
-│   └── assets/
-│       ├── style.css
-│       └── app.js
-└── .github/
-    └── workflows/
-        └── daily.yml
+│   ├── index.html                 # SPA 入口
+│   ├── assets/
+│   │   ├── app.js                 # SPA 前端逻辑
+│   │   └── style.css              # 样式
+│   └── data/                      # 静态数据缓存（向后兼容）
+├── dev-server.js                  # 本地开发服务器（SPA + Worker 代理）
+└── .github/workflows/daily.yml    # GitHub Actions 定时任务
 ```
 
-## 本地运行
+## 本地开发
+
+### 安装依赖
 
 ```bash
 pip install -r requirements.txt
+cd worker && npm install && cd ..
+```
+
+### 启动服务
+
+```bash
+# 1. 本地 Worker（端口 8787）
+cd worker && npx wrangler dev
+
+# 2. Dev server（端口 3000，代理 /api 到 Worker）
+node dev-server.js
+```
+
+访问 `http://127.0.0.1:3000`
+
+### 运行 Pipeline
+
+```bash
 export DEEPSEEK_API_KEY="your_api_key_here"
-python scripts/01_daily.py --date 2026-05-10
+
+# 抓取指定日期的论文
+python scripts/fetch_arxiv.py --date 2026-05-14 --max-papers 30
+
+# DeepSeek 分析
+python scripts/analyze_deepseek.py --date 2026-05-14 --concurrency 2
+
+# 同步到 Worker API
+python scripts/export_to_worker.py --url http://127.0.0.1:8787 --token your_token
 ```
 
-默认模型为 `deepseek-v4-flash`，并在请求中显式设置 `thinking` 为 `disabled`。如需临时覆盖模型，可设置：
+### D1 本地操作
 
 ```bash
-export DEEPSEEK_MODEL="deepseek-v4-flash"
+# 应用迁移到本地数据库
+npx wrangler d1 execute arxiv-daily-db --local --file migrations/0001_create_papers_table.sql
+
+# 查询本地数据
+npx wrangler d1 execute arxiv-daily-db --local --command "SELECT COUNT(*) FROM papers"
 ```
 
-可选参数：
+### 部署 Worker
 
 ```bash
-python scripts/01_daily.py --date 2026-05-10 --max-papers 30
-python scripts/01_daily.py --max-papers 30
-python scripts/01_daily.py --date 2026-05-10 --max-papers 30 --concurrency 2
-python scripts/02_fetch.py --date 2026-05-10 --max-papers 30
-python scripts/02_fetch.py --latest-with-papers --max-papers 30
-python scripts/03_analyze.py --date 2026-05-10 --concurrency 2
-python scripts/04_build.py
+cd worker
+npx wrangler deploy
 ```
 
-维护脚本（`scripts/batch/`）：
+## GitHub 配置
 
-```bash
-python scripts/batch/backfill_arxiv.py                # 批量回填元数据到 archive
-python scripts/batch/analyze_archive.py               # 批量分析 archive 中的论文
-python scripts/merge_analyzed_to_archive.py           # 一次性导入 legacy 分析结果
+### Secrets
+
+| 名称 | 说明 |
+|---|---|
+| `DEEPSEEK_API_KEY` | DeepSeek API key |
+| `ARXIV_DAILY_WORKER_URL` | Worker URL，如 `https://arxiv-daily-api.jwwangchn.workers.dev` |
+| `ARXIV_DAILY_WORKER_TOKEN` | Worker API 认证 token |
+
+### GitHub Pages
+
+```
+Settings → Pages → Source: main 分支, Folder: /docs
 ```
 
-不传 `--date` 时，`01_daily.py` 会从当前日期向前回溯，选择最近一个有 arXiv 更新的日期；如果该日期的论文已经全部分析过，会跳过 DeepSeek 调用，只重新构建静态网站。
+### GitHub Actions
 
-DeepSeek 分析默认并发数为 `2`，可通过 `--concurrency` 或环境变量 `DEEPSEEK_CONCURRENCY` 调整。为避免触发限速，代码会将并发数上限限制为 `4`；如果遇到 429 或连接波动，建议降到 `1` 或 `2`。
+每天北京时间 04:00 自动运行：
 
-arXiv 抓取和 DeepSeek 分析都会显示 `tqdm` 进度条，包括已完成数量、处理速度和预计剩余时间。GitHub Actions 支持这类 stderr 日志输出；在 CI 中脚本会降低刷新频率并使用 ASCII 进度条，避免日志过度刷屏。
-
-## Mock 模式
-
-无需 `DEEPSEEK_API_KEY`，直接生成可预览网站：
-
-```bash
-python scripts/01_daily.py --mock
-```
-
-也可以只构建静态页面：
-
-```bash
-python scripts/04_build.py --mock
-```
-
-生成后打开：
-
-```text
-docs/index.html
-```
-
-## GitHub Secrets
-
-在仓库中添加 DeepSeek API key：
-
-```text
-Settings → Secrets and variables → Actions → New repository secret
-Name: DEEPSEEK_API_KEY
-```
-
-不要把真实 API key 写入代码、README、日志或任何生成文件。
-
-## GitHub Pages
-
-配置 Pages 从 `/docs` 部署：
-
-```text
-Settings → Pages → Build and deployment
-Source: Deploy from a branch
-Branch: main
-Folder: /docs
-```
-
-`docs/index.html` 使用 `assets/style.css` 和 `assets/app.js`；历史页使用 `../assets/style.css` 和 `../assets/app.js`，适配 GitHub Pages 相对路径。
-
-## GitHub Actions
-
-workflow 位于 `.github/workflows/daily.yml`：
-
-- 每天北京时间 04:00 运行，cron 为 `0 20 * * *`。
-- 支持 `workflow_dispatch` 手动触发。
-- 使用 Python 3.11。
-- 安装 `requirements.txt`。
-- 执行 `python scripts/01_daily.py`。
-- DeepSeek 分析默认使用并发 `2`；手动触发 workflow 时可填写 concurrency，代码会安全限制到最多 `4`。
-- 将 `data/archive/` 和 `docs/` 的变化 commit 并 push。
-- 如果没有变化，会输出 `No changes`，不会报错。
-
-手动触发：
-
-```text
-Actions → Daily arXiv Guide → Run workflow
-```
-
-如果 push 失败，请确认 workflow permissions 包含 `contents: write`，并检查仓库 Actions 设置是否允许 GitHub Actions 写入。
+1. 抓取 arXiv 论文 → JSONL + SQLite
+2. DeepSeek 分析 → JSONL + SQLite
+3. 同步新数据到 Worker API
+4. Commit 并 push `data/` 变更
 
 ## config.yaml
 
-`config.yaml` 控制站点标题、arXiv 分类、每日最大论文数和主题关键词。
-
-- `site.title`：页面标题。
-- `site.subtitle`：页面副标题。
-- `arxiv.categories`：默认抓取分类，目前聚焦 `cs.CV`、`cs.AI`。
-- `arxiv.max_papers`：默认每日最多论文数。
-- `topics`：用于后续筛选、prompt 优化和 tags 对齐的主题关键词配置。
-- `data/iclr_taxonomy.json`：从 `ICLR2026_all_papers_CN.json` 提取的 ICLR 一级/二级分类体系，用于 DeepSeek 分类。
-
-## 常见问题
-
-**没有 API key**
-
-使用 `python scripts/01_daily.py --mock` 预览网站。正式分析需要设置 `DEEPSEEK_API_KEY`。
-
-**DeepSeek 返回非 JSON**
-
-脚本要求模型输出 JSON，并使用 `response_format={"type": "json_object"}`。如果仍然解析失败，该论文会保留原始信息，并记录 `analysis_error` 和可用的原始响应信息。
-
-**DeepSeek 连接失败**
-
-如果本地网络直连失败，可以通过代理运行，例如：
-
-```bash
-ALL_PROXY=socks5://127.0.0.1:1082 HTTPS_PROXY=socks5://127.0.0.1:1082 python scripts/03_analyze.py --date 2026-05-10
+```yaml
+arxiv:
+  categories:
+    - cs.CV
+    - cs.AI
+    - cs.CL
+    - cs.LG
+  max_papers: 2000
 ```
-
-**当天没有论文**
-
-`02_fetch.py` 仍会写出合法 JSON，`papers` 为空；页面会显示空状态。无人值守运行时会自动向前回溯，寻找最近一个有论文更新的日期。
-
-**GitHub Pages 路径问题**
-
-本项目所有站内资源使用相对路径。首页资源为 `assets/...`，历史页资源为 `../assets/...`。
-
-**GitHub Actions 没有权限 push**
-
-确认 workflow 中有 `permissions: contents: write`，并在仓库 Settings 的 Actions 权限中允许 workflow 写入。
 
 ## 已知限制
 
-1. 只基于 `title + abstract` 分析，不读取 PDF 全文。
-2. 不下载 arXiv source。
-3. 不提取主图。
-4. 不使用数据库。
-5. 搜索和过滤只在当前静态页面前端完成。
-6. GitHub Actions 定时任务不保证秒级准时。
-7. DeepSeek 输出可能不是严格 JSON，因此代码中做了容错。
-8. 论文筛选质量依赖 prompt 和配置关键词，后续可以优化。
+1. 只基于 `title + abstract` 分析，不读取 PDF
+2. 不下载 arXiv source 或提取图片
+3. 前端搜索仅在当前加载的论文中完成
+4. SPA 依赖 Worker API 可用性
 
-## 后续可扩展方向
+## Worker API
 
-- 提取 arXiv source。
-- 提取论文主图。
-- 使用 Cloudflare R2 存图片。
-- RSS / 邮件推送。
-- 更复杂的论文筛选。
-- PDF 全文分析。
+| 端点 | 说明 |
+|---|---|
+| `GET /api/dates` | 日期索引（论文数） |
+| `GET /api/papers?date=YYYY-MM-DD` | 指定日期论文 |
+| `GET /api/papers?id=arxiv_id` | 单篇论文 |
+| `GET /api/search?q=query` | 全文搜索 |
+| `POST /api/papers` | 批量写入论文（需 token） |
+| `POST /api/analyses` | 批量写入分析（需 token） |
 
 ## 参考
 
