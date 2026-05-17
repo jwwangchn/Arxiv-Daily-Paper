@@ -22,7 +22,7 @@ permissions:
   contents: write
 
 jobs:
-  build:
+  pipeline:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -83,6 +83,14 @@ jobs:
             git commit -m "Update daily arXiv guide"
             git push
           fi
+
+  deploy:
+    needs: pipeline
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Deploy docs to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
