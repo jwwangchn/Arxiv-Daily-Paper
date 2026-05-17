@@ -65,11 +65,15 @@ jobs:
           python scripts/analyze_deepseek.py "${args[@]}"
 
       - name: Sync new data to D1 via Worker API
-        if: "${{ secrets.ARXIV_DAILY_WORKER_URL != '' && secrets.ARXIV_DAILY_WORKER_TOKEN != '' }}"
+        if: ${{ env.WORKER_URL != '' }}
         env:
           WORKER_URL: ${{ secrets.ARXIV_DAILY_WORKER_URL }}
           WORKER_TOKEN: ${{ secrets.ARXIV_DAILY_WORKER_TOKEN }}
         run: |
+          if [ -z "$WORKER_TOKEN" ]; then
+            echo "WARNING: ARXIV_DAILY_WORKER_TOKEN not set, skipping sync"
+            exit 0
+          fi
           python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN"
 
       - name: Commit generated files
