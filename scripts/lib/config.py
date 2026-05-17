@@ -24,10 +24,6 @@ def setup_logging() -> None:
 def ensure_dirs() -> None:
     for path in [
         PROJECT_ROOT / "data" / "archive",
-        PROJECT_ROOT / "data" / "mock",
-        PROJECT_ROOT / "docs" / "daily",
-        PROJECT_ROOT / "docs" / "data",
-        PROJECT_ROOT / "docs" / "assets",
     ]:
         path.mkdir(parents=True, exist_ok=True)
 

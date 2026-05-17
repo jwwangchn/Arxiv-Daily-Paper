@@ -18,7 +18,7 @@ on:
         required: false
         type: string
       full_export:
-        description: "Export the full local JSONL backup to D1 instead of only the target date"
+        description: "Export all local database records to D1 instead of only the target date"
         required: false
         default: false
         type: boolean
@@ -40,6 +40,9 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Initialize local database
+        run: PYTHONPATH=scripts python -c "from lib.db import init_db; init_db()"
 
       - name: Fetch today's arXiv papers
         env:
@@ -85,20 +88,8 @@ jobs:
             exit 0
           fi
           if [ "$FULL_EXPORT" = "true" ]; then
-            python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN" --full --source jsonl
+            python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN" --full
           else
             export_date="${REQUESTED_DATE:-$(date -u +%F)}"
             python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN" --date "$export_date"
-          fi
-
-      - name: Commit generated files
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data
-          if git diff --cached --quiet; then
-            echo "No changes"
-          else
-            git commit -m "Update daily arXiv guide"
-            git push
           fi

@@ -1,7 +1,6 @@
 """SQLite database layer mirroring D1 schema for local development.
 
-Provides the same public API as lib/archive.py but backed by SQLite.
-Used locally during development; Cloudflare D1 uses the same schema.
+Used locally during development; Cloudflare D1 uses the same schema in production.
 """
 
 from __future__ import annotations
@@ -213,22 +212,6 @@ def available_dates(db_path: Path = DB_PATH) -> list[str]:
     return dates
 
 
-def latest_analysis_by_arxiv_id(
-    *,
-    version: str | None = None,
-    db_path: Path = DB_PATH,
-) -> dict[str, dict[str, Any]]:
-    init_db(db_path)
-    conn = get_connection(db_path)
-    if version:
-        cursor = conn.execute("SELECT * FROM analyses WHERE analysis_version = ?", (version,))
-    else:
-        cursor = conn.execute("SELECT * FROM analyses")
-    latest = {row["arxiv_id"]: _row_to_dict(row) for row in cursor}
-    conn.close()
-    return latest
-
-
 def unanalyzed_papers_for_date(
     source_date: str,
     *,
@@ -246,77 +229,3 @@ def unanalyzed_papers_for_date(
     papers = [_row_to_dict(row) for row in cursor]
     conn.close()
     return papers
-
-
-def export_month_data(
-    month: str,
-    *,
-    analysis_version: str | None = None,
-    db_path: Path = DB_PATH,
-) -> dict[str, Any]:
-    if len(month) != 7:
-        raise ValueError("month must use YYYY-MM format")
-
-    init_db(db_path)
-    conn = get_connection(db_path)
-
-    papers_cursor = conn.execute("SELECT * FROM papers WHERE source_date LIKE ?", (f"{month}-%",))
-    papers = [_row_to_dict(row) for row in papers_cursor]
-
-    analyses_cursor = conn.execute(
-        "SELECT a.* FROM analyses a JOIN papers p ON a.arxiv_id = p.id WHERE p.source_date LIKE ?",
-        (f"{month}-%",),
-    )
-    analyses = {row["arxiv_id"]: _row_to_dict(row) for row in analyses_cursor}
-    conn.close()
-
-    dates: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for paper in papers:
-        source_date = paper_source_date(paper)
-        item = dict(paper)
-        record = analyses.get(paper_id(paper))
-        if record:
-            if analysis_version and str(record.get("analysis_version", "")) != analysis_version:
-                continue
-            item["analysis"] = {
-                "tldr": record.get("tldr", ""),
-                "research_motivation": record.get("research_motivation", ""),
-                "problem": record.get("problem", ""),
-                "phenomenon_analysis": record.get("phenomenon_analysis", ""),
-                "method": record.get("method", ""),
-                "contributions": record.get("contributions", []),
-                "experiments": record.get("experiments", ""),
-                "limitations": record.get("limitations", []),
-                "primary_area_en": record.get("primary_area_en", ""),
-                "primary_area": record.get("primary_area", ""),
-                "category": record.get("category", ""),
-                "sub_area": record.get("sub_area", ""),
-                "tags": record.get("tags", []),
-                "reading_priority": record.get("reading_priority", ""),
-                "recommended_action": record.get("recommended_action", ""),
-            }
-            item["analysis_version"] = record.get("analysis_version")
-            item["analyzed_at"] = record.get("analyzed_at")
-        dates[source_date].append(item)
-
-    return {"month": month, "dates": {date: dates[date] for date in sorted(dates, reverse=True)}}
-
-
-def read_jsonl(path: Path, db_path: Path = DB_PATH) -> list[dict[str, Any]]:
-    """Backward-compatible: reads from DB if available, falls back to JSONL."""
-    if db_path.exists():
-        conn = get_connection(db_path)
-        count = conn.execute("SELECT COUNT(*) as cnt FROM papers").fetchone()["cnt"]
-        conn.close()
-        if count > 0:
-            return list(load_paper_index(db_path).values())
-
-    if not path.exists():
-        return []
-    records: list[dict[str, Any]] = []
-    with path.open("r", encoding="utf-8") as f:
-        for line in f:
-            text = line.strip()
-            if text:
-                records.append(json.loads(text))
-    return records

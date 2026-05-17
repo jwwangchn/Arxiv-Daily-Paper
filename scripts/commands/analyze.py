@@ -10,24 +10,9 @@ from typing import Any
 
 from openai import OpenAI
 
-from lib.config import PROJECT_ROOT, ensure_dirs, parse_date, read_json, setup_logging, write_json
+from lib.config import PROJECT_ROOT, ensure_dirs, parse_date, read_json, setup_logging
+from lib.db import DB_PATH, append_new_analyses, load_analysis_index, load_paper_index, paper_id, papers_for_date
 from lib.progress import progress_bar
-
-try:
-    from lib.archive import (
-        ARCHIVE_DIR,
-        append_new_analyses as append_new_analyses_jsonl,
-        load_analysis_index as load_analysis_index_jsonl,
-    )
-    from lib.db import (
-        DB_PATH,
-        append_new_analyses as append_new_analyses_db,
-        load_analysis_index as load_analysis_index_db,
-    )
-    _HAS_ARCHIVE = True
-except ImportError:
-    _HAS_ARCHIVE = False
-
 
 LOGGER = logging.getLogger("analyze_deepseek")
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
@@ -37,7 +22,7 @@ MAX_DEEPSEEK_CONCURRENCY = 4
 TAXONOMY_PATH = PROJECT_ROOT / "data" / "iclr_taxonomy.json"
 
 
-SYSTEM_PROMPT_TEMPLATE = """你是一个严谨的机器学习论文导读助手。请只根据论文标题和摘要生成中文导读，不要编造摘要中不存在的实验结论。如果摘要没有提到实验结果，请明确写“摘要未提供具体实验结果”。输出必须是合法 JSON。
+SYSTEM_PROMPT_TEMPLATE = """你是一个严谨的机器学习论文导读助手。请只根据论文标题和摘要生成中文导读，不要编造摘要中不存在的实验结论。如果摘要没有提到实验结果，请明确写"摘要未提供具体实验结果"。输出必须是合法 JSON。
 
 分类体系来自 ICLR 2026 官方研究方向整理。你必须从下列 taxonomy 中选择最匹配的一级分类和二级分类，不要发明新类别：
 {taxonomy}
@@ -71,8 +56,8 @@ tags 说明：提取 3–5 个英文关键词标签，反映论文核心技术/�
 6. 如果难以判断，选择 primary_area_en="other topics in machine learning (i.e., none of the above)"，primary_area="其他 ML 主题"，category="其他"。
 
 字段区分要求：
-- research_motivation 写“为什么值得研究”：背景痛点、应用价值、已有方法为什么不够。
-- problem 写“具体要解决什么问题”：论文直接攻克的任务、误差来源、约束或目标。
+- research_motivation 写"为什么值得研究"：背景痛点、应用价值、已有方法为什么不够。
+- problem 写"具体要解决什么问题"：论文直接攻克的任务、误差来源、约束或目标。
 - research_motivation 和 problem 不要原句重复；如果摘要信息不足，也要从不同角度简短表述。
 
 reading_priority 判定标准：
@@ -234,7 +219,7 @@ def parse_concurrency(value: int | str | None) -> int:
 
 def analyze_one_paper(client: OpenAI, paper: dict[str, Any], model: str) -> dict[str, Any]:
     enriched = dict(paper)
-    arxiv_id = paper.get("arxiv_id")
+    arxiv_id = paper_id(paper)
     try:
         enriched["analysis"] = analyze_paper(client, paper, model)
     except ModelJsonError as exc:
@@ -247,20 +232,12 @@ def analyze_one_paper(client: OpenAI, paper: dict[str, Any], model: str) -> dict
     return enriched
 
 
-def load_existing(output_path: Path) -> dict[str, dict[str, Any]]:
-    if not output_path.exists():
-        return {}
-    existing = read_json(output_path)
-    return {paper.get("arxiv_id"): paper for paper in existing.get("papers", []) if paper.get("arxiv_id")}
-
-
 def _extract_analyses(papers: list[dict[str, Any] | None]) -> list[dict[str, Any]]:
-    """Convert analyzed papers into the format expected by archive.append_new_analyses."""
     analyses = []
     for paper in papers:
         if paper is None:
             continue
-        arxiv_id = paper.get("arxiv_id")
+        arxiv_id = paper_id(paper)
         if not arxiv_id:
             continue
         analyses.append({
@@ -274,61 +251,31 @@ def _extract_analyses(papers: list[dict[str, Any] | None]) -> list[dict[str, Any
     return analyses
 
 
-def write_analyzed(output_path: Path, target_date: str, source: str, papers: list[dict[str, Any] | None]) -> None:
-    completed = [paper for paper in papers if paper is not None]
-    write_json(output_path, {"date": target_date, "source": source, "papers": completed})
-
-    if _HAS_ARCHIVE:
-        new_analyses = _extract_analyses(papers)
-        if new_analyses:
-            # Write to JSONL (backup)
-            try:
-                index = load_analysis_index_jsonl() if (ARCHIVE_DIR / "analyses.jsonl").exists() else None
-                inserted, skipped = append_new_analyses_jsonl(new_analyses, existing_index=index)
-                if inserted:
-                    LOGGER.info("JSONL: appended %d analysis record(s) (skipped %d duplicates)", inserted, skipped)
-            except Exception as exc:
-                LOGGER.warning("Failed to write analyses to JSONL: %s", exc)
-
-            # Write to SQLite (local dev)
-            try:
-                index = load_analysis_index_db() if DB_PATH.exists() else None
-                inserted, skipped = append_new_analyses_db(new_analyses, existing_index=index)
-                if inserted:
-                    LOGGER.info("SQLite: inserted %d analysis record(s) (skipped %d duplicates)", inserted, skipped)
-            except Exception as exc:
-                LOGGER.warning("Failed to write analyses to SQLite: %s", exc)
-
-
-def analyze_date(target_date: str, concurrency: int | str | None = None) -> Path:
+def analyze_date(target_date: str, concurrency: int | str | None = None) -> None:
     ensure_dirs()
-    raw_path = PROJECT_ROOT / "data" / "raw" / f"{target_date}.json"
-    if not raw_path.exists():
-        raise FileNotFoundError(f"Raw data not found: {raw_path}")
+    papers = papers_for_date(target_date)
+    if not papers:
+        LOGGER.info("No papers found in database for %s.", target_date)
+        return
 
-    raw = read_json(raw_path)
-    output_path = PROJECT_ROOT / "data" / "analyzed" / f"{target_date}.json"
-    existing_by_id = load_existing(output_path)
-
-    if not raw.get("papers", []):
-        write_json(output_path, {"date": target_date, "source": raw.get("source", "arxiv"), "papers": []})
-        LOGGER.info("No papers to analyze for %s; wrote empty analyzed JSON.", target_date)
-        return output_path
+    analysis_index = load_analysis_index()
+    existing_by_id: dict[str, dict[str, Any]] = {}
+    for arxiv_id, record in analysis_index.items():
+        if record.get("analysis") or record.get("tldr"):
+            existing_by_id[arxiv_id] = record
 
     client = get_client()
     model = os.environ.get("DEEPSEEK_MODEL", DEFAULT_DEEPSEEK_MODEL)
     worker_count = parse_concurrency(concurrency if concurrency is not None else os.environ.get("DEEPSEEK_CONCURRENCY"))
-    raw_papers = raw.get("papers", [])
-    source = raw.get("source", "arxiv")
-    analyzed_papers: list[dict[str, Any] | None] = [None] * len(raw_papers)
+    analyzed_papers: list[dict[str, Any] | None] = [None] * len(papers)
     pending: list[tuple[int, dict[str, Any]]] = []
 
-    for index, paper in enumerate(raw_papers):
-        arxiv_id = paper.get("arxiv_id")
+    for index, paper in enumerate(papers):
+        arxiv_id = paper_id(paper)
         existing = existing_by_id.get(arxiv_id)
-        if existing and ("analysis" in existing or "analysis_error" in existing):
+        if existing and (existing.get("analysis") or existing.get("tldr")):
             LOGGER.info("Skipping already analyzed paper %s", arxiv_id)
-            analyzed_papers[index] = existing
+            analyzed_papers[index] = {**paper, "analysis": existing.get("analysis", existing), "analysis_version": existing.get("analysis_version", "1"), "analyzed_at": existing.get("analyzed_at", ""), "model": existing.get("model", model)}
             continue
         pending.append((index, paper))
 
@@ -337,21 +284,22 @@ def analyze_date(target_date: str, concurrency: int | str | None = None) -> Path
         with ThreadPoolExecutor(max_workers=worker_count) as executor:
             futures = {}
             for index, paper in pending:
-                LOGGER.info("Queueing paper %d/%d: %s", index + 1, len(raw_papers), paper.get("arxiv_id"))
+                LOGGER.info("Queueing paper %d/%d: %s", index + 1, len(papers), paper_id(paper))
                 futures[executor.submit(analyze_one_paper, client, paper, model)] = index
-            completed_futures = as_completed(futures)
             for completed_count, future in enumerate(
-                progress_bar(completed_futures, total=len(futures), desc="DeepSeek analysis", unit="paper"),
+                progress_bar(as_completed(futures), total=len(futures), desc="DeepSeek analysis", unit="paper"),
                 start=1,
             ):
                 index = futures[future]
                 analyzed_papers[index] = future.result()
                 LOGGER.info("Completed pending analysis %d/%d.", completed_count, len(pending))
-                write_analyzed(output_path, target_date, source, analyzed_papers)
 
-    write_analyzed(output_path, target_date, source, analyzed_papers)
-    LOGGER.info("Wrote %s", output_path)
-    return output_path
+    new_analyses = _extract_analyses(analyzed_papers)
+    if new_analyses:
+        inserted, skipped = append_new_analyses(new_analyses, existing_index=analysis_index)
+        LOGGER.info("Database: inserted %d analysis record(s) (skipped %d duplicates)", inserted, skipped)
+
+    LOGGER.info("Analysis complete for %s: %d papers total, %d analyzed", target_date, len(papers), len(pending))
 
 
 def parse_args() -> argparse.Namespace:

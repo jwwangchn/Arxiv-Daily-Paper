@@ -1,6 +1,5 @@
 """Shared fixtures and path setup for all tests."""
 
-import json
 import sys
 from pathlib import Path
 
@@ -17,10 +16,7 @@ if str(SCRIPTS_DIR) not in sys.path:
 def tmp_data_dir(tmp_path: Path) -> Path:
     """Create a temporary data directory with standard subfolders."""
     d = tmp_path / "data"
-    (d / "raw").mkdir(parents=True)
-    (d / "analyzed").mkdir(parents=True)
     (d / "archive").mkdir(parents=True)
-    (d / "mock").mkdir(parents=True)
     return d
 
 
@@ -121,12 +117,3 @@ def sample_config() -> dict:
             },
         },
     }
-
-
-def write_jsonl(path: Path, records: list[dict]) -> None:
-    """Helper to write JSONL files."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as f:
-        for record in records:
-            f.write(json.dumps(record, ensure_ascii=False, separators=(",", ":")))
-            f.write("\n")

@@ -152,7 +152,3 @@ class TestEnsureDirs:
         mock_root.__truediv__ = lambda self, other: tmp_path / other
         ensure_dirs()
         assert (tmp_path / "data" / "archive").is_dir()
-        assert (tmp_path / "data" / "mock").is_dir()
-        assert (tmp_path / "docs" / "daily").is_dir()
-        assert (tmp_path / "docs" / "data").is_dir()
-        assert (tmp_path / "docs" / "assets").is_dir()

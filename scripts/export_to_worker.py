@@ -1,4 +1,4 @@
-"""Export local archive data to the Cloudflare Worker API."""
+"""Export local database data to the Cloudflare Worker API."""
 
 from __future__ import annotations
 
@@ -20,9 +20,8 @@ SCRIPTS_DIR = Path(__file__).resolve().parents[1]
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
-from lib.archive import ANALYSES_JSONL, PAPERS_JSONL, paper_id, paper_source_date, read_jsonl
 from lib.config import setup_logging
-from lib.db import DB_PATH, get_connection, init_db
+from lib.db import DB_PATH, get_connection, init_db, paper_id, paper_source_date
 
 LOGGER = logging.getLogger("export_to_worker")
 BATCH_SIZE = 100
@@ -81,7 +80,7 @@ def _analysis_record_from_db(row: sqlite3.Row) -> dict[str, Any]:
     }
 
 
-def _load_from_db(date: str | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+def load_records(date: str | None = None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     if not DB_PATH.exists():
         return [], []
 
@@ -109,42 +108,6 @@ def _load_from_db(date: str | None) -> tuple[list[dict[str, Any]], list[dict[str
         return papers, analyses
     finally:
         conn.close()
-
-
-def _load_from_jsonl(date: str | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    papers = read_jsonl(PAPERS_JSONL)
-    if date:
-        papers = [paper for paper in papers if paper_source_date(paper) == date]
-        paper_ids = {paper_id(paper) for paper in papers}
-        analyses = [
-            analysis
-            for analysis in read_jsonl(ANALYSES_JSONL)
-            if str(analysis.get("arxiv_id") or "").strip() in paper_ids
-        ]
-    else:
-        analyses = read_jsonl(ANALYSES_JSONL)
-    return papers, analyses
-
-
-def load_records(source: str, date: str | None) -> tuple[str, list[dict[str, Any]], list[dict[str, Any]]]:
-    if source == "db":
-        papers, analyses = _load_from_db(date)
-        return "db", papers, analyses
-    if source == "jsonl":
-        papers, analyses = _load_from_jsonl(date)
-        return "jsonl", papers, analyses
-
-    db_papers, db_analyses = _load_from_db(date)
-    jsonl_papers, jsonl_analyses = _load_from_jsonl(date)
-
-    if date:
-        if db_papers:
-            return "db", db_papers, db_analyses
-        return "jsonl", jsonl_papers, jsonl_analyses
-
-    if db_papers and len(db_papers) >= len(jsonl_papers):
-        return "db", db_papers, db_analyses
-    return "jsonl", jsonl_papers, jsonl_analyses
 
 
 def export_papers(url: str, token: str, papers: list[dict[str, Any]]) -> int:
@@ -215,12 +178,11 @@ def export_analyses(url: str, token: str, analyses: list[dict[str, Any]]) -> int
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Export local data to Cloudflare Worker API.")
+    parser = argparse.ArgumentParser(description="Export local database to Cloudflare Worker API.")
     parser.add_argument("--url", default=os.environ.get("WORKER_URL", ""), help="Worker API base URL.")
     parser.add_argument("--token", default=os.environ.get("WORKER_TOKEN", ""), help="Worker API token.")
     parser.add_argument("--date", default=None, help="Export only one source_date in YYYY-MM-DD format.")
     parser.add_argument("--full", action="store_true", help="Export all local records.")
-    parser.add_argument("--source", choices=["auto", "db", "jsonl"], default="auto", help="Local export source.")
     return parser.parse_args()
 
 
@@ -235,10 +197,9 @@ def main() -> None:
     if bool(args.date) == bool(args.full):
         raise SystemExit("Use exactly one of --date YYYY-MM-DD or --full.")
 
-    source_name, papers, analyses = load_records(args.source, args.date)
+    papers, analyses = load_records(args.date)
     LOGGER.info(
-        "Export source=%s scope=%s papers=%d analyses=%d",
-        source_name,
+        "Export scope=%s papers=%d analyses=%d",
         args.date or "full",
         len(papers),
         len(analyses),
