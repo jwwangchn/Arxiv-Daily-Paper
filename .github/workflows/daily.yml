@@ -65,7 +65,7 @@ jobs:
           python scripts/analyze_deepseek.py "${args[@]}"
 
       - name: Sync new data to D1 via Worker API
-        if: ${{ secrets.ARXIV_DAILY_WORKER_URL != '' && secrets.ARXIV_DAILY_WORKER_TOKEN != '' }}
+        if: "${{ secrets.ARXIV_DAILY_WORKER_URL != '' && secrets.ARXIV_DAILY_WORKER_TOKEN != '' }}"
         env:
           WORKER_URL: ${{ secrets.ARXIV_DAILY_WORKER_URL }}
           WORKER_TOKEN: ${{ secrets.ARXIV_DAILY_WORKER_TOKEN }}
