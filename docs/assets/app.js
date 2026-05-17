@@ -1,4 +1,7 @@
 (function () {
+  // Production Worker API URL (fallback when static JSON has no data)
+  const WORKER_URL = "https://arxiv-daily-api.jwwangchn.workers.dev";
+
   const state = {
     date: "",
     query: "",
@@ -422,10 +425,24 @@
     els.loading.classList.remove("hidden");
     els.currentDateLabel.textContent = `📅 ${date}`;
     const monthData = await loadMonth(entry.month);
-    state.papers = (monthData.dates && monthData.dates[date]) || [];
+    const staticPapers = (monthData.dates && monthData.dates[date]) || [];
+    // Fallback to Worker API if static JSON has no data for this date
+    state.papers = staticPapers.length > 0 ? staticPapers : await fetchFromWorker(date);
     clearFilters();
     renderDates();
     updateUrl(date);
+  }
+
+  async function fetchFromWorker(date) {
+    try {
+      const res = await fetch(`${WORKER_URL}/api/papers?date=${date}`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      console.warn("Worker fetch failed:", e);
+      return [];
+    }
   }
 
   function bindEvents() {
@@ -501,6 +518,20 @@
     updateBackToTop();
     const requestedDate = new URLSearchParams(window.location.search).get("date");
     const initialDate = entryForDate(requestedDate) ? requestedDate : state.dateIndex.latest;
+    // If date exists in URL but not in static index, try Worker API
+    if (requestedDate && !entryForDate(requestedDate)) {
+      const apiPapers = await fetchFromWorker(requestedDate);
+      if (apiPapers.length > 0) {
+        state.date = requestedDate;
+        state.calendarMonth = requestedDate.slice(0, 7);
+        els.currentDateLabel.textContent = ` ${requestedDate}`;
+        state.papers = apiPapers;
+        clearFilters();
+        renderDates();
+        updateUrl(requestedDate);
+        return;
+      }
+    }
     await selectDate(initialDate);
   }
 
