@@ -17,6 +17,11 @@ on:
         description: "Optional DeepSeek request concurrency, safe-capped at 4"
         required: false
         type: string
+      full_export:
+        description: "Export the full local JSONL backup to D1 instead of only the target date"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -65,16 +70,26 @@ jobs:
           python scripts/analyze_deepseek.py "${args[@]}"
 
       - name: Sync new data to D1 via Worker API
-        if: ${{ env.WORKER_URL != '' }}
         env:
           WORKER_URL: ${{ secrets.ARXIV_DAILY_WORKER_URL }}
           WORKER_TOKEN: ${{ secrets.ARXIV_DAILY_WORKER_TOKEN }}
+          REQUESTED_DATE: ${{ github.event.inputs.date }}
+          FULL_EXPORT: ${{ github.event.inputs.full_export }}
         run: |
+          if [ -z "$WORKER_URL" ]; then
+            echo "WARNING: ARXIV_DAILY_WORKER_URL not set, skipping sync"
+            exit 0
+          fi
           if [ -z "$WORKER_TOKEN" ]; then
             echo "WARNING: ARXIV_DAILY_WORKER_TOKEN not set, skipping sync"
             exit 0
           fi
-          python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN"
+          if [ "$FULL_EXPORT" = "true" ]; then
+            python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN" --full --source jsonl
+          else
+            export_date="${REQUESTED_DATE:-$(date -u +%F)}"
+            python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN" --date "$export_date"
+          fi
 
       - name: Commit generated files
         run: |

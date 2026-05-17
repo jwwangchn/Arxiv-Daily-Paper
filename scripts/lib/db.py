@@ -17,7 +17,7 @@ from typing import Any
 from lib.config import PROJECT_ROOT
 
 DB_PATH = PROJECT_ROOT / "data" / "archive" / "papers.db"
-SCHEMA_PATH = PROJECT_ROOT / "db" / "schema.sql"
+SCHEMA_PATH = PROJECT_ROOT / "migrations" / "0001_create_papers_table.sql"
 
 
 def utc_now_iso() -> str:

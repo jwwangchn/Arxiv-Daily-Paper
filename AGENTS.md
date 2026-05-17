@@ -117,8 +117,8 @@ python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN"
 # Apply migration to local SQLite
 npx wrangler d1 execute arxiv-daily-db --local --file migrations/0001_create_papers_table.sql
 
-# Import JSONL into local SQLite (seeding)
-# (see scripts/import_jsonl_to_db.py)
+# One-time seed from JSONL backup to Worker/D1
+python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN" --full --source jsonl
 
 # Query local database
 npx wrangler d1 execute arxiv-daily-db --local --command "SELECT COUNT(*) FROM papers"

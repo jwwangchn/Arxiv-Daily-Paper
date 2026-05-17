@@ -65,6 +65,10 @@ def result_datetime(value: Any) -> str:
     return str(value)
 
 
+def paper_submitted_date(paper: dict[str, Any]) -> str:
+    return str(paper.get("source_date") or paper.get("published") or "")[:10]
+
+
 def parse_result(result: arxiv.Result) -> dict[str, Any]:
     entry_url = str(getattr(result, "entry_id", "") or "")
     raw_id = entry_url.rstrip("/").split("/")[-1] if entry_url else str(result.get_short_id())
@@ -79,6 +83,7 @@ def parse_result(result: arxiv.Result) -> dict[str, Any]:
         getattr(result, "primary_category", "") or (categories[0] if categories else "")
     )
     pdf_url = str(getattr(result, "pdf_url", "") or f"{ARXIV_BASE_URL}/pdf/{arxiv_id}")
+    published = result_datetime(getattr(result, "published", ""))
 
     return {
         "arxiv_id": arxiv_id,
@@ -87,8 +92,9 @@ def parse_result(result: arxiv.Result) -> dict[str, Any]:
         "abstract": normalize_space(getattr(result, "summary", "")),
         "categories": categories,
         "primary_category": primary_category,
-        "published": result_datetime(getattr(result, "published", "")),
+        "published": published,
         "updated": result_datetime(getattr(result, "updated", "")),
+        "source_date": published[:10],
         "entry_url": entry_url or f"{ARXIV_BASE_URL}/abs/{arxiv_id}",
         "pdf_url": pdf_url,
     }
@@ -335,6 +341,9 @@ def fetch_browse_fallback(target_date: str, categories: list[str], max_papers: i
 
             published = metadata.get("published") or f"{target_date}T00:00:00Z"
             paper_categories = metadata.get("categories") or [category]
+            source_date = str(metadata.get("source_date") or published)[:10]
+            if source_date != target_date:
+                continue
 
             papers.append(
                 {
@@ -346,7 +355,7 @@ def fetch_browse_fallback(target_date: str, categories: list[str], max_papers: i
                     "primary_category": metadata.get("primary_category") or category,
                     "published": published,
                     "updated": metadata.get("updated") or published,
-                    "source_date": target_date,
+                    "source_date": source_date,
                     "entry_url": f"{ARXIV_BASE_URL}/abs/{arxiv_id}",
                     "pdf_url": f"{ARXIV_BASE_URL}/pdf/{arxiv_id}",
                 }
@@ -393,9 +402,16 @@ def fetch_papers(
             unit="paper",
         ):
             paper = parse_result(result)
-            paper["source_date"] = target_date
 
             if paper["arxiv_id"] in seen:
+                continue
+            if paper_submitted_date(paper) != target_date:
+                LOGGER.debug(
+                    "Skipping %s for %s because submitted date is %s.",
+                    paper["arxiv_id"],
+                    target_date,
+                    paper_submitted_date(paper) or "unknown",
+                )
                 continue
 
             seen.add(paper["arxiv_id"])

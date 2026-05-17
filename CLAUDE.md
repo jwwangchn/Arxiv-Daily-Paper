@@ -84,7 +84,7 @@ npx wrangler deploy
 | `scripts/fetch_arxiv.py` | arXiv metadata fetcher, dual-writes to JSONL + SQLite |
 | `scripts/analyze_deepseek.py` | Entry point — delegates to commands.analyze |
 | `scripts/commands/analyze.py` | DeepSeek analysis logic |
-| `scripts/export_to_worker.py` | Exports new JSONL data to Worker API (with retry logic) |
+| `scripts/export_to_worker.py` | Exports local SQLite data to Worker API, with JSONL fallback/full-seed support |
 | `scripts/commands/build.py` | SPA build: reads JSONL, writes docs/index.html + docs/data/ |
 | `scripts/commands/fetch.py` | Legacy fetch commands (see fetch_arxiv.py for the active entry) |
 | `scripts/lib/db.py` | SQLite layer (local dev mirror of D1 schema) |

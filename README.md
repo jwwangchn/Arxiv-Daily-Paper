@@ -32,9 +32,9 @@
 
 | 层 | 位置 | 用途 |
 |---|---|---|
-| JSONL archive | `data/archive/` | 权威数据源，git 追踪 |
+| Cloudflare D1 | 远程数据库 | 生产环境权威数据源，Worker API 查询 |
 | 本地 SQLite | `data/archive/papers.db` | 本地开发，D1 schema 镜像 |
-| Cloudflare D1 | 远程数据库 | 生产环境，Worker API 查询 |
+| JSONL archive | `data/archive/` | git 追踪备份，用于一次性 seed / 回退 |
 
 ## 目录结构
 
@@ -44,18 +44,14 @@
 ├── scripts/
 │   ├── fetch_arxiv.py             # arXiv 元数据抓取（双写 JSONL + SQLite）
 │   ├── analyze_deepseek.py        # DeepSeek 分析（双写 JSONL + SQLite）
-│   ├── export_to_worker.py        # 将新数据同步到 Worker API
-│   ├── 01_daily.py ~ 05_*.py      # 旧版入口脚本（部分兼容）
+│   ├── export_to_worker.py        # 将 SQLite/JSONL 数据同步到 Worker API
 │   ├── lib/                       # 共享模块
 │   │   ├── archive.py             # JSONL archive 读写
 │   │   ├── db.py                  # SQLite 本地数据库层
 │   │   ├── config.py              # 配置加载
 │   │   ├── progress.py            # 进度条
-│   │   ├── taxonomy.py            # 分类体系
-│   │   └── source_archive.py      # 非 arXiv 数据源存储
 │   ├── fetchers/                  # 多源抓取插件（AAAI, ACL, CVF, OpenReview）
-│   ├── commands/                  # 旧版命令模块（部分兼容）
-│   └── batch/                     # 批量维护脚本
+│   └── commands/                  # 兼容命令模块
 ├── worker/
 │   ├── src/index.ts               # Cloudflare Worker（Hono API）
 │   ├── package.json
@@ -110,8 +106,11 @@ python scripts/fetch_arxiv.py --date 2026-05-14 --max-papers 30
 # DeepSeek 分析
 python scripts/analyze_deepseek.py --date 2026-05-14 --concurrency 2
 
-# 同步到 Worker API
-python scripts/export_to_worker.py --url http://127.0.0.1:8787 --token your_token
+# 同步单日数据到 Worker API
+python scripts/export_to_worker.py --url http://127.0.0.1:8787 --token your_token --date 2026-05-14
+
+# 一次性全量 seed（通常只在手动维护时运行）
+python scripts/export_to_worker.py --url http://127.0.0.1:8787 --token your_token --full --source jsonl
 ```
 
 ### D1 本地操作
