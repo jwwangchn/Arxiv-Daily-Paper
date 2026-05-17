@@ -671,17 +671,24 @@ a.calendar-day:hover {
   background: #f0f0f0;
   color: #999;
 }
-}
 
 .paper-id {
   display: inline-flex;
   align-items: center;
-  background: #e8ecf1;
-  color: #24292f;
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  background: var(--nav);
+  color: var(--muted);
   font-size: 12px;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 6px;
+  padding: 2px 10px;
+  text-decoration: none !important;
+}
+
+.paper-id:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-soft);
 }
 
 .hash-tag {
@@ -842,6 +849,20 @@ a.calendar-day:hover {
 
 .hidden {
   display: none !important;
+}
+
+.pagination-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  padding: 18px 0 8px;
+}
+
+.page-indicator {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .back-to-top {

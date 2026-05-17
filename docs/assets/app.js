@@ -1,5 +1,6 @@
 (function () {
   const WORKER_URL = "https://arxiv-daily-api.jwwangchn.workers.dev";
+  const PAGE_SIZE = 50;
 
   const state = {
     date: "",
@@ -11,6 +12,14 @@
     subareaParent: "",
     dateIndex: null,
     papers: [],
+    total: 0,
+    page: 0,
+    facetData: null,
+    paperCache: new Map(),
+    facetCache: new Map(),
+    paperRequests: new Map(),
+    activeFetch: null,
+    searchTimer: null,
     expandedAreas: new Set(),
     calendarMonth: "",
   };
@@ -109,9 +118,10 @@
     state.area = "";
     state.subarea = "";
     state.subareaParent = "";
+    state.page = 0;
     state.expandedAreas.clear();
     if (els.search) els.search.value = "";
-    renderPapers();
+    loadCurrentPage();
   }
 
   function facetCounts(papers) {
@@ -231,7 +241,12 @@
   }
 
   function renderFacets(papers) {
-    const { priorities, tags, areas } = facetCounts(papers);
+    const facetData = Array.isArray(papers) ? facetCounts(papers) : papers;
+    const priorities = facetData.priorities || { high: 0, medium: 0, low: 0 };
+    const tags = facetData.tags instanceof Map ? facetData.tags : new Map(facetData.tags || []);
+    const areas = facetData.areas instanceof Map
+      ? facetData.areas
+      : new Map((facetData.areas || []).map(([area, subs]) => [area, new Map(subs)]));
     els.priorityFilters.innerHTML = Object.entries(priorities)
       .map(([name, count]) => `<button class="filter-chip${state.priority === name ? " active" : ""}" data-priority="${name}" type="button">${name} <b>${count}</b></button>`)
       .join("");
@@ -279,21 +294,17 @@
   }
 
   function filteredPapers() {
-    const query = normalize(state.query);
-    return state.papers.filter((paper) => {
-      const tags = (paper.analysis || {}).tags || [];
-      return (
-        (!query || searchBlob(paper).includes(query)) &&
-        (!state.priority || paperPriority(paper) === state.priority) &&
-        (!state.tag || tags.includes(state.tag)) &&
-        (!state.area || paperArea(paper) === state.area) &&
-        (!state.subarea || (paperArea(paper) === state.subareaParent && paperSubarea(paper) === state.subarea))
-      );
-    });
+    return state.papers;
   }
 
   function list(values) {
-    if (!values || !values.length) return '<span class="muted">暂无</span>';
+    if (values == null) return '<span class="muted">暂无</span>';
+    if (!Array.isArray(values)) {
+      // Handle string or other types defensively
+      const text = String(values).trim();
+      return text ? `<ul><li>${escapeHtml(text)}</li></ul>` : '<span class="muted">暂无</span>';
+    }
+    if (!values.length) return '<span class="muted">暂无</span>';
     return `<ul>${values.map((value) => `<li>${escapeHtml(value)}</li>`).join("")}</ul>`;
   }
 
@@ -311,11 +322,10 @@
         <h3 class="paper-title"><a href="${escapeHtml(paper.entry_url)}" target="_blank" rel="noopener">${title}</a></h3>
         <div class="paper-meta-line">
           <span class="priority-pill priority-unknown">未分析</span>
-          <span class="paper-id">${escapeHtml(paper.arxiv_id)}</span>
+          <a class="paper-id" href="${escapeHtml(paper.entry_url)}" target="_blank" rel="noopener">${escapeHtml(paper.arxiv_id)}</a>
         </div>
         <div class="paper-authors">${escapeHtml(authors)}${moreAuthors}</div>
         <div class="paper-links">
-          <a href="${escapeHtml(paper.entry_url)}" target="_blank" rel="noopener">arXiv</a>
           <a href="${escapeHtml(paper.pdf_url)}" target="_blank" rel="noopener">PDF</a>
           <span>${escapeHtml(paper.display_category || paper.primary_category)}</span>
         </div>
@@ -330,7 +340,7 @@
         <button class="topic-badge" data-area="${escapeHtml(paperArea(paper))}" type="button">${escapeHtml(paperArea(paper))}</button>
         <button class="topic-badge subarea-badge" data-subarea="${escapeHtml(paperSubarea(paper))}" data-parent-area="${escapeHtml(paperArea(paper))}" type="button">${escapeHtml(paperSubarea(paper))}</button>
         <span class="priority-pill priority-${escapeHtml(priority)}">${escapeHtml(priority)}</span>
-        <span class="paper-id">${escapeHtml(paper.arxiv_id)}</span>
+        <a class="paper-id" href="${escapeHtml(paper.entry_url)}" target="_blank" rel="noopener">${escapeHtml(paper.arxiv_id)}</a>
         ${tags}
       </div>
       <div class="paper-authors">${escapeHtml(authors)}${moreAuthors}</div>
@@ -393,19 +403,29 @@
 
   function renderPapers() {
     const papers = sortPapers(filteredPapers());
-    els.paperList.innerHTML = groupedPapersHtml(papers);
-    els.visibleCount.textContent = String(papers.length);
-    els.paperTotalInline.textContent = String(state.papers.length);
-    els.totalCount.textContent = String(state.papers.length);
-    els.heroTotal.textContent = String(state.papers.length);
-    if (els.clear) els.clear.innerHTML = `📚 全部 ${state.papers.length} 篇`;
+    const start = state.total ? state.page * PAGE_SIZE + 1 : 0;
+    const end = Math.min((state.page + 1) * PAGE_SIZE, state.total);
+    const totalPages = Math.max(1, Math.ceil(state.total / PAGE_SIZE));
+    const pagination = state.total > PAGE_SIZE
+      ? `<div class="pagination-wrap">
+          <button class="filter-chip" data-page-prev type="button"${state.page <= 0 ? " disabled" : ""}>上一页</button>
+          <span class="page-indicator">${state.page + 1} / ${totalPages}</span>
+          <button class="filter-chip" data-page-next type="button"${state.page >= totalPages - 1 ? " disabled" : ""}>下一页</button>
+        </div>`
+      : "";
+    els.paperList.innerHTML = groupedPapersHtml(papers) + pagination;
+    els.visibleCount.textContent = `${start}-${end}`;
+    els.paperTotalInline.textContent = String(state.total);
+    els.totalCount.textContent = String(state.total);
+    els.heroTotal.textContent = String(state.total);
+    if (els.clear) els.clear.innerHTML = `📚 全部 ${state.total} 篇`;
     if (els.clearTop) els.clearTop.classList.toggle("active", !state.priority && !state.tag && !state.area && !state.subarea && !state.query);
-    if (els.heroHighCount) els.heroHighCount.textContent = String(state.papers.filter((paper) => paperPriority(paper) === "high").length);
+    if (els.heroHighCount) els.heroHighCount.textContent = String((state.facetData?.priorities || {}).high || 0);
     if (els.heroHigh) els.heroHigh.classList.toggle("active", state.priority === "high");
-    els.noResults.classList.toggle("hidden", papers.length !== 0 || state.papers.length === 0);
+    els.noResults.classList.toggle("hidden", papers.length !== 0 || state.total === 0);
     els.loading.classList.add("hidden");
     updateFilterText();
-    renderFacets(state.papers);
+    renderFacets(state.facetData || state.papers);
   }
 
   function updateFilterText() {
@@ -431,11 +451,86 @@
   }
 
   // All data from Worker API
-  async function fetchFromWorker(date) {
-    const res = await fetch(`${WORKER_URL}/api/papers?date=${date}`);
-    if (!res.ok) return [];
+  function pageCacheKey(date) {
+    const params = new URLSearchParams({
+      date,
+      limit: String(PAGE_SIZE),
+      offset: String(state.page * PAGE_SIZE),
+    });
+    if (state.query) params.set("q", state.query);
+    if (state.priority) params.set("priority", state.priority);
+    if (state.tag) params.set("tag", state.tag);
+    if (state.area) params.set("area", state.area);
+    if (state.subarea) params.set("subarea", state.subarea);
+    return params.toString();
+  }
+
+  async function fetchFromWorker(date, signal) {
+    const key = pageCacheKey(date);
+    if (state.paperCache.has(key)) return state.paperCache.get(key);
+    if (state.paperRequests.has(key)) return state.paperRequests.get(key);
+    const request = fetch(`${WORKER_URL}/api/papers?${key}`, { signal })
+      .then(async (res) => {
+        if (!res.ok) return { papers: [], total: 0 };
+        const data = await res.json();
+        const page = Array.isArray(data)
+          ? { papers: data, total: data.length }
+          : { papers: data.papers || [], total: data.total || 0 };
+        state.paperCache.set(key, page);
+        return page;
+      })
+      .finally(() => {
+        state.paperRequests.delete(key);
+      });
+    state.paperRequests.set(key, request);
+    return request;
+  }
+
+  function prefetchDate(date) {
+    if (!date || state.date === date) return;
+    fetchFromWorker(date).catch(() => {});
+  }
+
+  async function fetchFacets(date) {
+    if (state.facetCache.has(date)) return state.facetCache.get(date);
+    const res = await fetch(`${WORKER_URL}/api/facets?date=${date}`);
+    if (!res.ok) return null;
     const data = await res.json();
-    return Array.isArray(data) ? data : [];
+    state.facetCache.set(date, data);
+    return data;
+  }
+
+  function resetFilters() {
+    state.query = "";
+    state.priority = "";
+    state.tag = "";
+    state.area = "";
+    state.subarea = "";
+    state.subareaParent = "";
+    state.expandedAreas.clear();
+    if (els.search) els.search.value = "";
+  }
+
+  async function loadCurrentPage() {
+    if (state.activeFetch) state.activeFetch.abort();
+    const controller = new AbortController();
+    state.activeFetch = controller;
+    state.papers = [];
+    els.paperList.innerHTML = "";
+    els.loading.classList.remove("hidden");
+    try {
+      const page = await fetchFromWorker(state.date, controller.signal);
+      state.papers = page.papers;
+      state.total = page.total;
+    } catch (error) {
+      if (error.name === "AbortError") return;
+      throw error;
+    }
+    if (state.activeFetch !== controller) return;
+    state.activeFetch = null;
+    renderDates();
+    updateUrl(state.date);
+    renderPapers();
   }
 
   async function selectDate(date) {
@@ -443,21 +538,20 @@
     if (!entry) return;
     state.date = date;
     state.calendarMonth = date.slice(0, 7);
-    // Clear old papers and show loading immediately
-    state.papers = [];
-    els.paperList.innerHTML = "";
-    els.loading.classList.remove("hidden");
+    state.page = 0;
+    state.total = 0;
+    resetFilters();
     els.currentDateLabel.textContent = `📅 ${date}`;
-    state.papers = await fetchFromWorker(date);
-    clearFilters();
-    renderDates();
-    updateUrl(date);
+    state.facetData = await fetchFacets(date);
+    await loadCurrentPage();
   }
 
   function bindEvents() {
     els.search?.addEventListener("input", (event) => {
       state.query = event.target.value;
-      renderPapers();
+      state.page = 0;
+      clearTimeout(state.searchTimer);
+      state.searchTimer = setTimeout(loadCurrentPage, 250);
     });
     els.clear?.addEventListener("click", clearFilters);
     els.clearTop?.addEventListener("click", clearFilters);
@@ -478,6 +572,10 @@
         selectDate(button.dataset.date);
       }
     });
+    els.dateNav?.addEventListener("pointerover", (event) => {
+      const button = event.target.closest("[data-date]");
+      if (button) prefetchDate(button.dataset.date);
+    });
     els.backToTop?.addEventListener("click", scrollBackToTop);
     document.addEventListener("click", (event) => {
       const priority = event.target.closest("[data-priority]");
@@ -492,7 +590,7 @@
         } else if (areaName) {
           state.expandedAreas.add(areaName);
         }
-        renderFacets(state.papers);
+        renderFacets(state.facetData || state.papers);
         return;
       }
       if (priority) state.priority = state.priority === priority.dataset.priority ? "" : priority.dataset.priority;
@@ -514,7 +612,22 @@
           if (parent) state.expandedAreas.add(parent);
         }
       }
-      if (priority || tag || area || subarea) renderPapers();
+      const prevPage = event.target.closest("[data-page-prev]");
+      const nextPage = event.target.closest("[data-page-next]");
+      if (prevPage && state.page > 0) {
+        state.page -= 1;
+        loadCurrentPage();
+        return;
+      }
+      if (nextPage && (state.page + 1) * PAGE_SIZE < state.total) {
+        state.page += 1;
+        loadCurrentPage();
+        return;
+      }
+      if (priority || tag || area || subarea) {
+        state.page = 0;
+        loadCurrentPage();
+      }
     });
   }
 
@@ -537,6 +650,7 @@
   }
 
   init().catch((error) => {
+    if (error.name === "AbortError") return;
     els.loading.textContent = error.message || "数据加载失败。";
   });
 })();
