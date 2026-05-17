@@ -6,7 +6,9 @@ arxiv:
   categories:
     - cs.CV
     - cs.AI
-  max_papers: 600
+    - cs.CL
+    - cs.LG
+  max_papers: 2000
 
 topics:
   video_generation:

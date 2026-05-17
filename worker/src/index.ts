@@ -272,17 +272,29 @@ function safeJsonParse(value: string | null | undefined): any {
   }
 }
 
+const SUBSCRIBED_CATEGORIES = ["cs.CV", "cs.AI", "cs.CL", "cs.LG"];
+
+function pickDisplayCategory(categories: string[], primary: string): string {
+  for (const cat of SUBSCRIBED_CATEGORIES) {
+    if (categories.includes(cat)) return cat;
+  }
+  return primary;
+}
+
 function normalizePaperRow(r: any): any {
   const hasAnalysis = Boolean(r.analysis_id);
   const readingPriority = PRIORITY_MAP[r.reading_priority] || r.reading_priority || "unknown";
+  const categories = safeJsonParse(r.categories);
+  const displayCategory = pickDisplayCategory(categories, r.primary_category);
   return {
     arxiv_id: r.arxiv_id,
     source: r.source,
     title: r.title,
     authors: safeJsonParse(r.authors),
     abstract: r.abstract,
-    categories: safeJsonParse(r.categories),
+    categories,
     primary_category: r.primary_category,
+    display_category: displayCategory,
     published: r.published,
     updated: r.updated,
     entry_url: r.entry_url,
