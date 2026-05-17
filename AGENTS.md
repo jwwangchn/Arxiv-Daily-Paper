@@ -4,240 +4,209 @@ Project-level guidance for coding agents working in this repository.
 
 ## Project Overview
 
-This repository builds a static arXiv Daily Paper Guide. The pipeline fetches arXiv metadata, analyzes each paper with DeepSeek using only `title + abstract`, stores all data as JSON, and renders a GitHub Pages site under `docs/`.
+This repository builds a daily arXiv paper guide with AI-powered Chinese summaries. The pipeline fetches arXiv metadata, analyzes each paper with DeepSeek (title + abstract only), stores data in a **Cloudflare D1 database** (production) with local SQLite mirror (development), and serves a SPA frontend via GitHub Pages that reads from a Cloudflare Worker API.
 
-Keep the MVP simple:
+**Architecture principle: database-first.** All data flows through D1/SQLite. JSONL files in `data/archive/` are kept for git tracking and backup but are not the primary data source for the running system.
 
-- Python 3.11.
-- No database, SQL, backend service, login, or cloud server.
-- No PDF download, arXiv source download, image extraction, embeddings, or vector search.
-- Frontend is static HTML/CSS/JavaScript, with no React/Vue/Next/Vite build step.
-- The deployed site is served from the repository's `docs/` directory.
+Core stack:
+
+- Python 3.11 for data pipeline scripts.
+- Cloudflare D1 (serverless SQLite) for production data storage.
+- SQLite (`data/archive/papers.db`) for local development, mirroring the D1 schema.
+- Cloudflare Worker (Hono/TypeScript) as the API layer between frontend and D1.
+- GitHub Pages serves the SPA frontend (`docs/`).
+- No React/Vue/Next.js — plain HTML/CSS/JavaScript.
+
+## Architecture
+
+```
+┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│  GitHub Actions   │────▶│  Cloudflare       │◀────│  SPA Frontend    │
+│  (daily.yml)      │     │  Worker + D1      │     │  (docs/index)    │
+│                   │     │                   │     │                   │
+│  fetch_arxiv.py   │     │  GET /api/dates   │     │  app.js          │
+│  analyze_*.py     │     │  GET /api/papers  │     │  All data via    │
+│  export_to_worker │     │  POST /api/*      │     │  Worker API      │
+└──────────────────┘     └──────────────────┘     └──────────────────┘
+```
+
+**Three data layers (kept in sync):**
+
+| Layer | Location | Purpose |
+|---|---|---|
+| **Cloudflare D1** | Remote (`ac0b5b96-...`) | Production data store, queried by Worker API |
+| **Local SQLite** | `data/archive/papers.db` | Local dev mirror of D1 schema |
+| **JSONL archive** | `data/archive/*.jsonl` | Git-tracked backup, used for seeding and version control |
 
 ## Important Paths
 
-- `config.yaml`: site title, arXiv categories, max papers, topic keywords.
-- `scripts/01_daily.py`: full pipeline entrypoint (alias for `scripts/commands/daily.py`).
-- `scripts/02_fetch.py`: arXiv metadata fetcher (alias for `scripts/commands/fetch.py`).
-- `scripts/03_analyze.py`: DeepSeek analysis and resume logic (alias for `scripts/commands/analyze.py`).
-- `scripts/04_build.py`: static site renderer (alias for `scripts/commands/build.py`).
-- `scripts/lib/`: shared modules — `config.py`, `archive.py`, `progress.py`, `taxonomy.py`.
-- `scripts/commands/`: pipeline command modules — `daily.py`, `fetch.py`, `analyze.py`, `build.py`.
-- `scripts/batch/backfill_arxiv.py`: backfills metadata into `data/archive/papers.jsonl`.
-- `scripts/batch/analyze_archive.py`: analyzes archived papers date by date.
-- `scripts/merge_analyzed_to_archive.py`: one-off importer for legacy analyzed JSON bundles.
-- `data/archive/papers.jsonl`: canonical archive of all papers, unique by `arxiv_id`.
-- `data/archive/analyses.jsonl`: canonical archive of all analyses, unique by `arxiv_id`.
-- `data/raw/` and `data/analyzed/`: deprecated local caches; do not use as source data or commit new files.
-- `data/mock/analyzed_sample.json`: mock analyzed data for offline preview.
-- `data/iclr_taxonomy.json`: ICLR-style primary area/category taxonomy.
-- `docs/`: generated GitHub Pages site.
-- `.github/workflows/daily.yml`: scheduled daily run.
+- `config.yaml`: site title, arXiv categories (cs.CV/cs.AI/cs.CL/cs.LG), max papers, topic keywords.
+- `scripts/fetch_arxiv.py`: arXiv metadata fetcher — writes to local SQLite + JSONL backup.
+- `scripts/analyze_deepseek.py`: DeepSeek analysis — writes to local SQLite + JSONL backup.
+- `scripts/export_to_worker.py`: syncs new local data to remote D1 via Worker API.
+- `scripts/lib/db.py`: SQLite layer — mirrors D1 schema for local development.
+- `scripts/lib/archive.py`: JSONL archive layer — append-only backup, not primary source.
+- `scripts/lib/config.py`: config loading from `config.yaml`.
+- `scripts/lib/taxonomy.py`: ICLR 2026 classification taxonomy.
+- `scripts/lib/source_archive.py`: storage for non-arXiv paper sources.
+- `scripts/fetchers/`: multi-source fetch plugins (AAAI, ACL, CVF, OpenReview).
+- `scripts/commands/`: legacy command modules (partially compatible, do not add new logic here).
+- `worker/src/index.ts`: Cloudflare Worker (Hono API) — the only API the frontend calls.
+- `migrations/0001_create_papers_table.sql`: D1 schema definition (papers + analyses tables).
+- `wrangler.toml`: Cloudflare deployment config with D1 binding.
+- `dev-server.js`: local dev server — serves `docs/` and proxies `/api/*` to local Worker.
+- `data/archive/papers.jsonl` + `analyses.jsonl`: JSONL backup, git-tracked.
+- `data/archive/papers.db`: local SQLite database.
+- `data/raw/` and `data/analyzed/`: deprecated, do not use.
+- `docs/assets/app.js`: SPA frontend — all data loaded from Worker API.
+- `.github/workflows/daily.yml`: scheduled daily pipeline.
 
-## Data And Generated Files
+## Data Flow
 
-JSON files must be UTF-8 and written with `ensure_ascii=False`.
+### Production (GitHub Actions)
 
-Canonical data lives in `data/archive/`:
+1. `fetch_arxiv.py` → fetches arXiv metadata, writes to local SQLite + JSONL backup
+2. `analyze_deepseek.py` → calls DeepSeek API, writes analysis to local SQLite + JSONL backup
+3. `export_to_worker.py` → reads local SQLite, pushes new records to remote D1 via Worker API
+4. Git commits JSONL changes for backup/versioning
 
-- `data/archive/papers.jsonl`: paper metadata, unique by `arxiv_id`.
-- `data/archive/analyses.jsonl`: analysis results, unique by `arxiv_id`.
+### Local Development
 
-The site is generated, not hand-authored:
-
-- Edit templates and rendering logic in `scripts/commands/build.py`.
-- Then run `python scripts/04_build.py`.
-- Generated files in `docs/` may have large diffs after sorting/layout/rendering changes.
-
-Do not manually patch generated HTML unless the user explicitly asks for a one-off emergency fix. Prefer changing the generator and regenerating.
+1. `wrangler dev` (in `worker/`) → starts local Worker on port 8787, uses local SQLite
+2. `node dev-server.js` → SPA on port 3000, proxies `/api/*` to local Worker
+3. Run fetch/analyze scripts directly → data written to local SQLite immediately visible in SPA
 
 ## Commands
 
-Install dependencies:
+### Install
 
 ```bash
 pip install -r requirements.txt
+cd worker && npm install && cd ..
 ```
 
-Mock/offline site build:
+### Local Development
 
 ```bash
-python scripts/01_daily.py --mock
-python scripts/04_build.py --mock
+# Terminal 1: local Worker (port 8787, uses local SQLite)
+cd worker && npx wrangler dev
+
+# Terminal 2: dev server (port 3000, proxies to Worker)
+node dev-server.js
 ```
 
-Normal pipeline:
+### Pipeline
 
 ```bash
 export DEEPSEEK_API_KEY="your_api_key_here"
-python scripts/01_daily.py
-python scripts/01_daily.py --date 2026-05-10 --max-papers 30
-python scripts/01_daily.py --date 2026-05-10 --max-papers 30 --concurrency 2
+
+# Fetch papers for a date
+python scripts/fetch_arxiv.py --date 2026-05-14 --max-papers 30
+
+# Analyze with DeepSeek
+python scripts/analyze_deepseek.py --date 2026-05-14 --concurrency 2
+
+# Sync to remote D1
+python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN"
 ```
 
-Individual steps:
+### D1 Management
 
 ```bash
-python scripts/02_fetch.py --date 2026-05-10 --max-papers 30
-python scripts/02_fetch.py --latest-with-papers --max-papers 30
-python scripts/03_analyze.py --date 2026-05-10 --concurrency 2
-python scripts/04_build.py
+# Apply migration to local SQLite
+npx wrangler d1 execute arxiv-daily-db --local --file migrations/0001_create_papers_table.sql
+
+# Import JSONL into local SQLite (seeding)
+# (see scripts/import_jsonl_to_db.py)
+
+# Query local database
+npx wrangler d1 execute arxiv-daily-db --local --command "SELECT COUNT(*) FROM papers"
+
+# Deploy Worker to Cloudflare
+cd worker && npx wrangler deploy
 ```
 
-Maintenance scripts:
+## D1 Schema
 
-```bash
-python scripts/backfill_all.py                      # backfill metadata 2026-04-01 to today
-python scripts/analyze_missing.py                   # analyze all papers missing DeepSeek analysis
-python scripts/merge_analyzed_to_archive.py         # merge analyzed/ into archive/analyses.jsonl
-```
+Two tables with `INSERT OR IGNORE` for deduplication:
 
-Lightweight checks:
+- **papers**: `id TEXT PRIMARY KEY` (arxiv_id), source, title, authors (JSON), abstract, categories (JSON), primary_category, published, updated, entry_url, pdf_url, source_date, venue, year, fetched_at, created_at
+- **analyses**: `arxiv_id TEXT PRIMARY KEY`, analysis_version, model, analyzed_at, tldr, research_motivation, problem, phenomenon_analysis, method, contributions (JSON), experiments, limitations (JSON), primary_area_en, primary_area, category, sub_area, tags (JSON), reading_priority, recommended_action, raw_response, created_at
 
-```bash
-python -m py_compile scripts/*.py scripts/lib/*.py scripts/commands/*.py
-python scripts/04_build.py
-test -f docs/index.html
-test -f docs/assets/style.css
-test -f docs/assets/app.js
-```
+Indexes on `papers.source_date`, `papers.source`, `papers.year`, `analyses.reading_priority`, `analyses.primary_area`, `analyses.category`.
 
-## External APIs And Secrets
+## D1 Free Tier Guidelines
 
-Never request, print, commit, or write a real API key.
+Cloudflare D1 free tier is limited by **daily read/write rows** (not storage). Follow these rules:
 
-- DeepSeek key comes only from `DEEPSEEK_API_KEY`.
-- Optional model override comes from `DEEPSEEK_MODEL`.
-- Default model is `deepseek-v4-flash`.
-- Do not log raw secrets or environment variables.
-- Do not create or commit `.env` files.
+1. **Incremental only** — process only recent dates, never re-write historical data.
+2. **`INSERT OR IGNORE`** — never `INSERT OR REPLACE` or `DELETE + INSERT`.
+3. **Hash-based skip** — skip writes if content hasn't changed.
+4. **Batch to 100** — Worker API already batches; maintain this limit.
+5. **Single UPDATE per record** — avoid split updates.
+6. **Minimal indexing** — current indexes are sufficient, don't add more.
+7. **All queries use LIMIT** — no unbounded SELECT.
+8. **Local dev uses local D1** — `wrangler dev` uses local SQLite, not remote.
+9. **Idempotent runs** — same-day re-runs must not duplicate writes.
+10. **Use `--force` to override** — default behavior skips existing records.
 
-If local network access fails, the user's environment may need a SOCKS proxy on `127.0.0.1:1082`. For local troubleshooting, prefer command-scoped proxy variables rather than committing proxy config:
+## Worker API Endpoints
 
-```bash
-ALL_PROXY=socks5://127.0.0.1:1082 HTTPS_PROXY=socks5://127.0.0.1:1082 python scripts/run_daily.py --date 2026-05-10
-```
+| Method | Path | Description |
+|---|---|---|
+| GET | `/health` | Health check |
+| GET | `/api/dates` | Date index with paper counts |
+| GET | `/api/papers?date=YYYY-MM-DD` | Papers for specific date |
+| GET | `/api/papers?id=arxiv_id` | Single paper lookup |
+| GET | `/api/search?q=query` | Full-text search (paginated, max 200) |
+| GET | `/api/stats` | Overall statistics |
+| POST | `/api/papers` | Bulk upsert papers (Bearer token required) |
+| POST | `/api/analyses` | Bulk upsert analyses (Bearer token required) |
 
-## Archive Store
+## SPA Frontend
 
-Paper and analysis data are persisted in `data/archive/` as JSONL files, managed by `scripts/lib/archive.py`:
+The deployed site (`docs/index.html`) is a single-page application:
 
-- `data/archive/papers.jsonl`: one JSON object per paper with `arxiv_id`, metadata, and `source_date`. This is the canonical paper source.
-- `data/archive/analyses.jsonl`: one JSON object per analyzed paper keyed by `arxiv_id`. `analysis_version` is metadata only, not part of the uniqueness key.
-- The archive store provides append-only, index-based deduplication. Functions like `append_new_papers`, `append_new_analyses`, `papers_for_date`, and `available_dates` are the public API.
-- `commands/analyze.py` reads papers only from `data/archive/papers.jsonl` and writes successful analyses only to `data/archive/analyses.jsonl`.
-- `data/raw/` and `data/analyzed/` are deprecated compatibility caches. Do not add new pipeline dependencies on them.
-- Additional scripts: `scripts/batch/backfill_arxiv.py` (bulk metadata backfill), `scripts/batch/analyze_archive.py` (bulk analysis), `scripts/merge_analyzed_to_archive.py` (one-off import from a legacy analyzed JSON file).
-
-## SPA Frontend Architecture
-
-The deployed site (`docs/index.html`) is a single-page application that lazily loads data:
-
-- `docs/data/dates.json` lists all available dates with paper counts and a `latest` date pointer.
-- `docs/data/by-month/YYYY-MM.json` contains month-bundled paper data. The SPA loads month data on demand as the user scrolls or navigates.
-- Month files are generated by `build_site.py` from `data/archive/papers.jsonl` plus `data/archive/analyses.jsonl`. Stale month files are deleted during rebuild.
-- `docs/daily/YYYY-MM-DD.html` pages are simple HTTP redirects to `../index.html?date=YYYY-MM-DD` for backward compatibility with existing links.
-- `docs/assets/app.js` handles all client-side filtering, search, lazy loading, and rendering. No framework or build step.
-
-## ICLR Taxonomy
-
-`data/iclr_taxonomy.json` defines the ICLR 2026 classification taxonomy used by both `analyze_deepseek.py` (in the system prompt) and `build_site.py` (for area/category canonicalization). Do not edit this file manually — it should be updated from the official ICLR 2026 taxonomy when needed.
-
-## Pipeline Behavior
-
-`commands/daily.py` (`scripts/01_daily.py`) should:
-
-- Reuse existing archive JSONL records when possible.
-- If no date is provided, pick the most recent date with available papers.
-- Skip DeepSeek calls when all papers for the selected date are already analyzed.
-- Continue site generation when individual paper analyses fail.
-
-`commands/fetch.py` (`scripts/02_fetch.py`) should:
-
-- Use arXiv OAI-PMH (`oaipmh.arxiv.org`) as the primary metadata source, with `arxiv.py` API and browse-page HTML as fallbacks.
-- Respect categories and max paper settings from `config.yaml` unless CLI args override them.
-- Apply reasonable retry/timeout/rate-limit behavior.
-- Append new papers to the archive store (`data/archive/papers.jsonl`) via `append_new_papers`.
-- Support `--backfill` for bulk metadata harvesting over date ranges and `--oai-check` for finding papers missed by prior fetches.
-
-`commands/analyze.py` (`scripts/03_analyze.py`) should:
-
-- Analyze only `title + abstract`.
-- Load papers from the archive store (`data/archive/papers.jsonl`).
-- Skip papers already analyzed in the archive (`data/archive/analyses.jsonl`) by `arxiv_id`.
-- Record `analysis_error` per paper instead of failing the whole date when one request fails.
-- Preserve raw model response only when useful for parse failure debugging, and never include secrets.
-- Use ICLR-style taxonomy fields where available: `primary_area_en`, `primary_area`, and `category`.
-- Append successful analyses to the archive store immediately after each paper completes.
-- `--cache-only` reports missing archive analyses without calling DeepSeek.
-
-`commands/build.py` (`scripts/04_build.py`) should:
-
-- Read paper data from `data/archive/papers.jsonl` and merge with `data/archive/analyses.jsonl` by `arxiv_id`.
-- Work with real analyzed data or mock data.
-- Generate `docs/index.html` (SPA entry point), `docs/daily/YYYY-MM-DD.html` (redirect pages), `docs/data/dates.json` (date index), `docs/data/by-month/YYYY-MM.json` (month bundles), `docs/assets/style.css`, and `docs/assets/app.js`.
-- Use only relative links so GitHub Pages works under `/Arxiv-Daily-Paper/`.
-- Keep generated pages static and CDN-free.
-- Delete stale month files and daily pages that no longer correspond to available dates.
-
-`merge_analyzed_to_archive.py` should:
-
-- Import explicitly provided legacy analyzed JSON bundle files.
-- Normalize analysis via `commands.analyze.normalize_analysis()` and append new records via `lib.archive.append_new_analyses()`.
+- All data loaded from Worker API (`docs/assets/app.js`).
+- On init: fetches `/api/dates` for calendar and date list.
+- On date selection: fetches `/api/papers?date=YYYY-MM-DD`.
+- Unanalyzed papers (no analysis record) display as "未分析" category with abstract only.
+- No static JSON dependency for data — `docs/data/` files are backward-compatible only.
+- No framework or build step.
 
 ## Site UX Rules
 
-The visual target is a compact academic paper guide similar in density to the referenced ICLR guide, but implemented independently.
+- Left sidebar: search, calendar, area/category tree, priority filters, top tags.
+- Right content: grouped by primary area → category, papers sorted by priority then recency.
+- Unanalyzed papers show simplified card (title, authors, links, abstract) — no analysis grid.
+- Show max 20 tags in sidebar.
+- No horizontal overflow on desktop or mobile.
+- System fonts, restrained academic-tool styling.
 
-Preserve these behaviors:
+## GitHub Actions
 
-- Left navigation with search, calendar, area/category tree, priority filters, and top tags.
-- Right content grouped by primary area and category.
-- Default right-side ordering: primary areas by paper count descending, categories by paper count descending, papers by priority `High > Medium > Low` and then newest metadata first.
-- Do not hide other primary areas merely because a subcategory filter is active; filtering should update visible cards while keeping the navigation understandable.
-- Show only the highest-frequency 20 tags in the sidebar.
-- Avoid horizontal overflow on desktop and mobile.
-- Use system fonts and restrained academic-tool styling.
+Daily at Beijing time 04:00 (`cron: "0 20 * * *"`):
 
-When changing UI, verify generated HTML at least by rebuilding and checking `docs/index.html` exists. For larger visual changes, inspect in a browser if available.
+1. Fetch arXiv → local SQLite + JSONL backup
+2. DeepSeek analyze → local SQLite + JSONL backup
+3. Export new data to Worker API → remote D1
+4. Commit and push `data/` (JSONL backup)
 
-## GitHub Actions And Pages
+Secrets: `DEEPSEEK_API_KEY`, `ARXIV_DAILY_WORKER_URL`, `ARXIV_DAILY_WORKER_TOKEN`.
 
-The scheduled workflow runs daily at Beijing time 04:00, which is `20:00 UTC` on the previous day:
+## External APIs And Secrets
 
-```yaml
-cron: "0 20 * * *"
-```
+- DeepSeek key from `DEEPSEEK_API_KEY` env var or `.env` file (never committed).
+- Default model: `deepseek-v4-flash`.
+- Worker API token from `ARXIV_DAILY_WORKER_TOKEN`.
+- Never log raw secrets or environment variables.
+- `.env` is git-ignored — do not commit.
 
-The workflow should:
+## Known Limitations
 
-- Use Python 3.11.
-- Install `requirements.txt`.
-- Read `DEEPSEEK_API_KEY` from GitHub Secrets.
-- Run `python scripts/run_daily.py`.
-- Commit and push changes under `data/` and `docs/`.
-- Exit cleanly if there are no changes.
-
-GitHub Pages should deploy from branch `main`, folder `/docs`.
-
-## Editing And Commit Hygiene
-
-- Keep changes scoped to the user's request.
-- Do not revert user changes or generated data unless explicitly asked.
-- Prefer changing source scripts over editing generated artifacts directly.
-- If generated artifacts change because of a source change, include them when the user asks for a ready-to-deploy update.
-- Before committing, run `git status --short` and inspect the diff enough to understand what is being committed.
-- Group unrelated work into separate commits when the user asks for categorized commits.
-
-## Known Limitations To Preserve In Docs
-
-The MVP intentionally:
-
-- Analyzes only title and abstract.
-- Does not read PDFs.
-- Does not download arXiv source.
-- Does not extract figures or main images.
-- Does not use a database or backend service.
-- Performs search/filtering only in the current static page.
-- Depends on DeepSeek JSON compliance and prompt quality.
-- Relies on GitHub Actions scheduling, which is not second-level precise.
+1. Analyzes only title + abstract (no PDF).
+2. Does not download arXiv source or extract images.
+3. Frontend search limited to currently loaded date's papers.
+4. SPA depends on Worker API availability.
+5. GitHub Actions scheduling is not second-level precise.
+6. DeepSeek output may not be strict JSON (handled with fallback parsing).
