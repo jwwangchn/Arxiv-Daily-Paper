@@ -227,3 +227,8 @@ ALL_PROXY=socks5://127.0.0.1:1082 HTTPS_PROXY=socks5://127.0.0.1:1082 python scr
 - RSS / 邮件推送。
 - 更复杂的论文筛选。
 - PDF 全文分析。
+
+## 参考
+
+- [JenniferZhao0531/ICLR2026-Guide-CN](https://github.com/JenniferZhao0531/ICLR2026-Guide-CN) — ICLR 2026 论文中文导读参考
+- [papers.cool](https://papers.cool/) — 学术论文阅读与检索工具参考
