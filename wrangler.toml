@@ -1,0 +1,8 @@
+name = "arxiv-daily-api"
+compatibility_date = "2025-01-01"
+main = "worker/src/index.ts"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "arxiv-daily-db"
+database_id = "ac0b5b96-b8c4-4e51-9e92-f8a935875b40"

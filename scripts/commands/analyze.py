@@ -1,5 +1,3 @@
-"""Analyze arXiv papers with DeepSeek AI."""
-
 from __future__ import annotations
 
 import argparse
@@ -7,34 +5,28 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 import logging
 import os
+from pathlib import Path
 from typing import Any
 
 from openai import OpenAI
 
-from lib.archive import (
-    ANALYSES_JSONL,
-    append_new_analyses,
-    load_analysis_index,
-    paper_id,
-    papers_for_date,
-    utc_now_iso,
-)
-from lib.config import ensure_dirs, parse_date, setup_logging
-from lib.progress import progress_bar
-from lib.taxonomy import (
-    AREA_CATEGORIES_MAP as _AREA_CATEGORIES_MAP,
-    AREA_INDEX as _AREA_INDEX,
-    CATEGORY_AREA_INDEX as _CATEGORY_AREA_INDEX,
-    CATEGORY_INDEX as _CATEGORY_INDEX,
-    load_taxonomy_prompt,
-)
+from progress import progress_bar
+from utils import PROJECT_ROOT, ensure_dirs, parse_date, read_json, setup_logging, write_json
 
-LOGGER = logging.getLogger("commands.analyze")
+try:
+    from lib.archive import append_new_analyses, load_analysis_index
+    from lib.db import DB_PATH
+    _HAS_ARCHIVE = True
+except ImportError:
+    _HAS_ARCHIVE = False
+
+
+LOGGER = logging.getLogger("analyze_deepseek")
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 DEFAULT_DEEPSEEK_MODEL = "deepseek-v4-flash"
-DEFAULT_ANALYSIS_VERSION = "v3_noscore_2026_05"
-DEFAULT_DEEPSEEK_CONCURRENCY = 4
-MAX_DEEPSEEK_CONCURRENCY = 8
+DEFAULT_DEEPSEEK_CONCURRENCY = 2
+MAX_DEEPSEEK_CONCURRENCY = 4
+TAXONOMY_PATH = PROJECT_ROOT / "data" / "iclr_taxonomy.json"
 
 
 SYSTEM_PROMPT_TEMPLATE = """你是一个严谨的机器学习论文导读助手。请只根据论文标题和摘要生成中文导读，不要编造摘要中不存在的实验结论。如果摘要没有提到实验结果，请明确写“摘要未提供具体实验结果”。输出必须是合法 JSON。
@@ -57,8 +49,7 @@ SYSTEM_PROMPT_TEMPLATE = """你是一个严谨的机器学习论文导读助手�
   "category": "taxonomy 中该一级分类下的中文二级分类",
   "sub_area": "必须与 category 完全相同，用于兼容旧页面字段",
   "tags": ["VLM", "Video Generation"],
-  "recommended_action": "read_deeply|read_abstract|save_for_later|skip",
-  "reading_priority": "must_read|recommended|skim|low_priority|skip"
+  "reading_priority": "high|medium|low"
 }}
 
 分类要求：
@@ -74,18 +65,11 @@ SYSTEM_PROMPT_TEMPLATE = """你是一个严谨的机器学习论文导读助手�
 - problem 写“具体要解决什么问题”：论文直接攻克的任务、误差来源、约束或目标。
 - research_motivation 和 problem 不要原句重复；如果摘要信息不足，也要从不同角度简短表述。
 
-阅读建议要求：
-- 不要输出 novelty、technical_depth、impact、relevance、score_raw、score、reason 等评分或评分解释字段。
-- recommended_action 必须只选 read_deeply、read_abstract、save_for_later、skip。
-- reading_priority 用于粗粒度排序和筛选，不是评分；不确定时偏保守。
-
 reading_priority 判定标准：
-- must_read：必须满足至少一条：1) 与 VLM/MLLM、视频生成/图像生成、CT 报告生成、LLM 训练/对齐/推理/Agent 这些重点方向强相关，且摘要显示有明确方法创新、系统性实验或显著应用价值；2) 属于基础/前沿模型、生成模型、应用：CV/音频/语言等、数据集与基准，并且看起来值得优先精读；3) 摘要中出现强实证信号，如多个 benchmark、SOTA、显著效率提升、开源数据/代码或真实临床/工业场景验证。
-- recommended：与重点方向中等相关，但贡献偏增量、实验信息有限或应用范围较窄；或者方法可能有价值但摘要没有给出足够实验细节。
-- skim：属于相关大类，但不是当前最核心关注点，适合快速浏览。
-- low_priority：与重点方向弱相关、主要是边缘应用、小规模工程改进或特定数据集技巧。
-- skip：摘要信息不足且与当前关注方向距离较远。
-- 如果 must_read 和 recommended 都可解释，优先选择 recommended，避免过度标 must_read。只有明显值得优先阅读的论文才标 must_read。
+- high：必须满足至少一条：1) 与 VLM/MLLM、视频生成/图像生成、CT 报告生成、LLM 训练/对齐/推理/Agent 这些重点方向强相关，且摘要显示有明确方法创新、系统性实验或显著应用价值；2) 属于基础/前沿模型、生成模型、应用：CV/音频/语言等、数据集与基准，并且看起来值得优先精读；3) 摘要中出现强实证信号，如多个 benchmark、SOTA、显著效率提升、开源数据/代码或真实临床/工业场景验证。
+- medium：满足至少一条：1) 与重点方向中等相关，但贡献偏增量、实验信息有限或应用范围较窄；2) 方法可能有价值但摘要没有给出足够实验细节；3) 属于相关大类，但不是当前最核心关注点。
+- low：满足至少一条：1) 与重点方向弱相关或主要是边缘应用；2) 摘要信息不足，难以判断贡献；3) 主要是小规模工程改进、特定数据集技巧或与当前关注方向距离较远。
+- 如果 high 和 medium 都可解释，优先选择 medium，避免过度标 high。只有明显值得优先阅读的论文才标 high。
 """
 
 PAPER_PROMPT_TEMPLATE = """论文标题：
@@ -102,19 +86,47 @@ class ModelJsonError(ValueError):
         self.raw_response = raw_response
 
 
-AREA_INDEX = _AREA_INDEX
-CATEGORY_INDEX = _CATEGORY_INDEX
-CATEGORY_AREA_INDEX = _CATEGORY_AREA_INDEX
-AREA_CATEGORIES_MAP = _AREA_CATEGORIES_MAP
+def load_taxonomy_prompt() -> str:
+    taxonomy = read_json(TAXONOMY_PATH)
+    lines: list[str] = []
+    for area in taxonomy.get("areas", []):
+        primary_area_en = area.get("primary_area_en", "")
+        primary_area = area.get("primary_area", "")
+        categories = "；".join(area.get("categories", []))
+        lines.append(f"- {primary_area_en} | {primary_area}: {categories}")
+    return "\n".join(lines)
+
+
+def normalize_label(value: str) -> str:
+    return "".join(str(value or "").replace("：", ":").lower().split())
+
+
+def taxonomy_indexes() -> tuple[dict[str, dict[str, Any]], dict[str, str], dict[str, str], dict[str, set[str]]]:
+    taxonomy = read_json(TAXONOMY_PATH)
+    area_index: dict[str, dict[str, Any]] = {}
+    category_index: dict[str, str] = {}
+    category_candidates: dict[str, set[str]] = {}
+    area_categories: dict[str, set[str]] = {}
+    for area in taxonomy.get("areas", []):
+        primary_area = str(area.get("primary_area") or "").strip()
+        if not primary_area:
+            continue
+        area_index[normalize_label(primary_area)] = area
+        area_categories[primary_area] = set()
+        for category in area.get("categories", []):
+            category_name = str(category).strip()
+            category_key = normalize_label(category_name)
+            category_index[category_key] = category_name
+            category_candidates.setdefault(category_key, set()).add(primary_area)
+            area_categories[primary_area].add(category_key)
+    category_area_index = {
+        category: next(iter(areas)) for category, areas in category_candidates.items() if len(areas) == 1
+    }
+    return area_index, category_index, category_area_index, area_categories
+
+
 SYSTEM_PROMPT = SYSTEM_PROMPT_TEMPLATE.format(taxonomy=load_taxonomy_prompt())
-
-
-def legacy_priority(priority: str) -> str:
-    if priority == "must_read":
-        return "high"
-    if priority in {"recommended", "skim"}:
-        return "medium"
-    return "low"
+AREA_INDEX, CATEGORY_INDEX, CATEGORY_AREA_INDEX, AREA_CATEGORIES = taxonomy_indexes()
 
 
 def get_client() -> OpenAI:
@@ -142,59 +154,35 @@ def normalize_analysis(analysis: dict[str, Any]) -> dict[str, Any]:
         analysis["tldr"] = tldr
         analysis["one_sentence_summary"] = tldr
 
-    for key in ("novelty", "technical_depth", "impact", "relevance", "score_raw", "score", "reason"):
-        analysis.pop(key, None)
-
-    priority = str(analysis.get("reading_priority") or "").strip().lower()
-    legacy_priority_aliases = {"high": "must_read", "medium": "recommended", "low": "low_priority"}
-    priority = legacy_priority_aliases.get(priority, priority)
-    if priority not in {"must_read", "recommended", "skim", "low_priority", "skip"}:
-        priority = "recommended"
-    action = str(analysis.get("recommended_action") or "").strip().lower()
-    if action not in {"read_deeply", "read_abstract", "save_for_later", "skip"}:
-        action = {
-            "must_read": "read_deeply",
-            "recommended": "read_abstract",
-            "skim": "read_abstract",
-            "low_priority": "save_for_later",
-            "skip": "skip",
-        }[priority]
+    priority = str(analysis.get("reading_priority", "")).strip().lower()
+    if priority not in {"high", "medium", "low"}:
+        priority = "medium"
     analysis["reading_priority"] = priority
-    analysis["legacy_reading_priority"] = legacy_priority(priority)
-    analysis["recommended_action"] = action
 
     category = str(analysis.get("category") or analysis.get("sub_area") or "").strip()
-    category_area = CATEGORY_AREA_INDEX.get("".join(str(category or "").replace("：", ":").lower().split()))
+    category_area = CATEGORY_AREA_INDEX.get(normalize_label(category))
     primary_area = str(analysis.get("primary_area") or "").strip()
-    area = AREA_INDEX.get("".join(str(primary_area or "").replace("：", ":").lower().split()))
+    area = AREA_INDEX.get(normalize_label(primary_area))
     legacy_area_aliases = {
-        "".join("医学与科学AI".replace("：", ":").lower().split()): "应用: CV/音频/语言等",
-        "".join("医学与科学 AI".replace("：", ":").lower().split()): "应用: CV/音频/语言等",
+        normalize_label("医学与科学AI"): "应用: CV/音频/语言等",
+        normalize_label("医学与科学 AI"): "应用: CV/音频/语言等",
     }
-    norm_pa = "".join(str(primary_area or "").replace("：", ":").lower().split())
-    if not area and norm_pa in legacy_area_aliases:
-        area = AREA_INDEX.get("".join(legacy_area_aliases[norm_pa].replace("：", ":").lower().split()))
+    if not area and normalize_label(primary_area) in legacy_area_aliases:
+        area = AREA_INDEX.get(normalize_label(legacy_area_aliases[normalize_label(primary_area)]))
     if category_area:
-        area = AREA_INDEX.get("".join(str(category_area).replace("：", ":").lower().split()), area)
+        area = AREA_INDEX.get(normalize_label(category_area), area)
     if area:
         analysis["primary_area_en"] = area.get("primary_area_en", analysis.get("primary_area_en", ""))
         analysis["primary_area"] = area.get("primary_area", primary_area)
 
-    norm_cat = "".join(str(category or "").replace("：", ":").lower().split())
-    canonical_category = CATEGORY_INDEX.get(norm_cat)
+    category_key = normalize_label(category)
+    canonical_category = CATEGORY_INDEX.get(category_key)
     primary_area_value = str(analysis.get("primary_area") or "").strip()
-    if not canonical_category or norm_cat not in AREA_CATEGORIES_MAP.get(primary_area_value, set()):
-        canonical_category = CATEGORY_INDEX.get("".join("其他".replace("：", ":").lower().split()), "其他")
+    if not canonical_category or category_key not in AREA_CATEGORIES.get(primary_area_value, set()):
+        canonical_category = CATEGORY_INDEX.get(normalize_label("其他"), "其他")
     analysis["category"] = canonical_category
     analysis["sub_area"] = canonical_category
     return analysis
-
-
-def legacy_analysis_for_site(analysis: dict[str, Any]) -> dict[str, Any]:
-    legacy = dict(analysis)
-    legacy["archive_reading_priority"] = analysis.get("reading_priority")
-    legacy["reading_priority"] = analysis.get("legacy_reading_priority") or legacy_priority(str(analysis.get("reading_priority") or ""))
-    return legacy
 
 
 def analyze_paper(client: OpenAI, paper: dict[str, Any], model: str) -> dict[str, Any]:
@@ -249,73 +237,83 @@ def analyze_one_paper(client: OpenAI, paper: dict[str, Any], model: str) -> dict
     return enriched
 
 
-def archive_analysis_record(
-    enriched_paper: dict[str, Any],
-    *,
-    analysis_version: str,
-    model: str,
-) -> dict[str, Any]:
-    record: dict[str, Any] = {
-        "arxiv_id": enriched_paper.get("arxiv_id"),
-        "analysis_version": analysis_version,
-        "model": model,
-        "analyzed_at": utc_now_iso(),
-    }
-    record["analysis"] = enriched_paper["analysis"]
-    return record
+def load_existing(output_path: Path) -> dict[str, dict[str, Any]]:
+    if not output_path.exists():
+        return {}
+    existing = read_json(output_path)
+    return {paper.get("arxiv_id"): paper for paper in existing.get("papers", []) if paper.get("arxiv_id")}
 
 
-def paper_with_analysis_record(paper: dict[str, Any], record: dict[str, Any]) -> dict[str, Any]:
-    enriched = dict(paper)
-    if "analysis" in record:
-        enriched["analysis"] = legacy_analysis_for_site(record["analysis"])
-    if "analysis_error" in record:
-        enriched["analysis_error"] = record["analysis_error"]
-    if "raw_response" in record:
-        enriched["raw_response"] = record["raw_response"]
-    return enriched
+def _extract_analyses(papers: list[dict[str, Any] | None]) -> list[dict[str, Any]]:
+    """Convert analyzed papers into the format expected by archive.append_new_analyses."""
+    analyses = []
+    for paper in papers:
+        if paper is None:
+            continue
+        arxiv_id = paper.get("arxiv_id")
+        if not arxiv_id:
+            continue
+        analyses.append({
+            "arxiv_id": arxiv_id,
+            "analysis_version": str(paper.get("analysis_version", "1")),
+            "model": os.environ.get("DEEPSEEK_MODEL", DEFAULT_DEEPSEEK_MODEL),
+            "analyzed_at": paper.get("analyzed_at", ""),
+            "analysis": paper.get("analysis", {}),
+            "raw_response": paper.get("raw_response", ""),
+        })
+    return analyses
 
 
-def load_raw_papers(target_date: str) -> tuple[list[dict[str, Any]], str]:
-    archive_papers = papers_for_date(target_date)
-    if archive_papers:
-        LOGGER.info("Loaded %d paper(s) for %s from archive.", len(archive_papers), target_date)
-        return archive_papers, "archive"
-    raise FileNotFoundError(f"Archive papers not found for {target_date}. Run fetch/backfill first.")
+def write_analyzed(output_path: Path, target_date: str, source: str, papers: list[dict[str, Any] | None]) -> None:
+    completed = [paper for paper in papers if paper is not None]
+    write_json(output_path, {"date": target_date, "source": source, "papers": completed})
+
+    # Also write new analyses to the local SQLite database (JSONL files preserved as backup)
+    if _HAS_ARCHIVE:
+        try:
+            new_analyses = _extract_analyses(papers)
+            if new_analyses:
+                index = load_analysis_index() if DB_PATH.exists() else None
+                inserted, skipped = append_new_analyses(new_analyses, existing_index=index)
+                if inserted:
+                    LOGGER.info("DB: inserted %d new analysis record(s) (skipped %d duplicates)", inserted, skipped)
+        except Exception as exc:
+            LOGGER.warning("Failed to write analyses to database: %s", exc)
 
 
-def analyze_date(
-    target_date: str,
-    concurrency: int | str | None = None,
-    analysis_version: str = DEFAULT_ANALYSIS_VERSION,
-    cache_only: bool = False,
-) -> Path:
+def analyze_date(target_date: str, concurrency: int | str | None = None) -> Path:
     ensure_dirs()
-    raw_papers, _source = load_raw_papers(target_date)
-    archive_analysis_index = load_analysis_index()
+    raw_path = PROJECT_ROOT / "data" / "raw" / f"{target_date}.json"
+    if not raw_path.exists():
+        raise FileNotFoundError(f"Raw data not found: {raw_path}")
 
-    if not raw_papers:
-        LOGGER.info("No papers to analyze for %s.", target_date)
-        return ANALYSES_JSONL
+    raw = read_json(raw_path)
+    output_path = PROJECT_ROOT / "data" / "analyzed" / f"{target_date}.json"
+    existing_by_id = load_existing(output_path)
 
+    if not raw.get("papers", []):
+        write_json(output_path, {"date": target_date, "source": raw.get("source", "arxiv"), "papers": []})
+        LOGGER.info("No papers to analyze for %s; wrote empty analyzed JSON.", target_date)
+        return output_path
+
+    client = get_client()
     model = os.environ.get("DEEPSEEK_MODEL", DEFAULT_DEEPSEEK_MODEL)
     worker_count = parse_concurrency(concurrency if concurrency is not None else os.environ.get("DEEPSEEK_CONCURRENCY"))
+    raw_papers = raw.get("papers", [])
+    source = raw.get("source", "arxiv")
+    analyzed_papers: list[dict[str, Any] | None] = [None] * len(raw_papers)
     pending: list[tuple[int, dict[str, Any]]] = []
 
     for index, paper in enumerate(raw_papers):
-        arxiv_id = paper_id(paper)
-        archive_existing = archive_analysis_index.get(arxiv_id)
-        if archive_existing:
-            LOGGER.info("Skipping archive-analyzed paper %s", arxiv_id)
+        arxiv_id = paper.get("arxiv_id")
+        existing = existing_by_id.get(arxiv_id)
+        if existing and ("analysis" in existing or "analysis_error" in existing):
+            LOGGER.info("Skipping already analyzed paper %s", arxiv_id)
+            analyzed_papers[index] = existing
             continue
-
         pending.append((index, paper))
 
     if pending:
-        if cache_only:
-            LOGGER.info("Cache-only mode: %d paper(s) are missing analysis and will not call DeepSeek.", len(pending))
-            return ANALYSES_JSONL
-        client = get_client()
         LOGGER.info("Analyzing %d pending paper(s) with concurrency=%d.", len(pending), worker_count)
         with ThreadPoolExecutor(max_workers=worker_count) as executor:
             futures = {}
@@ -328,16 +326,13 @@ def analyze_date(
                 start=1,
             ):
                 index = futures[future]
-                enriched = future.result()
-                if "analysis" in enriched:
-                    append_new_analyses(
-                        [archive_analysis_record(enriched, analysis_version=analysis_version, model=model)],
-                        existing_index=archive_analysis_index,
-                    )
+                analyzed_papers[index] = future.result()
                 LOGGER.info("Completed pending analysis %d/%d.", completed_count, len(pending))
+                write_analyzed(output_path, target_date, source, analyzed_papers)
 
-    LOGGER.info("Updated %s", ANALYSES_JSONL)
-    return ANALYSES_JSONL
+    write_analyzed(output_path, target_date, source, analyzed_papers)
+    LOGGER.info("Wrote %s", output_path)
+    return output_path
 
 
 def parse_args() -> argparse.Namespace:
@@ -349,24 +344,13 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help=f"Concurrent DeepSeek requests. Defaults to {DEFAULT_DEEPSEEK_CONCURRENCY}; capped at {MAX_DEEPSEEK_CONCURRENCY}.",
     )
-    parser.add_argument("--analysis-version", default=DEFAULT_ANALYSIS_VERSION)
-    parser.add_argument(
-        "--cache-only",
-        action="store_true",
-        help="Report missing archive analyses without calling DeepSeek.",
-    )
     return parser.parse_args()
 
 
 def main() -> None:
     setup_logging()
     args = parse_args()
-    analyze_date(
-        parse_date(args.date),
-        concurrency=args.concurrency,
-        analysis_version=args.analysis_version,
-        cache_only=args.cache_only,
-    )
+    analyze_date(parse_date(args.date), concurrency=args.concurrency)
 
 
 if __name__ == "__main__":
