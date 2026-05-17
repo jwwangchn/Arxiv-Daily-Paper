@@ -575,6 +575,11 @@
     }
     if (state.activeFetch !== controller) return;
     state.activeFetch = null;
+    // Sync date index count with actual paper count (fixes stale /api/dates cache)
+    const entry = entryForDate(state.date);
+    if (entry && entry.count !== state.total) {
+      entry.count = state.total;
+    }
     renderDates();
     updateUrl(state.date);
     renderPapers();
