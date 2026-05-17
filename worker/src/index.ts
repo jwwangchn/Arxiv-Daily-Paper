@@ -14,6 +14,30 @@ const PRIORITY_MAP: Record<string, string> = {
   low_priority: "low", skip: "low",
 };
 
+const DATA_CACHE_SECONDS = 900;
+const BROWSER_CACHE_SECONDS = 300;
+const MAX_PAGE_SIZE = 100;
+
+function cacheableJson(c: any, data: unknown): Response {
+  const response = c.json(data);
+  response.headers.set(
+    "Cache-Control",
+    `public, max-age=${BROWSER_CACHE_SECONDS}, s-maxage=${DATA_CACHE_SECONDS}, stale-while-revalidate=86400`,
+  );
+  return response;
+}
+
+async function cachedGet(c: any, key: string, loader: () => Promise<Response>): Promise<Response> {
+  const cache = (caches as any).default;
+  const request = new Request(key, c.req.raw);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+
+  const response = await loader();
+  c.executionCtx.waitUntil(cache.put(request, response.clone()));
+  return response;
+}
+
 // CORS for Pages frontend
 app.use("/*", cors({
   origin: "*",
@@ -26,6 +50,7 @@ app.get("/health", (c) => c.json({ status: "ok", timestamp: new Date().toISOStri
 
 // GET /api/dates - List all available dates with paper counts
 app.get("/api/dates", async (c) => {
+  return cachedGet(c, c.req.url, async () => {
   const { results } = await c.env.DB.prepare(`
     SELECT
       p.source_date as date,
@@ -40,7 +65,8 @@ app.get("/api/dates", async (c) => {
   `).all<{ date: string; month: string; count: number; analyzed_count: number }>();
 
   const latest = results.length > 0 ? results[0].date : "";
-  return c.json({ latest, dates: results });
+  return cacheableJson(c, { latest, dates: results });
+  });
 });
 
 // GET /api/papers?date=YYYY-MM-DD - Papers for a specific date
@@ -50,6 +76,15 @@ app.get("/api/papers", async (c) => {
   const id = c.req.query("id");
   const source = c.req.query("source") || "arxiv";
 
+  if ((date || month) && !id && source === "arxiv") {
+    return cachedGet(c, c.req.url, async () => loadPapers(c, date, month, source));
+  }
+
+  return loadPapers(c, date, month, source, id);
+});
+
+async function loadPapers(c: any, date?: string, month?: string, source = "arxiv", id?: string): Promise<Response> {
+
   if (id) {
     // Single paper lookup
     const paper = await c.env.DB.prepare("SELECT id as arxiv_id, source, title, authors, abstract, categories, primary_category, published, updated, entry_url, pdf_url, source_date, venue, year FROM papers WHERE id = ?").bind(id).first();
@@ -57,6 +92,17 @@ app.get("/api/papers", async (c) => {
     const analysis = await c.env.DB.prepare("SELECT * FROM analyses WHERE arxiv_id = ?").bind(id).first();
     return c.json(normalizePaperRow({ ...paper, ...analysis, analysis_id: (analysis as any)?.arxiv_id || "" }));
   }
+
+  const limitParam = c.req.query("limit");
+  const offsetParam = c.req.query("offset");
+  const paginated = limitParam !== undefined || offsetParam !== undefined;
+  const limit = Math.min(Math.max(parseInt(limitParam || "50", 10) || 50, 1), MAX_PAGE_SIZE);
+  const offset = Math.max(parseInt(offsetParam || "0", 10) || 0, 0);
+  const priority = c.req.query("priority") || "";
+  const tag = c.req.query("tag") || "";
+  const area = c.req.query("area") || "";
+  const subarea = c.req.query("subarea") || "";
+  const q = c.req.query("q") || "";
 
   let whereClause = source === "all" ? "WHERE 1=1" : "WHERE p.source = ?";
   let bindings: (string | number)[] = source === "all" ? [] : [source];
@@ -67,6 +113,61 @@ app.get("/api/papers", async (c) => {
   } else if (month) {
     whereClause += " AND p.source_date LIKE ?";
     bindings.push(`${month}-%`);
+  }
+
+  if (priority) {
+    whereClause += ` AND (CASE a.reading_priority
+      WHEN 'must_read' THEN 'high'
+      WHEN 'recommended' THEN 'medium'
+      WHEN 'skim' THEN 'low'
+      WHEN 'low_priority' THEN 'low'
+      WHEN 'skip' THEN 'low'
+      ELSE a.reading_priority
+    END) = ?`;
+    bindings.push(priority);
+  }
+
+  if (tag) {
+    whereClause += " AND a.tags LIKE ?";
+    bindings.push(`%"${tag}"%`);
+  }
+
+  if (area) {
+    if (area === "未分析") {
+      whereClause += " AND a.arxiv_id IS NULL";
+    } else {
+      whereClause += " AND a.primary_area = ?";
+      bindings.push(area);
+    }
+  }
+
+  if (subarea) {
+    if (subarea === "未分析") {
+      whereClause += " AND a.arxiv_id IS NULL";
+    } else {
+      whereClause += " AND (a.category = ? OR a.sub_area = ?)";
+      bindings.push(subarea, subarea);
+    }
+  }
+
+  if (q) {
+    const like = `%${q}%`;
+    whereClause += ` AND (
+      p.title LIKE ? OR p.abstract LIKE ? OR p.authors LIKE ?
+      OR a.tldr LIKE ? OR a.problem LIKE ? OR a.method LIKE ?
+    )`;
+    bindings.push(like, like, like, like, like, like);
+  }
+
+  let total = 0;
+  if (paginated) {
+    const totalRow = await c.env.DB.prepare(`
+      SELECT COUNT(*) as total
+      FROM papers p
+      LEFT JOIN analyses a ON p.id = a.arxiv_id
+      ${whereClause}
+    `).bind(...bindings).first<{ total: number }>();
+    total = totalRow?.total || 0;
   }
 
   const { results } = await c.env.DB.prepare(`
@@ -91,12 +192,65 @@ app.get("/api/papers", async (c) => {
       END,
       p.source_date DESC,
       p.id DESC
-  `).bind(...bindings).all();
+    ${paginated ? "LIMIT ? OFFSET ?" : ""}
+  `).bind(...(paginated ? [...bindings, limit, offset] : bindings)).all();
 
   // Parse JSON fields and normalize priority values
   const parsed = results.map(normalizePaperRow);
 
-  return c.json(parsed);
+  if (!paginated) return cacheableJson(c, parsed);
+  return cacheableJson(c, { papers: parsed, total, limit, offset });
+}
+
+// GET /api/facets?date=YYYY-MM-DD - Lightweight facet counts for a date
+app.get("/api/facets", async (c) => {
+  return cachedGet(c, c.req.url, async () => {
+    const date = c.req.query("date");
+    const month = c.req.query("month");
+    const source = c.req.query("source") || "arxiv";
+    let whereClause = source === "all" ? "WHERE 1=1" : "WHERE p.source = ?";
+    const bindings: string[] = source === "all" ? [] : [source];
+    if (date) {
+      whereClause += " AND p.source_date = ?";
+      bindings.push(date);
+    } else if (month) {
+      whereClause += " AND p.source_date LIKE ?";
+      bindings.push(`${month}-%`);
+    }
+
+    const { results } = await c.env.DB.prepare(`
+      SELECT a.arxiv_id as analysis_id, a.primary_area, a.category, a.sub_area,
+             a.tags, a.reading_priority
+      FROM papers p
+      LEFT JOIN analyses a ON p.id = a.arxiv_id
+      ${whereClause}
+    `).bind(...bindings).all();
+
+    const priorities: Record<string, number> = { high: 0, medium: 0, low: 0 };
+    const tags = new Map<string, number>();
+    const areas = new Map<string, Map<string, number>>();
+
+    for (const row of results as any[]) {
+      const priority = PRIORITY_MAP[row.reading_priority] || row.reading_priority || "unknown";
+      if (priority in priorities) priorities[priority] += 1;
+      const area = row.analysis_id ? (row.primary_area || "其他 ML 主题") : "未分析";
+      const sub = row.analysis_id ? (row.category || row.sub_area || "其他") : "未分析";
+      if (!areas.has(area)) areas.set(area, new Map());
+      const subMap = areas.get(area)!;
+      subMap.set(sub, (subMap.get(sub) || 0) + 1);
+      if (row.analysis_id) {
+        for (const tag of safeJsonParse(row.tags)) {
+          tags.set(tag, (tags.get(tag) || 0) + 1);
+        }
+      }
+    }
+
+    return cacheableJson(c, {
+      priorities,
+      tags: [...tags.entries()],
+      areas: [...areas.entries()].map(([areaName, subMap]) => [areaName, [...subMap.entries()]]),
+    });
+  });
 });
 
 // GET /api/stats - Overall statistics
@@ -170,16 +324,30 @@ app.post("/api/papers", async (c) => {
 
   let inserted = 0;
   const stmt = c.env.DB.prepare(`
-    INSERT OR IGNORE INTO papers
+    INSERT INTO papers
     (id, source, title, authors, abstract, categories, primary_category,
      published, updated, entry_url, pdf_url, source_date, fetched_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      source = excluded.source,
+      title = excluded.title,
+      authors = excluded.authors,
+      abstract = excluded.abstract,
+      categories = excluded.categories,
+      primary_category = excluded.primary_category,
+      published = excluded.published,
+      updated = excluded.updated,
+      entry_url = excluded.entry_url,
+      pdf_url = excluded.pdf_url,
+      source_date = excluded.source_date,
+      fetched_at = excluded.fetched_at
   `);
 
   const batch = papers.slice(0, 100); // D1 batch limit
   for (const paper of batch) {
     const arxivId = paper.arxiv_id || paper.id || "";
     if (!arxivId) continue;
+    const paperSourceDate = String(paper.source_date || paper.published || source_date || "").slice(0, 10);
 
     await stmt.bind(
       arxivId,
@@ -193,7 +361,7 @@ app.post("/api/papers", async (c) => {
       paper.updated || "",
       paper.entry_url || "",
       paper.pdf_url || "",
-      source_date || "",
+      paperSourceDate,
       paper.fetched_at || new Date().toISOString(),
     ).run();
     inserted++;
@@ -268,7 +436,7 @@ function safeJsonParse(value: string | null | undefined): any {
   try {
     return JSON.parse(value);
   } catch {
-    return [];
+    return [value];
   }
 }
 

@@ -121,7 +121,7 @@
     state.page = 0;
     state.expandedAreas.clear();
     if (els.search) els.search.value = "";
-    loadCurrentPage();
+    renderPapers();
   }
 
   function facetCounts(papers) {
@@ -257,6 +257,9 @@
       .join("") || '<span class="muted">暂无 tags</span>';
     els.topicNav.innerHTML = [...areas.entries()]
       .sort((a, b) => {
+        const aIsUn = a[0] === "未分析";
+        const bIsUn = b[0] === "未分析";
+        if (aIsUn !== bIsUn) return aIsUn ? 1 : -1;
         const ac = [...a[1].values()].reduce((sum, value) => sum + value, 0);
         const bc = [...b[1].values()].reduce((sum, value) => sum + value, 0);
         return bc - ac || a[0].localeCompare(b[0]);
@@ -294,7 +297,26 @@
   }
 
   function filteredPapers() {
-    return state.papers;
+    let papers = state.papers;
+
+    if (state.area) {
+      papers = papers.filter((p) => paperArea(p) === state.area);
+    }
+    if (state.subarea) {
+      papers = papers.filter((p) => paperSubarea(p) === state.subarea);
+    }
+    if (state.priority) {
+      papers = papers.filter((p) => paperPriority(p) === state.priority);
+    }
+    if (state.tag) {
+      papers = papers.filter((p) => ((p.analysis || {}).tags || []).includes(state.tag));
+    }
+    if (state.query) {
+      const q = normalize(state.query);
+      papers = papers.filter((p) => searchBlob(p).includes(q));
+    }
+
+    return papers;
   }
 
   function list(values) {
@@ -345,7 +367,6 @@
       </div>
       <div class="paper-authors">${escapeHtml(authors)}${moreAuthors}</div>
       <div class="paper-links">
-        <a href="${escapeHtml(paper.entry_url)}" target="_blank" rel="noopener">arXiv</a>
         <a href="${escapeHtml(paper.pdf_url)}" target="_blank" rel="noopener">PDF</a>
         <span>${escapeHtml(paper.display_category || paper.primary_category)}</span>
       </div>
@@ -363,7 +384,7 @@
     </article>`;
   }
 
-  function groupedPapersHtml(papers) {
+  function groupedPapersHtml(papers, startOffset, endOffset) {
     const areaMap = new Map();
     for (const paper of papers) {
       const area = paperArea(paper);
@@ -374,26 +395,60 @@
       subMap.get(sub).push(paper);
     }
 
-    return [...areaMap.entries()]
-      .sort((a, b) => {
-        const ac = [...a[1].values()].reduce((sum, items) => sum + items.length, 0);
-        const bc = [...b[1].values()].reduce((sum, items) => sum + items.length, 0);
-        return bc - ac || a[0].localeCompare(b[0], "zh-Hans-CN");
-      })
-      .map(([area, subMap]) => {
-        const areaCount = [...subMap.values()].reduce((sum, items) => sum + items.length, 0);
-        const subSections = [...subMap.entries()]
-          .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "zh-Hans-CN"))
+    // Sort areas: "未分析" always last, others by count descending
+    const sortedAreas = [...areaMap.entries()].sort((a, b) => {
+      const aIsUn = a[0] === "未分析";
+      const bIsUn = b[0] === "未分析";
+      if (aIsUn !== bIsUn) return aIsUn ? 1 : -1;
+      const ac = [...a[1].values()].reduce((sum, items) => sum + items.length, 0);
+      const bc = [...b[1].values()].reduce((sum, items) => sum + items.length, 0);
+      return bc - ac || a[0].localeCompare(b[0], "zh-Hans-CN");
+    });
+
+    // Flatten into a single ordered list for pagination
+    const flatOrdered = [];
+    for (const [, subMap] of sortedAreas) {
+      for (const [, items] of [...subMap.entries()].sort(
+        (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "zh-Hans-CN")
+      )) {
+        flatOrdered.push(...sortPapers(items));
+      }
+    }
+
+    // Apply pagination slice
+    const page = flatOrdered.slice(startOffset, endOffset);
+
+    // Re-group the paginated slice for display
+    const pageAreaMap = new Map();
+    for (const paper of page) {
+      const area = paperArea(paper);
+      const sub = paperSubarea(paper);
+      if (!pageAreaMap.has(area)) pageAreaMap.set(area, new Map());
+      const subMap = pageAreaMap.get(area);
+      if (!subMap.has(sub)) subMap.set(sub, []);
+      subMap.get(sub).push(paper);
+    }
+
+    // Build HTML using the original sorted area order, but only for areas present in page
+    return sortedAreas
+      .filter(([area]) => pageAreaMap.has(area))
+      .map(([area]) => {
+        const subMap = pageAreaMap.get(area);
+        const areaCount = subMap.size; // number of subareas on this page
+        const pageSubEntries = [...subMap.entries()].sort(
+          (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "zh-Hans-CN")
+        );
+        const subSections = pageSubEntries
           .map(([sub, items]) => `
             <section class="sub-sec">
               <h3 class="sub-title">${escapeHtml(sub)} <small>${items.length} 篇</small></h3>
-              <div class="paper-list">${sortPapers(items).map(paperCard).join("")}</div>
+              <div class="paper-list">${items.map(paperCard).join("")}</div>
             </section>
           `)
           .join("");
         return `
           <section class="paper-section pri-sec" data-section>
-            <h2 class="group-title">${escapeHtml(area)} <small>${areaCount} 篇 · ${subMap.size} 个细分</small></h2>
+            <h2 class="group-title">${escapeHtml(area)} <small>${areaCount} 个细分</small></h2>
             ${subSections}
           </section>
         `;
@@ -402,18 +457,21 @@
   }
 
   function renderPapers() {
-    const papers = sortPapers(filteredPapers());
-    const start = state.total ? state.page * PAGE_SIZE + 1 : 0;
-    const end = Math.min((state.page + 1) * PAGE_SIZE, state.total);
-    const totalPages = Math.max(1, Math.ceil(state.total / PAGE_SIZE));
-    const pagination = state.total > PAGE_SIZE
+    const papers = filteredPapers();
+    const total = papers.length;
+    const startOffset = state.page * PAGE_SIZE;
+    const endOffset = Math.min(startOffset + PAGE_SIZE, total);
+    const start = total > 0 ? startOffset + 1 : 0;
+    const end = Math.min((state.page + 1) * PAGE_SIZE, total);
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    const pagination = total > PAGE_SIZE
       ? `<div class="pagination-wrap">
           <button class="filter-chip" data-page-prev type="button"${state.page <= 0 ? " disabled" : ""}>上一页</button>
           <span class="page-indicator">${state.page + 1} / ${totalPages}</span>
           <button class="filter-chip" data-page-next type="button"${state.page >= totalPages - 1 ? " disabled" : ""}>下一页</button>
         </div>`
       : "";
-    els.paperList.innerHTML = groupedPapersHtml(papers) + pagination;
+    els.paperList.innerHTML = groupedPapersHtml(papers, startOffset, endOffset) + pagination;
     els.visibleCount.textContent = `${start}-${end}`;
     els.paperTotalInline.textContent = String(state.total);
     els.totalCount.textContent = String(state.total);
@@ -452,37 +510,26 @@
 
   // All data from Worker API
   function pageCacheKey(date) {
-    const params = new URLSearchParams({
-      date,
-      limit: String(PAGE_SIZE),
-      offset: String(state.page * PAGE_SIZE),
-    });
-    if (state.query) params.set("q", state.query);
-    if (state.priority) params.set("priority", state.priority);
-    if (state.tag) params.set("tag", state.tag);
-    if (state.area) params.set("area", state.area);
-    if (state.subarea) params.set("subarea", state.subarea);
+    const params = new URLSearchParams({ date });
     return params.toString();
   }
 
   async function fetchFromWorker(date, signal) {
-    const key = pageCacheKey(date);
-    if (state.paperCache.has(key)) return state.paperCache.get(key);
-    if (state.paperRequests.has(key)) return state.paperRequests.get(key);
-    const request = fetch(`${WORKER_URL}/api/papers?${key}`, { signal })
+    const url = `${WORKER_URL}/api/papers?date=${date}`;
+    if (state.paperCache.has(url)) return state.paperCache.get(url);
+    if (state.paperRequests.has(url)) return state.paperRequests.get(url);
+    const request = fetch(url, { signal })
       .then(async (res) => {
         if (!res.ok) return { papers: [], total: 0 };
         const data = await res.json();
-        const page = Array.isArray(data)
-          ? { papers: data, total: data.length }
-          : { papers: data.papers || [], total: data.total || 0 };
-        state.paperCache.set(key, page);
-        return page;
+        const papers = Array.isArray(data) ? data : data.papers || [];
+        state.paperCache.set(url, papers);
+        return papers;
       })
       .finally(() => {
-        state.paperRequests.delete(key);
+        state.paperRequests.delete(url);
       });
-    state.paperRequests.set(key, request);
+    state.paperRequests.set(url, request);
     return request;
   }
 
@@ -519,9 +566,9 @@
     els.paperList.innerHTML = "";
     els.loading.classList.remove("hidden");
     try {
-      const page = await fetchFromWorker(state.date, controller.signal);
-      state.papers = page.papers;
-      state.total = page.total;
+      const papers = await fetchFromWorker(state.date, controller.signal);
+      state.papers = papers;
+      state.total = papers.length;
     } catch (error) {
       if (error.name === "AbortError") return;
       throw error;
@@ -551,7 +598,7 @@
       state.query = event.target.value;
       state.page = 0;
       clearTimeout(state.searchTimer);
-      state.searchTimer = setTimeout(loadCurrentPage, 250);
+      state.searchTimer = setTimeout(() => renderPapers(), 250);
     });
     els.clear?.addEventListener("click", clearFilters);
     els.clearTop?.addEventListener("click", clearFilters);
@@ -616,17 +663,17 @@
       const nextPage = event.target.closest("[data-page-next]");
       if (prevPage && state.page > 0) {
         state.page -= 1;
-        loadCurrentPage();
+        renderPapers();
         return;
       }
-      if (nextPage && (state.page + 1) * PAGE_SIZE < state.total) {
+      if (nextPage && (state.page + 1) * PAGE_SIZE < filteredPapers().length) {
         state.page += 1;
-        loadCurrentPage();
+        renderPapers();
         return;
       }
       if (priority || tag || area || subarea) {
         state.page = 0;
-        loadCurrentPage();
+        renderPapers();
       }
     });
   }
