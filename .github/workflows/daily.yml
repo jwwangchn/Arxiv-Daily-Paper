@@ -22,7 +22,7 @@ permissions:
   contents: write
 
 jobs:
-  pipeline:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -72,7 +72,7 @@ jobs:
         run: |
           python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN"
 
-      - name: Commit generated data
+      - name: Commit generated files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -83,18 +83,3 @@ jobs:
             git commit -m "Update daily arXiv guide"
             git push
           fi
-
-  deploy:
-    needs: pipeline
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Deploy docs to gh-pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: docs
-          branch: gh-pages
-          clean: false
