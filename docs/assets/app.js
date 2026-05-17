@@ -1,6 +1,6 @@
 (function () {
-  // API base — change to your Worker URL in production if not same-origin
-  const API_BASE = typeof window.API_BASE_URL !== "undefined" ? window.API_BASE_URL : "";
+  // API base — empty string for same-origin (dev), Worker URL for production (GitHub Pages)
+  const API_BASE = typeof window.API_BASE_URL !== "undefined" ? window.API_BASE_URL : "https://arxiv-daily-api.jwwangchn.workers.dev";
 
   const state = {
     date: "",
