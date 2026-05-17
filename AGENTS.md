@@ -42,15 +42,16 @@ Core stack:
 
 - `config.yaml`: site title, arXiv categories (cs.CV/cs.AI/cs.CL/cs.LG), max papers, topic keywords.
 - `scripts/fetch_arxiv.py`: arXiv metadata fetcher — writes to local SQLite + JSONL backup.
-- `scripts/analyze_deepseek.py`: DeepSeek analysis — writes to local SQLite + JSONL backup.
-- `scripts/export_to_worker.py`: syncs new local data to remote D1 via Worker API.
+- `scripts/analyze_deepseek.py`: DeepSeek analysis entry point — delegates to `commands.analyze`.
+- `scripts/export_to_worker.py`: syncs new local data to remote D1 via Worker API (with retry logic).
 - `scripts/lib/db.py`: SQLite layer — mirrors D1 schema for local development.
 - `scripts/lib/archive.py`: JSONL archive layer — append-only backup, not primary source.
 - `scripts/lib/config.py`: config loading from `config.yaml`.
-- `scripts/lib/taxonomy.py`: ICLR 2026 classification taxonomy.
-- `scripts/lib/source_archive.py`: storage for non-arXiv paper sources.
-- `scripts/fetchers/`: multi-source fetch plugins (AAAI, ACL, CVF, OpenReview).
-- `scripts/commands/`: legacy command modules (partially compatible, do not add new logic here).
+- `scripts/fetchers/`: multi-source fetch plugins (AAAI, ACL, CVF, OpenReview) — extensible base class.
+- `scripts/commands/analyze.py`: DeepSeek analysis logic (called by analyze_deepseek.py).
+- `scripts/commands/build.py`: SPA build — reads JSONL, writes `docs/index.html` + `docs/data/`.
+- `scripts/commands/fetch.py`: legacy fetch commands.
+- `scripts/commands/daily.py`: legacy full pipeline (calls fetch → analyze → build).
 - `worker/src/index.ts`: Cloudflare Worker (Hono API) — the only API the frontend calls.
 - `migrations/0001_create_papers_table.sql`: D1 schema definition (papers + analyses tables).
 - `wrangler.toml`: Cloudflare deployment config with D1 binding.

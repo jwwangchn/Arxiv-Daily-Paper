@@ -81,6 +81,7 @@ def append_new_papers(
         arxiv_id = paper_id(paper)
         if not arxiv_id or arxiv_id in existing_index or arxiv_id in seen_in_batch:
             continue
+        record_source_date = paper_source_date(paper) or source_date
 
         new_records.append((
             arxiv_id, "arxiv",
@@ -93,11 +94,11 @@ def append_new_papers(
             paper.get("updated", ""),
             paper.get("entry_url", ""),
             paper.get("pdf_url", ""),
-            source_date,
+            record_source_date,
             fetched_at,
         ))
         seen_in_batch.add(arxiv_id)
-        existing_index[arxiv_id] = {**paper, "source_date": source_date, "fetched_at": fetched_at}
+        existing_index[arxiv_id] = {**paper, "source_date": record_source_date, "fetched_at": fetched_at}
 
     if new_records:
         conn.executemany(

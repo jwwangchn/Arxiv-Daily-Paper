@@ -12,8 +12,7 @@ from typing import Any
 import arxiv
 import requests
 
-from progress import progress_bar
-from utils import (
+from lib.config import (
     PROJECT_ROOT,
     ensure_dirs,
     load_config,
@@ -22,10 +21,19 @@ from utils import (
     setup_logging,
     write_json,
 )
+from lib.progress import progress_bar
 
 try:
-    from lib.archive import append_new_papers, load_paper_index
-    from lib.db import DB_PATH
+    from lib.archive import (
+        ARCHIVE_DIR,
+        append_new_papers as append_new_papers_jsonl,
+        load_paper_index as load_paper_index_jsonl,
+    )
+    from lib.db import (
+        DB_PATH,
+        append_new_papers as append_new_papers_db,
+        load_paper_index as load_paper_index_db,
+    )
     _HAS_ARCHIVE = True
 except ImportError:
     _HAS_ARCHIVE = False
@@ -338,6 +346,7 @@ def fetch_browse_fallback(target_date: str, categories: list[str], max_papers: i
                     "primary_category": metadata.get("primary_category") or category,
                     "published": published,
                     "updated": metadata.get("updated") or published,
+                    "source_date": target_date,
                     "entry_url": f"{ARXIV_BASE_URL}/abs/{arxiv_id}",
                     "pdf_url": f"{ARXIV_BASE_URL}/pdf/{arxiv_id}",
                 }
@@ -384,6 +393,7 @@ def fetch_papers(
             unit="paper",
         ):
             paper = parse_result(result)
+            paper["source_date"] = target_date
 
             if paper["arxiv_id"] in seen:
                 continue
@@ -469,15 +479,23 @@ def save_raw(target_date: str, papers: list[dict[str, Any]]) -> Path:
     write_json(output, {"date": target_date, "source": "arxiv", "papers": papers})
     LOGGER.info("Wrote %s", output)
 
-    # Also write new papers to the local SQLite database (JSONL files are preserved as backup)
+    # Dual-write: JSONL (backup) + SQLite (local dev)
     if _HAS_ARCHIVE and papers:
         try:
-            index = load_paper_index() if DB_PATH.exists() else None
-            inserted, skipped = append_new_papers(papers, source_date=target_date, existing_index=index)
+            jsonl_index = load_paper_index_jsonl() if (ARCHIVE_DIR / "papers.jsonl").exists() else None
+            inserted, skipped = append_new_papers_jsonl(papers, source_date=target_date, existing_index=jsonl_index)
             if inserted:
-                LOGGER.info("DB: inserted %d new paper(s) into SQLite archive (skipped %d duplicates)", inserted, skipped)
+                LOGGER.info("JSONL: appended %d paper(s) (skipped %d duplicates)", inserted, skipped)
         except Exception as exc:
-            LOGGER.warning("Failed to write papers to database: %s", exc)
+            LOGGER.warning("Failed to write papers to JSONL: %s", exc)
+
+        try:
+            db_index = load_paper_index_db() if DB_PATH.exists() else None
+            inserted, skipped = append_new_papers_db(papers, source_date=target_date, existing_index=db_index)
+            if inserted:
+                LOGGER.info("SQLite: inserted %d paper(s) (skipped %d duplicates)", inserted, skipped)
+        except Exception as exc:
+            LOGGER.warning("Failed to write papers to SQLite: %s", exc)
 
     return output
 

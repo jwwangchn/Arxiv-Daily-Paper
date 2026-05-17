@@ -75,7 +75,7 @@ def analysis_key(record: dict[str, Any]) -> str:
 
 def normalize_archive_paper(paper: dict[str, Any], source_date: str, fetched_at: str | None = None) -> dict[str, Any]:
     archived = dict(paper)
-    archived["source_date"] = source_date
+    archived["source_date"] = paper_source_date(paper) or source_date
     archived["fetched_at"] = fetched_at or utc_now_iso()
     return archived
 

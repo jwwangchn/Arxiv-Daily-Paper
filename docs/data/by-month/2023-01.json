@@ -1,0 +1,57 @@
+{
+  "month": "2023-01",
+  "dates": {
+    "2023-01-15": [
+      {
+        "arxiv_id": "2301.06217",
+        "title": "Analogy between Boltzmann machines and Feynman path integrals",
+        "authors": [
+          "Srinivasan S. Iyengar",
+          "Sabre Kais"
+        ],
+        "abstract": "We provide a detailed exposition of the connections between Boltzmann machines commonly utilized in machine learning problems and the ideas already well known in quantum statistical mechanics through Feynman's description of the same. We find that this equivalence allows the interpretation that the hidden layers in Boltzmann machines and other neural network formalisms are in fact discrete versions of path elements that are present within the Feynman path-integral formalism. Since Feynman paths are the natural and elegant depiction of interference phenomena germane to quantum mechanics, it appears that in machine learning, the goal is to find an appropriate combination of ``paths'', along with accumulated path-weights, through a network that cumulatively capture the correct $x \\rightarrow y$ map for a given mathematical problem. As a direct consequence of this analysis, we are able to provide general quantum circuit models that are applicable to both Boltzmann machines and to Feynman path integral descriptions. Connections are also made to inverse quantum scattering problems which allow a robust way to define ``interpretable'' hidden layers.",
+        "categories": [
+          "cs.AI",
+          "cs.LG"
+        ],
+        "primary_category": "cs.AI",
+        "published": "2023-01-15T00:00:00Z",
+        "updated": "2023-01-15T00:00:00Z",
+        "entry_url": "https://arxiv.org/abs/2301.06217",
+        "pdf_url": "https://arxiv.org/pdf/2301.06217",
+        "source_date": "2023-01-15",
+        "analysis": {
+          "tldr": "玻尔兹曼机与费曼路径积分之间存在深层类比，隐藏层可视为离散路径元素，并由此导出量子电路模型。",
+          "research_motivation": "探索机器学习中玻尔兹曼机与量子统计力学中费曼路径积分之间的形式联系，为理解神经网络内部机制提供新视角。",
+          "problem": "揭示玻尔兹曼机隐藏层与费曼路径积分中路径元素的对应关系，并基于此构建通用的量子电路模型。",
+          "phenomenon_analysis": "摘要未提供具体现象分析。",
+          "method": "通过数学等价性分析，将玻尔兹曼机的隐藏层解释为费曼路径积分中的离散路径元素，并利用逆量子散射问题定义可解释的隐藏层。",
+          "contributions": [
+            "建立了玻尔兹曼机与费曼路径积分之间的严格类比关系。",
+            "提出了适用于玻尔兹曼机和费曼路径积分的通用量子电路模型。"
+          ],
+          "experiments": "摘要未提供具体实验结果。",
+          "limitations": [
+            "理论分析为主，缺乏实验验证。",
+            "实际应用中的可扩展性和计算效率未讨论。"
+          ],
+          "primary_area_en": "other topics in machine learning (i.e., none of the above)",
+          "primary_area": "其他 ML 主题",
+          "category": "其他",
+          "sub_area": "其他",
+          "tags": [
+            "Boltzmann machine",
+            "Feynman path integral",
+            "quantum circuit"
+          ],
+          "recommended_action": "read_abstract",
+          "reading_priority": "medium",
+          "one_sentence_summary": "玻尔兹曼机与费曼路径积分之间存在深层类比，隐藏层可视为离散路径元素，并由此导出量子电路模型。",
+          "legacy_reading_priority": "medium"
+        },
+        "analysis_version": "v3_noscore_2026_05",
+        "analyzed_at": "2026-05-14T00:18:09.444282Z"
+      }
+    ]
+  }
+}

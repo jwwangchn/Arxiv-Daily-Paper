@@ -10,12 +10,20 @@ from typing import Any
 
 from openai import OpenAI
 
-from progress import progress_bar
-from utils import PROJECT_ROOT, ensure_dirs, parse_date, read_json, setup_logging, write_json
+from lib.config import PROJECT_ROOT, ensure_dirs, parse_date, read_json, setup_logging, write_json
+from lib.progress import progress_bar
 
 try:
-    from lib.archive import append_new_analyses, load_analysis_index
-    from lib.db import DB_PATH
+    from lib.archive import (
+        ARCHIVE_DIR,
+        append_new_analyses as append_new_analyses_jsonl,
+        load_analysis_index as load_analysis_index_jsonl,
+    )
+    from lib.db import (
+        DB_PATH,
+        append_new_analyses as append_new_analyses_db,
+        load_analysis_index as load_analysis_index_db,
+    )
     _HAS_ARCHIVE = True
 except ImportError:
     _HAS_ARCHIVE = False
@@ -270,17 +278,26 @@ def write_analyzed(output_path: Path, target_date: str, source: str, papers: lis
     completed = [paper for paper in papers if paper is not None]
     write_json(output_path, {"date": target_date, "source": source, "papers": completed})
 
-    # Also write new analyses to the local SQLite database (JSONL files preserved as backup)
     if _HAS_ARCHIVE:
-        try:
-            new_analyses = _extract_analyses(papers)
-            if new_analyses:
-                index = load_analysis_index() if DB_PATH.exists() else None
-                inserted, skipped = append_new_analyses(new_analyses, existing_index=index)
+        new_analyses = _extract_analyses(papers)
+        if new_analyses:
+            # Write to JSONL (backup)
+            try:
+                index = load_analysis_index_jsonl() if (ARCHIVE_DIR / "analyses.jsonl").exists() else None
+                inserted, skipped = append_new_analyses_jsonl(new_analyses, existing_index=index)
                 if inserted:
-                    LOGGER.info("DB: inserted %d new analysis record(s) (skipped %d duplicates)", inserted, skipped)
-        except Exception as exc:
-            LOGGER.warning("Failed to write analyses to database: %s", exc)
+                    LOGGER.info("JSONL: appended %d analysis record(s) (skipped %d duplicates)", inserted, skipped)
+            except Exception as exc:
+                LOGGER.warning("Failed to write analyses to JSONL: %s", exc)
+
+            # Write to SQLite (local dev)
+            try:
+                index = load_analysis_index_db() if DB_PATH.exists() else None
+                inserted, skipped = append_new_analyses_db(new_analyses, existing_index=index)
+                if inserted:
+                    LOGGER.info("SQLite: inserted %d analysis record(s) (skipped %d duplicates)", inserted, skipped)
+            except Exception as exc:
+                LOGGER.warning("Failed to write analyses to SQLite: %s", exc)
 
 
 def analyze_date(target_date: str, concurrency: int | str | None = None) -> Path:

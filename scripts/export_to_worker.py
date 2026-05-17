@@ -6,6 +6,7 @@ import argparse
 import json
 import logging
 import sys
+import time
 from pathlib import Path
 
 SCRIPTS_DIR = Path(__file__).resolve().parents[1]
@@ -13,12 +14,22 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from lib.config import setup_logging
 from lib.archive import PAPERS_JSONL, ANALYSES_JSONL, read_jsonl
 
 LOGGER = logging.getLogger("export_to_worker")
 BATCH_SIZE = 100
+
+
+def _make_session() -> requests.Session:
+    session = requests.Session()
+    retry = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
+    adapter = HTTPAdapter(max_retries=retry, pool_connections=1, pool_maxsize=1)
+    session.mount("https://", adapter)
+    return session
 
 
 def export_papers(url: str, token: str) -> int:
@@ -28,6 +39,7 @@ def export_papers(url: str, token: str) -> int:
         LOGGER.info("No papers to export.")
         return 0
 
+    session = _make_session()
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}
     total_exported = 0
 
@@ -40,17 +52,21 @@ def export_papers(url: str, token: str) -> int:
             by_date.setdefault(date, []).append(paper)
 
         for date, date_papers in by_date.items():
-            resp = requests.post(
-                f"{url}/api/papers",
-                headers=headers,
-                json={"papers": date_papers, "source_date": date},
-                timeout=30,
-            )
-            if resp.ok:
-                result = resp.json()
-                total_exported += result.get("inserted", 0)
-            else:
-                LOGGER.warning("Failed to export papers for %s: %s", date, resp.text)
+            try:
+                resp = session.post(
+                    f"{url}/api/papers",
+                    headers=headers,
+                    json={"papers": date_papers, "source_date": date},
+                    timeout=30,
+                )
+                if resp.ok:
+                    result = resp.json()
+                    total_exported += result.get("inserted", 0)
+                else:
+                    LOGGER.warning("Failed to export papers for %s: %s", date, resp.text)
+            except requests.exceptions.RequestException as exc:
+                LOGGER.warning("Request failed for %s: %s", date, exc)
+            time.sleep(0.5)
 
         LOGGER.info("Exported batch %d-%d/%d", i, min(i + BATCH_SIZE, len(papers)), len(papers))
 
@@ -65,22 +81,27 @@ def export_analyses(url: str, token: str) -> int:
         LOGGER.info("No analyses to export.")
         return 0
 
+    session = _make_session()
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}
     total_exported = 0
 
     for i in range(0, len(analyses), BATCH_SIZE):
         batch = analyses[i : i + BATCH_SIZE]
-        resp = requests.post(
-            f"{url}/api/analyses",
-            headers=headers,
-            json={"analyses": batch},
-            timeout=30,
-        )
-        if resp.ok:
-            result = resp.json()
-            total_exported += result.get("inserted", 0)
-        else:
-            LOGGER.warning("Failed to export analyses batch %d-%d: %s", i, i + BATCH_SIZE, resp.text)
+        try:
+            resp = session.post(
+                f"{url}/api/analyses",
+                headers=headers,
+                json={"analyses": batch},
+                timeout=30,
+            )
+            if resp.ok:
+                result = resp.json()
+                total_exported += result.get("inserted", 0)
+            else:
+                LOGGER.warning("Failed to export analyses batch %d-%d: %s", i, i + BATCH_SIZE, resp.text)
+        except requests.exceptions.RequestException as exc:
+            LOGGER.warning("Request failed for analyses batch %d-%d: %s", i, i + BATCH_SIZE, exc)
+        time.sleep(0.5)
 
     LOGGER.info("Total analyses exported: %d", total_exported)
     return total_exported

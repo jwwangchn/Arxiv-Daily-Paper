@@ -82,8 +82,11 @@ npx wrangler deploy
 | Path | Purpose |
 |---|---|
 | `scripts/fetch_arxiv.py` | arXiv metadata fetcher, dual-writes to JSONL + SQLite |
-| `scripts/analyze_deepseek.py` | DeepSeek analysis (calls DeepSeek API) |
-| `scripts/export_to_worker.py` | Exports new JSONL data to Worker API |
+| `scripts/analyze_deepseek.py` | Entry point — delegates to commands.analyze |
+| `scripts/commands/analyze.py` | DeepSeek analysis logic |
+| `scripts/export_to_worker.py` | Exports new JSONL data to Worker API (with retry logic) |
+| `scripts/commands/build.py` | SPA build: reads JSONL, writes docs/index.html + docs/data/ |
+| `scripts/commands/fetch.py` | Legacy fetch commands (see fetch_arxiv.py for the active entry) |
 | `scripts/lib/db.py` | SQLite layer (local dev mirror of D1 schema) |
 | `scripts/lib/archive.py` | JSONL archive layer (canonical source) |
 | `worker/src/index.ts` | Hono API server (Cloudflare Worker) |
@@ -149,4 +152,4 @@ Cloudflare D1 free tier is limited by **daily read/write rows**, not storage. Cu
 
 ## Known Issues
 
-- `scripts/analyze_deepseek.py` is referenced in the workflow but does not exist. The actual analysis script is `scripts/commands/analyze.py`. The workflow will fail on the analysis step.
+None currently.

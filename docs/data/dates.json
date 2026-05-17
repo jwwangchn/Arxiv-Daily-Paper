@@ -1,11 +1,17 @@
 {
-  "latest": "2026-05-13",
+  "latest": "2026-05-14",
   "dates": [
+    {
+      "date": "2026-05-14",
+      "month": "2026-05",
+      "count": 10,
+      "analyzed_count": 3
+    },
     {
       "date": "2026-05-13",
       "month": "2026-05",
-      "count": 478,
-      "analyzed_count": 38
+      "count": 441,
+      "analyzed_count": 1
     },
     {
       "date": "2026-05-12",
@@ -16,8 +22,8 @@
     {
       "date": "2026-05-11",
       "month": "2026-05",
-      "count": 700,
-      "analyzed_count": 695
+      "count": 699,
+      "analyzed_count": 694
     },
     {
       "date": "2026-05-10",
@@ -28,38 +34,38 @@
     {
       "date": "2026-05-09",
       "month": "2026-05",
-      "count": 349,
-      "analyzed_count": 342
+      "count": 365,
+      "analyzed_count": 358
     },
     {
       "date": "2026-05-08",
       "month": "2026-05",
-      "count": 703,
-      "analyzed_count": 633
+      "count": 710,
+      "analyzed_count": 640
     },
     {
       "date": "2026-05-07",
       "month": "2026-05",
-      "count": 763,
-      "analyzed_count": 673
+      "count": 760,
+      "analyzed_count": 670
     },
     {
       "date": "2026-05-06",
       "month": "2026-05",
-      "count": 433,
-      "analyzed_count": 406
+      "count": 434,
+      "analyzed_count": 407
     },
     {
       "date": "2026-05-05",
       "month": "2026-05",
-      "count": 391,
-      "analyzed_count": 380
+      "count": 393,
+      "analyzed_count": 382
     },
     {
       "date": "2026-05-04",
       "month": "2026-05",
-      "count": 381,
-      "analyzed_count": 372
+      "count": 384,
+      "analyzed_count": 375
     },
     {
       "date": "2026-05-03",
@@ -82,14 +88,14 @@
     {
       "date": "2026-04-30",
       "month": "2026-04",
-      "count": 428,
-      "analyzed_count": 375
+      "count": 431,
+      "analyzed_count": 378
     },
     {
       "date": "2026-04-29",
       "month": "2026-04",
-      "count": 330,
-      "analyzed_count": 320
+      "count": 334,
+      "analyzed_count": 324
     },
     {
       "date": "2026-04-28",
@@ -258,6 +264,36 @@
       "month": "2026-04",
       "count": 408,
       "analyzed_count": 368
+    },
+    {
+      "date": "2026-03-29",
+      "month": "2026-03",
+      "count": 1,
+      "analyzed_count": 1
+    },
+    {
+      "date": "2026-03-04",
+      "month": "2026-03",
+      "count": 1,
+      "analyzed_count": 1
+    },
+    {
+      "date": "2026-02-14",
+      "month": "2026-02",
+      "count": 1,
+      "analyzed_count": 1
+    },
+    {
+      "date": "2026-01-09",
+      "month": "2026-01",
+      "count": 1,
+      "analyzed_count": 1
+    },
+    {
+      "date": "2023-01-15",
+      "month": "2023-01",
+      "count": 1,
+      "analyzed_count": 1
     }
   ]
 }

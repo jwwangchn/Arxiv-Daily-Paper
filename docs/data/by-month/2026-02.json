@@ -1,0 +1,59 @@
+{
+  "month": "2026-02",
+  "dates": {
+    "2026-02-14": [
+      {
+        "arxiv_id": "2605.04050",
+        "title": "LCM: Lossless Context Management",
+        "authors": [
+          "Clint Ehrlich",
+          "Theodore Blackman"
+        ],
+        "abstract": "We introduce Lossless Context Management (LCM), a deterministic architecture for LLM memory that outperforms Claude Code on long-context tasks. When benchmarked using Opus 4.6, our LCM-augmented coding agent, Volt, achieves higher scores than Claude Code on the OOLONG long-context eval, including at every context length between 32K and 1M tokens. LCM may be considered both a vindication and extension of the recursive paradigm pioneered by Recursive Language Models (RLMs). Our results demonstrate that recursive context manipulation can outperform not just conventional LLMs, but frontier coding agents with native file-system access. LCM departs from RLM by decomposing symbolic recursion into two deterministic, engine-managed mechanisms: recursive context compression, in which a hierarchical summary DAG automatically compacts older messages while retaining lossless pointers to every original; and recursive task partitioning, in which engine-managed parallel primitives like LLM-Map replace model-written loops. This trade-off, analogous to the move from GOTO to structured control flow in program-ming language design, sacrifices maximal flexibility for termination guarantees, zero-cost continuity on short tasks, and lossless retrievability of all prior state.",
+        "categories": [
+          "cs.AI",
+          "cs.PL",
+          "cs.SE"
+        ],
+        "primary_category": "cs.AI",
+        "published": "2026-02-14T00:00:00Z",
+        "updated": "2026-02-14T00:00:00Z",
+        "entry_url": "https://arxiv.org/abs/2605.04050",
+        "pdf_url": "https://arxiv.org/pdf/2605.04050",
+        "source_date": "2026-02-14",
+        "analysis": {
+          "tldr": "提出无损上下文管理（LCM）架构，通过确定性递归机制提升LLM长上下文任务性能，超越Claude Code。",
+          "research_motivation": "现有LLM在处理长上下文时存在信息丢失、性能下降等问题，且递归语言模型（RLM）虽具潜力但缺乏确定性和可扩展性。",
+          "problem": "如何设计一种确定性的LLM记忆架构，在长上下文任务中实现无损信息保留和高效处理。",
+          "phenomenon_analysis": "摘要未提供具体现象分析。",
+          "method": "LCM将符号递归分解为两种确定性机制：递归上下文压缩（构建层次摘要DAG，保留无损指针）和递归任务划分（引擎管理的并行原语如LLM-Map替代模型自写循环）。",
+          "contributions": [
+            "提出LCM架构，在长上下文评测中超越Claude Code。",
+            "将递归范式扩展为确定性、可管理的机制，提供终止保证、短任务零成本连续性和无损状态检索。"
+          ],
+          "experiments": "在OOLONG长上下文评测上，LCM增强的编码代理Volt在32K到1M tokens各长度上均优于Claude Code。",
+          "limitations": [
+            "可能牺牲了RLM的最大灵活性。",
+            "摘要未提及在非编码任务上的泛化性。"
+          ],
+          "primary_area_en": "foundation or frontier models, including LLMs",
+          "primary_area": "基础/前沿模型 (含LLM)",
+          "category": "模型架构",
+          "sub_area": "模型架构",
+          "tags": [
+            "LLM",
+            "长上下文",
+            "递归",
+            "记忆管理"
+          ],
+          "recommended_action": "read_deeply",
+          "reading_priority": "high",
+          "one_sentence_summary": "提出无损上下文管理（LCM）架构，通过确定性递归机制提升LLM长上下文任务性能，超越Claude Code。",
+          "legacy_reading_priority": "high"
+        },
+        "analysis_version": "v3_noscore_2026_05",
+        "analyzed_at": "2026-05-14T00:18:10.151541Z"
+      }
+    ]
+  }
+}

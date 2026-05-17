@@ -7,3 +7,14 @@ venv/
 data/raw/
 data/analyzed/
 data/archive/*.bak-*
+data/archive/raw/
+data/archive/analyzed/
+data/archive/daily/
+data/archive/data/
+data/archive/scripts/
+data/archive/papers.db
+data/archive/sources/
+.claude/
+
+
+node_modules/

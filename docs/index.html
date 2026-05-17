@@ -10,22 +10,22 @@
   <div class="shell">
     <aside class="sidebar">
       <div class="brand">
-        <h1><span class="book-mark">📚</span>arXiv Daily Paper</h1>
+        <h1><span class="book-mark">&#128218;</span>arXiv Daily Paper</h1>
         <p>每日论文导读</p>
       </div>
-      <input id="searchInput" class="search-input" type="search" placeholder="🔍 搜索标题 / 关键词...">
+      <input id="searchInput" class="search-input" type="search" placeholder="&#128269; 搜索标题 / 关键词...">
       <div class="stat-grid">
         <div class="stat-box"><b id="totalCount">0</b><span>论文总数</span></div>
         <div class="stat-box"><b id="dateCount">0</b><span>有论文日期</span></div>
       </div>
-      <button id="clearFilters" class="clear-button" type="button">📚 全部论文</button>
+      <button id="clearFilters" class="clear-button" type="button">&#128218; 全部论文</button>
 
       <section class="nav-section">
-        <h2>📅 历史日期</h2>
+        <h2>&#128197; 历史日期</h2>
         <div id="dateNav" class="date-nav"></div>
       </section>
       <section class="nav-section">
-        <h2>📂 按大类 -> 小类浏览</h2>
+        <h2>&#128194; 按大类 -&gt; 小类浏览</h2>
         <div id="topicNav" class="nav-tree"></div>
       </section>
       <section class="nav-section">
@@ -40,20 +40,20 @@
     <main class="content">
       <header class="page-header">
         <div class="hero-copy">
-          <h1>arXiv Daily Paper · 中文导读</h1>
-          <p>从 arXiv 自动抓取每日论文，基于标题与摘要生成中文导读；每篇论文给出 TL;DR、研究动机、解决问题、现象分析、主要方法、实验信息、贡献与局限。支持搜索、标签、分类和阅读优先级快速筛选。</p>
+          <h1>arXiv Daily Paper &middot; 中文导读</h1>
+          <p>&#20174; arXiv &#33258;&#21160;&#25235;&#21462;&#27599;&#26085;&#35542;&#25991;&#65292;&#22522;&#20110;&#26631;&#39064;&#19982;&#25688;&#35201;&#29983;&#25104;&#20013;&#25991;&#23548;&#35835;&#65307;&#27599;&#31687;&#35542;&#25991;&#32473;&#20986; TL;DR&#12289;&#30740;&#31350;&#21160;&#26426;&#12289;&#35299;&#20915;&#38382;&#39064;&#12289;&#29616;&#35937;&#20998;&#26512;&#12289;&#20027;&#35201;&#26041;&#27861;&#12289;&#23454;&#39564;&#20449;&#24687;&#12289;&#36129;&#29486;&#19982;&#23616;&#38480;&#12290;&#25903;&#25345;&#25628;&#32034;&#12289;&#26631;&#31614;&#12289;&#20998;&#31867;&#21644;&#38405;&#35835;&#20248;&#20808;&#32423;&#24555;&#36895;&#31569;&#36873;&#12290;</p>
           <div class="hero-chips">
-            <button class="hero-chip active" id="clearFiltersTop" type="button">📚 全部<span id="heroTotal">0</span>篇</button>
-            <button class="hero-chip hot" id="heroHigh" data-priority="high" type="button">🔥 High<span id="heroHighCount">0</span>篇</button>
-            <span class="hero-chip soft" id="currentDateLabel">加载中</span>
+            <button class="hero-chip active" id="clearFiltersTop" type="button">&#128218; &#20840;&#37096;<span id="heroTotal">0</span>&#31687;</button>
+            <button class="hero-chip hot" id="heroHigh" data-priority="high" type="button">&#128293; High<span id="heroHighCount">0</span>&#31687;</button>
+            <span class="hero-chip soft" id="currentDateLabel">&#21152;&#36733;&#20013;</span>
           </div>
         </div>
       </header>
-      <div class="count-line"><span id="visibleCount">0</span> / <span id="paperTotalInline">0</span> 篇论文可见 <span id="activeFilters"></span></div>
+      <div class="count-line"><span id="visibleCount">0</span> / <span id="paperTotalInline">0</span> &#31687;&#35542;&#25991;&#21487;&#35265; <span id="activeFilters"></span></div>
       <div id="paperList"></div>
-      <div id="noResults" class="empty-state hidden">没有匹配当前筛选条件的论文。</div>
-      <div id="loadingState" class="empty-state">正在加载论文数据...</div>
-      <button id="backToTop" class="back-to-top" type="button" aria-label="回到顶部">&uarr; 顶部</button>
+      <div id="noResults" class="empty-state hidden">&#27809;&#26377;&#21305;&#37197;&#24403;&#21069;&#31569;&#36873;&#26465;&#20214;&#30340;&#35542;&#25991;&#12290;</div>
+      <div id="loadingState" class="empty-state">&#27491;&#22312;&#21152;&#36733;&#35542;&#25991;&#25968;&#25454;...</div>
+      <button id="backToTop" class="back-to-top" type="button" aria-label="&#22238;&#21040;&#39030;&#37096;">&uarr; &#39030;&#37096;</button>
     </main>
   </div>
   <script src="assets/app.js"></script>
