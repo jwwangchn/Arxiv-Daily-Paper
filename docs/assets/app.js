@@ -62,7 +62,7 @@
   }
 
   function priorityRank(priority) {
-    return { high: 0, medium: 1, low: 2 }[priority] ?? 3;
+    return { high: 0, medium: 1, low: 2 }[priority] ?? 4;
   }
 
   function paperTime(paper) {
@@ -74,10 +74,12 @@
   }
 
   function paperArea(paper) {
-    return (paper.analysis || {}).primary_area || "其他 ML 主题";
+    const area = (paper.analysis || {}).primary_area;
+    return area || (paper.has_analysis ? "其他 ML 主题" : "未分析");
   }
 
   function paperSubarea(paper) {
+    if (paperArea(paper) === "未分析") return "未分析";
     const analysis = paper.analysis || {};
     return analysis.category || analysis.sub_area || "其他";
   }
@@ -119,10 +121,16 @@
     for (const paper of papers) {
       const priority = paperPriority(paper);
       if (priority in priorities) priorities[priority] += 1;
+      // Unanalyzed papers: no tags, no subareas
+      const area = paperArea(paper);
+      if (area === "未分析") {
+        if (!areas.has(area)) areas.set(area, new Map());
+        areas.get(area).set("未分析", (areas.get(area).get("未分析") || 0) + 1);
+        continue;
+      }
       for (const tag of (paper.analysis || {}).tags || []) {
         tags.set(tag, (tags.get(tag) || 0) + 1);
       }
-      const area = paperArea(paper);
       const sub = paperSubarea(paper);
       if (!areas.has(area)) areas.set(area, new Map());
       const subMap = areas.get(area);
@@ -296,6 +304,26 @@
     const authors = (paper.authors || []).slice(0, 8).join(", ");
     const moreAuthors = (paper.authors || []).length > 8 ? " et al." : "";
     const tags = (analysis.tags || []).map((tag) => `<button class="hash-tag" data-tag="${escapeHtml(tag)}" type="button">#${escapeHtml(tag)}</button>`).join("");
+
+    // Unanalyzed papers: show abstract only, no analysis grid
+    if (paperArea(paper) === "未分析") {
+      return `<article class="paper-card">
+        <h3 class="paper-title"><a href="${escapeHtml(paper.entry_url)}" target="_blank" rel="noopener">${title}</a></h3>
+        <div class="paper-meta-line">
+          <span class="priority-pill priority-unknown">未分析</span>
+          <span class="paper-id">${escapeHtml(paper.arxiv_id)}</span>
+        </div>
+        <div class="paper-authors">${escapeHtml(authors)}${moreAuthors}</div>
+        <div class="paper-links">
+          <a href="${escapeHtml(paper.entry_url)}" target="_blank" rel="noopener">arXiv</a>
+          <a href="${escapeHtml(paper.pdf_url)}" target="_blank" rel="noopener">PDF</a>
+          <span>${escapeHtml(paper.display_category || paper.primary_category)}</span>
+        </div>
+        <div class="paper-abstract">${escapeHtml(paper.abstract)}</div>
+      </article>`;
+    }
+
+    // Analyzed papers: show full analysis grid
     return `<article class="paper-card">
       <h3 class="paper-title"><a href="${escapeHtml(paper.entry_url)}" target="_blank" rel="noopener">${title}</a></h3>
       <div class="paper-meta-line">

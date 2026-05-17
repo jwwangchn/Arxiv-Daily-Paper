@@ -667,6 +667,12 @@ a.calendar-day:hover {
   color: #1a7f37;
 }
 
+.priority-unknown {
+  background: #f0f0f0;
+  color: #999;
+}
+}
+
 .paper-id {
   color: #6e7781;
   font-size: 12px;
@@ -728,6 +734,17 @@ a.calendar-day:hover {
 
 .paper-tldr b {
   color: #5a4500;
+}
+
+.paper-abstract {
+  border-left: 3px solid #e5e7eb;
+  border-radius: 0 4px 4px 0;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 9px 0 11px;
+  padding: 9px 13px;
 }
 
 .analysis-grid {
