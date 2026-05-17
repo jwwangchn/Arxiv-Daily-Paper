@@ -158,29 +158,25 @@ def export_papers(url: str, token: str, papers: list[dict[str, Any]]) -> int:
 
     for i in range(0, len(papers), BATCH_SIZE):
         batch = papers[i : i + BATCH_SIZE]
-        by_date: dict[str, list[dict[str, Any]]] = {}
-        for paper in batch:
-            date = paper_source_date(paper)
-            if not date:
-                LOGGER.warning("Skipping paper without source_date: %s", paper_id(paper) or paper.get("id", ""))
-                continue
-            by_date.setdefault(date, []).append(paper)
+        batch = [paper for paper in batch if paper_source_date(paper)]
+        if not batch:
+            continue
 
-        for source_date, date_papers in by_date.items():
-            try:
-                resp = session.post(
-                    f"{url}/api/papers",
-                    headers=headers,
-                    json={"papers": date_papers, "source_date": source_date},
-                    timeout=30,
-                )
-                if resp.ok:
-                    total_exported += int(resp.json().get("inserted", 0))
-                else:
-                    LOGGER.warning("Failed to export papers for %s: %s", source_date, resp.text)
-            except requests.exceptions.RequestException as exc:
-                LOGGER.warning("Request failed for %s: %s", source_date, exc)
-            time.sleep(0.5)
+        source_date = paper_source_date(batch[0])
+        try:
+            resp = session.post(
+                f"{url}/api/papers",
+                headers=headers,
+                json={"papers": batch, "source_date": source_date},
+                timeout=30,
+            )
+            if resp.ok:
+                total_exported += int(resp.json().get("inserted", 0))
+            else:
+                LOGGER.warning("Failed to export papers batch %d-%d: %s", i, i + BATCH_SIZE, resp.text)
+        except requests.exceptions.RequestException as exc:
+            LOGGER.warning("Request failed for papers batch %d-%d: %s", i, i + BATCH_SIZE, exc)
+        time.sleep(0.5)
 
         LOGGER.info("Exported papers batch %d-%d/%d", i, min(i + BATCH_SIZE, len(papers)), len(papers))
 
