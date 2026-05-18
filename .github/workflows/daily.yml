@@ -81,6 +81,15 @@ jobs:
             python scripts/fetch_arxiv.py "${args[@]}"
           done
 
+      - name: Sync existing analyses from D1
+        if: fromJSON(steps.dates.outputs.dates)[0] != null
+        env:
+          TARGET_DATES: ${{ steps.dates.outputs.dates }}
+          WORKER_URL: ${{ secrets.ARXIV_DAILY_WORKER_URL }}
+        run: |
+          dates=$(echo "$TARGET_DATES" | python -c "import sys,json; print(' '.join(json.load(sys.stdin)))")
+          PYTHONPATH=scripts python scripts/sync_remote_analyses.py --dates $dates --worker-url "$WORKER_URL"
+
       - name: Analyze papers with DeepSeek
         if: fromJSON(steps.dates.outputs.dates)[0] != null
         env:
