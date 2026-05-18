@@ -144,12 +144,13 @@ Settings → Pages → Source: main 分支, Folder: /docs
 
 ### GitHub Actions
 
-每天北京时间 04:00 自动运行（默认处理过去 3 个工作日）：
+每天北京时间 04:00 自动运行（默认处理当天日期）：
 
-1. 计算目标日期（跳过周六日），逐个日期执行 pipeline
+1. 获取目标日期（默认今天，或手动指定）
 2. 通过 OAI-PMH 抓取 arXiv 论文 → 自动跳过已存在于数据库的论文，仅插入新数据
-3. DeepSeek 分析 → 自动跳过已有分析结果的论文，仅分析未分析的
-4. 同步新数据到 Worker API → 写入远程 D1
+3. **同步远程 D1 已有分析结果** → 避免重复调用 DeepSeek API 浪费费用
+4. DeepSeek 分析 → 仅分析本地数据库中尚未分析的论文
+5. 同步新数据到 Worker API → 写入远程 D1
 
 ## config.yaml
 

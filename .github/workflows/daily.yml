@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
     inputs:
       date:
-        description: "Optional single target date in YYYY-MM-DD format (overrides auto date computation)"
+        description: "Optional single target date in YYYY-MM-DD format (default: today)"
         required: false
         type: string
       max_papers:
-        description: "Optional max number of papers to fetch per date"
+        description: "Optional max number of papers to fetch"
         required: false
         type: string
       concurrency:
@@ -18,14 +18,10 @@ on:
         required: false
         type: string
       full_export:
-        description: "Export all local database records to D1 instead of only the target dates"
+        description: "Export all local database records to D1 instead of only the target date"
         required: false
         default: false
         type: boolean
-      backfill_days:
-        description: "Number of past weekdays to process (default: 3)"
-        required: false
-        type: string
 
 permissions:
   contents: write
@@ -52,17 +48,14 @@ jobs:
         id: dates
         env:
           SINGLE_DATE: ${{ github.event.inputs.date }}
-          BACKFILL_DAYS: ${{ github.event.inputs.backfill_days }}
         run: |
           if [ -n "$SINGLE_DATE" ]; then
             echo "Using single date from input: $SINGLE_DATE"
             echo "dates=[\"$SINGLE_DATE\"]" >> "$GITHUB_OUTPUT"
           else
-            days="${BACKFILL_DAYS:-3}"
-            echo "Computing dates for past $days weekdays..."
-            result=$(PYTHONPATH=scripts python scripts/compute_dates.py --backfill-days "$days")
-            echo "dates=$result" >> "$GITHUB_OUTPUT"
-            echo "Target dates: $result"
+            today=$(date -u +%F)
+            echo "Using today's date: $today"
+            echo "dates=[\"$today\"]" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Fetch arXiv papers
