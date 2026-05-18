@@ -124,3 +124,14 @@ jobs:
               python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN" --date "$d"
             done
           fi
+
+      - name: Update static date index
+        run: PYTHONPATH=scripts python scripts/update_date_index.py
+
+      - name: Commit and push index changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data/dates.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update static date index"
+          git push

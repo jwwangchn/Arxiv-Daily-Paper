@@ -28,15 +28,17 @@ Core stack:
 │  fetch_arxiv.py   │     │  GET /api/*       │     │  app.js          │
 │  analyze_*.py     │     │  POST /api/*      │     │  Worker API only │
 │  export_to_worker │     │                   │     │                   │
+│  update_date_index│     │                   │     │  data/dates.json │
 └──────────────────┘     └──────────────────┘     └──────────────────┘
 ```
 
-**Two data layers:**
+**Data layers:**
 
 | Layer | Location | Purpose |
 |---|---|---|
-| **Cloudflare D1** | Remote (`ac0b5b96-...`) | Production data store, queried by Worker |
-| **Local SQLite** | `data/archive/papers.db` | Local dev mirror of D1 schema |
+| **Cloudflare D1** | Remote | Production data store, queried by Worker for paper details |
+| **Local SQLite** | `data/archive/papers.db` | Local dev/CI mirror of D1 schema |
+| **Static Index** | `docs/data/dates.json` | Committed JSON index for calendar counts (reduces D1 reads) |
 
 ## Important Paths
 
@@ -59,6 +61,7 @@ Core stack:
 - `data/archive/papers.db` — local SQLite database (gitignored)
 - `data/iclr_taxonomy.json` — ICLR 2026 classification taxonomy
 - `docs/assets/app.js` — SPA frontend, all data from Worker API
+- `docs/data/dates.json` — Static date index for calendar (committed to repo)
 - `tests/` — unit tests (pytest)
 
 **Removed paths — do not use:** `scripts/lib/archive.py`, `scripts/commands/build.py`, `data/raw/`, `data/analyzed/`, `data/mock/`, `data/archive/papers.jsonl`, `data/archive/analyses.jsonl`, `db/schema.sql`, `scripts/fetchers/aaai_ojs.py`, `scripts/fetchers/acl_anthology.py`, `scripts/fetchers/cvf.py`, `scripts/fetchers/openreview.py`.

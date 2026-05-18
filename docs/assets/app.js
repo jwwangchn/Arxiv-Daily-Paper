@@ -743,13 +743,20 @@
 
   async function init() {
     bindEvents();
-    // Date index from Worker API
-    const apiDates = await fetch(`${WORKER_URL}/api/dates`);
-    if (!apiDates.ok) {
-      els.loading.textContent = "无法连接数据源，请检查网络。";
-      return;
+    // Date index from static JSON file (reduces D1 read costs)
+    try {
+      const res = await fetch("data/dates.json");
+      if (!res.ok) throw new Error("Failed to load dates.json");
+      state.dateIndex = await res.json();
+    } catch (error) {
+      // Fallback to Worker API if static file is missing
+      const apiDates = await fetch(`${WORKER_URL}/api/dates`);
+      if (!apiDates.ok) {
+        els.loading.textContent = "无法连接数据源，请检查网络。";
+        return;
+      }
+      state.dateIndex = await apiDates.json();
     }
-    state.dateIndex = await apiDates.json();
     renderDates();
     els.content?.addEventListener("scroll", updateBackToTop);
     window.addEventListener("scroll", updateBackToTop);
