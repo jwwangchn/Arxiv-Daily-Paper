@@ -500,7 +500,7 @@
     const contentScrolled = els.content?.scrollTop || 0;
     const pageScrolled = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
     const scrolled = Math.max(contentScrolled, pageScrolled);
-    if (els.backToTop) els.backToTop.classList.toggle("visible", scrolled > 400);
+    if (els.backToTop) els.backToTop.classList.toggle("visible", scrolled > 200);
   }
 
   function scrollBackToTop() {
@@ -669,16 +669,74 @@
       if (prevPage && state.page > 0) {
         state.page -= 1;
         renderPapers();
+        scrollBackToTop();
         return;
       }
       if (nextPage && (state.page + 1) * PAGE_SIZE < filteredPapers().length) {
         state.page += 1;
         renderPapers();
+        scrollBackToTop();
         return;
       }
       if (priority || tag || area || subarea) {
         state.page = 0;
         renderPapers();
+        scrollBackToTop();
+      }
+      if (nextPage && (state.page + 1) * PAGE_SIZE < filteredPapers().length) {
+        state.page += 1;
+        renderPapers();
+        scrollBackToTop();
+        return;
+      }
+      if (priority || tag || area || subarea) {
+        state.page = 0;
+        renderPapers();
+        scrollBackToTop();
+      }
+      if (nextPage && (state.page + 1) * PAGE_SIZE < filteredPapers().length) {
+        state.page += 1;
+        renderPapers();
+        scrollBackToTop();
+        return;
+      }
+      if (priority || tag || area || subarea) {
+        state.page = 0;
+        renderPapers();
+        scrollBackToTop();
+      }
+      if (nextPage && (state.page + 1) * PAGE_SIZE < filteredPapers().length) {
+        state.page += 1;
+        renderPapers();
+        scrollBackToTop();
+        return;
+      }
+      if (priority || tag || area || subarea) {
+        state.page = 0;
+        renderPapers();
+        scrollBackToTop();
+      }
+      if (nextPage && (state.page + 1) * PAGE_SIZE < filteredPapers().length) {
+        state.page += 1;
+        renderPapers();
+        scrollBackToTop();
+        return;
+      }
+      if (priority || tag || area || subarea) {
+        state.page = 0;
+        renderPapers();
+        scrollBackToTop();
+      }
+      if (nextPage && (state.page + 1) * PAGE_SIZE < filteredPapers().length) {
+        state.page += 1;
+        renderPapers();
+        scrollBackToTop();
+        return;
+      }
+      if (priority || tag || area || subarea) {
+        state.page = 0;
+        renderPapers();
+        scrollBackToTop();
       }
     });
   }
