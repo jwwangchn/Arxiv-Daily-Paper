@@ -52,41 +52,50 @@ jobs:
           if [ -n "$SINGLE_DATE" ]; then
             echo "Using single date from input: $SINGLE_DATE"
             echo "dates=[\"$SINGLE_DATE\"]" >> "$GITHUB_OUTPUT"
+            echo "latest_with_papers=false" >> "$GITHUB_OUTPUT"
           else
             today=$(date -u +%F)
-            echo "Using today's date: $today"
+            echo "Using latest arXiv date with papers, starting from UTC date: $today"
             echo "dates=[\"$today\"]" >> "$GITHUB_OUTPUT"
+            echo "latest_with_papers=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Fetch arXiv papers
+        id: fetch
         if: fromJSON(steps.dates.outputs.dates)[0] != null
         env:
           TARGET_DATES: ${{ steps.dates.outputs.dates }}
+          LATEST_WITH_PAPERS: ${{ steps.dates.outputs.latest_with_papers }}
           REQUESTED_MAX_PAPERS: ${{ github.event.inputs.max_papers }}
         run: |
           dates=$(echo "$TARGET_DATES" | python -c "import sys,json; print(' '.join(json.load(sys.stdin)))")
           for d in $dates; do
             echo "=== Fetching papers for $d ==="
             args=(--date "$d")
+            if [ "$LATEST_WITH_PAPERS" = "true" ]; then
+              args+=(--latest-with-papers)
+            fi
             if [ -n "$REQUESTED_MAX_PAPERS" ]; then
               args+=(--max-papers "$REQUESTED_MAX_PAPERS")
             fi
             python scripts/fetch_arxiv.py "${args[@]}"
           done
+          actual_dates=$(PYTHONPATH=scripts python -c "import json; from lib.db import available_dates; print(json.dumps(available_dates()[-1:]))")
+          echo "dates=$actual_dates" >> "$GITHUB_OUTPUT"
 
       - name: Sync existing analyses from D1
-        if: fromJSON(steps.dates.outputs.dates)[0] != null
+        if: fromJSON(steps.fetch.outputs.dates)[0] != null
         env:
-          TARGET_DATES: ${{ steps.dates.outputs.dates }}
+          TARGET_DATES: ${{ steps.fetch.outputs.dates }}
           WORKER_URL: ${{ secrets.ARXIV_DAILY_WORKER_URL }}
         run: |
           dates=$(echo "$TARGET_DATES" | python -c "import sys,json; print(' '.join(json.load(sys.stdin)))")
           PYTHONPATH=scripts python scripts/sync_remote_analyses.py --dates $dates --worker-url "$WORKER_URL"
 
       - name: Analyze papers with DeepSeek
-        if: fromJSON(steps.dates.outputs.dates)[0] != null
+        if: fromJSON(steps.fetch.outputs.dates)[0] != null
         env:
-          TARGET_DATES: ${{ steps.dates.outputs.dates }}
+          TARGET_DATES: ${{ steps.fetch.outputs.dates }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           DEEPSEEK_CONCURRENCY: ${{ github.event.inputs.concurrency }}
         run: |
@@ -105,7 +114,7 @@ jobs:
           WORKER_URL: ${{ secrets.ARXIV_DAILY_WORKER_URL }}
           WORKER_TOKEN: ${{ secrets.ARXIV_DAILY_WORKER_TOKEN }}
           FULL_EXPORT: ${{ github.event.inputs.full_export }}
-          TARGET_DATES: ${{ steps.dates.outputs.dates }}
+          TARGET_DATES: ${{ steps.fetch.outputs.dates }}
         run: |
           if [ -z "$WORKER_URL" ]; then
             echo "WARNING: ARXIV_DAILY_WORKER_URL not set, skipping sync"
