@@ -51,7 +51,27 @@ app.get("/health", (c) => c.json({ status: "ok", timestamp: new Date().toISOStri
 // GET /api/dates - List all available dates with paper counts
 app.get("/api/dates", async (c) => {
   return cachedGet(c, c.req.url, async () => {
-  const { results } = await c.env.DB.prepare(`
+    // Steady-state path: read the materialized small table, not papers/analyses.
+    const dateIndex = await loadDateIndex(c.env.DB);
+    return cacheableJson(c, dateIndex);
+  });
+});
+
+async function loadDateIndex(db: D1Database): Promise<{ latest: string; dates: any[] }> {
+  try {
+    const { results } = await db.prepare(`
+      SELECT date, month, count, analyzed_count
+      FROM date_index
+      ORDER BY date DESC
+    `).all<{ date: string; month: string; count: number; analyzed_count: number }>();
+    if (results.length > 0) {
+      return { latest: results[0].date, dates: results };
+    }
+  } catch {
+    // Migration rollout safety only. Rebuild date_index after deploy to keep /api/dates cheap.
+  }
+
+  const { results } = await db.prepare(`
     SELECT
       p.source_date as date,
       substr(p.source_date, 1, 7) as month,
@@ -65,9 +85,8 @@ app.get("/api/dates", async (c) => {
   `).all<{ date: string; month: string; count: number; analyzed_count: number }>();
 
   const latest = results.length > 0 ? results[0].date : "";
-  return cacheableJson(c, { latest, dates: results });
-  });
-});
+  return { latest, dates: results };
+}
 
 // GET /api/papers?date=YYYY-MM-DD - Papers for a specific date
 app.get("/api/papers", async (c) => {
@@ -166,7 +185,7 @@ async function loadPapers(c: any, date?: string, month?: string, source = "arxiv
       FROM papers p
       LEFT JOIN analyses a ON p.id = a.arxiv_id
       ${whereClause}
-    `).bind(...bindings).first<{ total: number }>();
+    `).bind(...bindings).first() as { total: number } | null;
     total = totalRow?.total || 0;
   }
 
@@ -264,7 +283,7 @@ app.get("/api/stats", async (c) => {
     WHERE primary_area != ''
     GROUP BY primary_area
     ORDER BY count DESC
-  `).all<{ primary_area: string; count: number }>();
+  `).all() as { results: { primary_area: string; count: number }[] };
 
   return c.json({
     total_papers: (paperCount as any)?.count || 0,
@@ -344,6 +363,7 @@ app.post("/api/papers", async (c) => {
   `);
 
   const batch = papers.slice(0, 100); // D1 batch limit
+  const affectedDates = new Set<string>();
   for (const paper of batch) {
     const arxivId = paper.arxiv_id || paper.id || "";
     if (!arxivId) continue;
@@ -364,8 +384,10 @@ app.post("/api/papers", async (c) => {
       paperSourceDate,
       paper.fetched_at || new Date().toISOString(),
     ).run();
+    if (paperSourceDate) affectedDates.add(paperSourceDate);
     inserted++;
   }
+  await refreshDateIndex(c.env.DB, [...affectedDates]);
 
   return c.json({ inserted, total: papers.length });
 });
@@ -398,9 +420,11 @@ app.post("/api/analyses", async (c) => {
   `);
 
   const batch = analyses.slice(0, 100);
+  const affectedIds = new Set<string>();
   for (const analysis of batch) {
     const arxivId = analysis.arxiv_id || "";
     if (!arxivId) continue;
+    affectedIds.add(arxivId);
 
     const data = analysis.analysis || {};
     await stmt.bind(
@@ -427,9 +451,101 @@ app.post("/api/analyses", async (c) => {
     ).run();
     inserted++;
   }
+  await refreshDateIndexForPapers(c.env.DB, [...affectedIds]);
 
   return c.json({ inserted, total: analyses.length });
 });
+
+// POST /api/date-index/rebuild - Expensive maintenance path: rebuild small date_index table from D1 tables
+app.post("/api/date-index/rebuild", async (c) => {
+  if (c.env.API_TOKEN) {
+    const auth = c.req.header("Authorization");
+    if (auth !== `Bearer ${c.env.API_TOKEN}`) {
+      return c.json({ error: "Unauthorized" }, 401);
+    }
+  }
+
+  try {
+    const rebuilt = await rebuildDateIndex(c.env.DB);
+    return c.json({ rebuilt });
+  } catch (error) {
+    return c.json({ rebuilt: false, error: String(error) });
+  }
+});
+
+async function rebuildDateIndex(db: D1Database): Promise<boolean> {
+  await db.prepare("DELETE FROM date_index").run();
+  await db.prepare(`
+    INSERT INTO date_index (date, month, count, analyzed_count, updated_at)
+    SELECT
+      p.source_date as date,
+      substr(p.source_date, 1, 7) as month,
+      COUNT(*) as count,
+      COUNT(a.arxiv_id) as analyzed_count,
+      datetime('now') as updated_at
+    FROM papers p
+    LEFT JOIN analyses a ON p.id = a.arxiv_id
+    WHERE p.source_date != ''
+    GROUP BY p.source_date
+  `).run();
+  return true;
+}
+
+async function refreshDateIndexForPapers(db: D1Database, arxivIds: string[]): Promise<void> {
+  if (arxivIds.length === 0) return;
+  try {
+    const placeholders = arxivIds.map(() => "?").join(", ");
+    const { results } = await db.prepare(`
+      SELECT DISTINCT source_date
+      FROM papers
+      WHERE id IN (${placeholders}) AND source_date != ''
+    `).bind(...arxivIds).all<{ source_date: string }>();
+    await refreshDateIndex(db, results.map((row) => row.source_date));
+  } catch {
+    // Keep data export successful even if date_index has not been migrated yet.
+  }
+}
+
+async function refreshDateIndex(db: D1Database, dates: string[]): Promise<void> {
+  const uniqueDates = [...new Set(dates.filter(Boolean))];
+  if (uniqueDates.length === 0) return;
+
+  try {
+    const status = await db.prepare("SELECT COUNT(*) as count FROM date_index").first<{ count: number }>();
+    if (!status?.count) return;
+
+    for (const date of uniqueDates) {
+      const row = await db.prepare(`
+        SELECT
+          p.source_date as date,
+          substr(p.source_date, 1, 7) as month,
+          COUNT(*) as count,
+          COUNT(a.arxiv_id) as analyzed_count
+        FROM papers p
+        LEFT JOIN analyses a ON p.id = a.arxiv_id
+        WHERE p.source_date = ?
+        GROUP BY p.source_date
+      `).bind(date).first<{ date: string; month: string; count: number; analyzed_count: number }>();
+
+      if (!row) {
+        await db.prepare("DELETE FROM date_index WHERE date = ?").bind(date).run();
+        continue;
+      }
+
+      await db.prepare(`
+        INSERT INTO date_index (date, month, count, analyzed_count, updated_at)
+        VALUES (?, ?, ?, ?, datetime('now'))
+        ON CONFLICT(date) DO UPDATE SET
+          month = excluded.month,
+          count = excluded.count,
+          analyzed_count = excluded.analyzed_count,
+          updated_at = excluded.updated_at
+      `).bind(row.date, row.month, row.count, row.analyzed_count).run();
+    }
+  } catch {
+    // date_index is optional during migration rollout.
+  }
+}
 
 function safeJsonParse(value: string | null | undefined): any {
   if (!value) return [];

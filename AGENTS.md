@@ -28,7 +28,6 @@ Core stack:
 │  fetch_arxiv.py   │     │  GET /api/*       │     │  app.js          │
 │  analyze_*.py     │     │  POST /api/*      │     │  Worker API only │
 │  export_to_worker │     │                   │     │                   │
-│  update_date_index│     │                   │     │  data/dates.json │
 └──────────────────┘     └──────────────────┘     └──────────────────┘
 ```
 
@@ -36,9 +35,8 @@ Core stack:
 
 | Layer | Location | Purpose |
 |---|---|---|
-| **Cloudflare D1** | Remote | Production data store, queried by Worker for paper details |
+| **Cloudflare D1** | Remote | Production data store, queried by Worker for paper details and date index |
 | **Local SQLite** | `data/archive/papers.db` | Local dev/CI mirror of D1 schema |
-| **Static Index** | `docs/data/dates.json` | Committed JSON index for calendar counts (reduces D1 reads) |
 
 ## Important Paths
 
@@ -55,16 +53,16 @@ Core stack:
 - `scripts/fetchers/base.py` — base fetcher class (framework for future fetchers)
 - `scripts/fetchers/registry.py` — fetcher registry (framework for future fetchers)
 - `worker/src/index.ts` — Cloudflare Worker (Hono API)
-- `migrations/0001_create_papers_table.sql` — D1 schema definition
+- `migrations/0001_create_papers_table.sql` — D1 paper/analysis schema definition
+- `migrations/0002_create_date_index.sql` — D1 materialized date index schema
 - `wrangler.toml` — Cloudflare deployment config with D1 binding
 - `tools/dev-server.js` — local dev server (port 3000, proxies `/api/*` to Worker)
 - `data/archive/papers.db` — local SQLite database (gitignored)
 - `data/iclr_taxonomy.json` — ICLR 2026 classification taxonomy
 - `docs/assets/app.js` — SPA frontend, all data from Worker API
-- `docs/data/dates.json` — Static date index for calendar (committed to repo)
 - `tests/` — unit tests (pytest)
 
-**Removed paths — do not use:** `scripts/lib/archive.py`, `scripts/commands/build.py`, `data/raw/`, `data/analyzed/`, `data/mock/`, `data/archive/papers.jsonl`, `data/archive/analyses.jsonl`, `db/schema.sql`, `scripts/fetchers/aaai_ojs.py`, `scripts/fetchers/acl_anthology.py`, `scripts/fetchers/cvf.py`, `scripts/fetchers/openreview.py`.
+**Removed paths — do not use:** `scripts/lib/archive.py`, `scripts/commands/build.py`, `scripts/update_date_index.py`, `docs/data/dates.json`, `data/raw/`, `data/analyzed/`, `data/mock/`, `data/archive/papers.jsonl`, `data/archive/analyses.jsonl`, `db/schema.sql`, `scripts/fetchers/aaai_ojs.py`, `scripts/fetchers/acl_anthology.py`, `scripts/fetchers/cvf.py`, `scripts/fetchers/openreview.py`.
 
 ## Commands
 
@@ -151,6 +149,8 @@ Workflow inputs:
 1. `fetch_arxiv.py` → fetches arXiv metadata via OAI-PMH, writes to SQLite
 2. `analyze_deepseek.py` → calls DeepSeek API, writes analysis to SQLite
 3. `export_to_worker.py` → reads local SQLite, pushes new records to D1 via Worker API
+4. Worker rebuilds the D1 `date_index` table for calendar counts; no Git-tracked JSON index is generated
+5. SPA calendar reads `/api/dates`, whose steady-state path reads only the D1 `date_index` small table
 
 ### Local Development
 
@@ -164,8 +164,9 @@ Two tables:
 
 - **papers**: `id TEXT PRIMARY KEY` (arxiv_id), source, title, authors (JSON), abstract, categories (JSON), primary_category, published, updated, entry_url, pdf_url, source_date, venue, year, fetched_at, created_at
 - **analyses**: `arxiv_id TEXT PRIMARY KEY`, analysis_version, model, analyzed_at, tldr, research_motivation, problem, phenomenon_analysis, method, contributions (JSON), experiments, limitations (JSON), primary_area_en, primary_area, category, sub_area, tags (JSON), reading_priority, recommended_action, raw_response, created_at
+- **date_index**: `date TEXT PRIMARY KEY`, month, count, analyzed_count, updated_at
 
-Indexes on `papers.source_date`, `papers.source`, `papers.year`, `analyses.reading_priority`, `analyses.primary_area`, `analyses.category`.
+Indexes on `papers.source_date`, `papers.source`, `papers.year`, `analyses.reading_priority`, `analyses.primary_area`, `analyses.category`, `date_index.month`.
 
 **Important write semantics:**
 - **papers**: `INSERT ... ON CONFLICT(id) DO UPDATE SET` — upserts (updates existing)
@@ -204,13 +205,14 @@ Cloudflare D1 free tier is limited by **daily read/write rows** (not storage). F
 
 Worker uses Cache API with `s-maxage=900`, `max-age=300`, `stale-while-revalidate=86400`.
 
+`GET /api/dates` must stay cheap: the normal path reads the materialized D1 `date_index` table. Aggregating from `papers` / `analyses` is only for `POST /api/date-index/rebuild` or migration fallback when `date_index` is not available yet.
+
 Priority mapping in Worker: `must_read→high`, `recommended→medium`, `skim→low`, `low_priority→low`, `skip→low`.
 
 ## SPA Frontend
 
 - `docs/assets/app.js` — vanilla JS, no framework, no build step.
-- Hardcoded `WORKER_URL = "https://arxiv-daily-api.jwwangchn.workers.dev"`.
-- Dev server injects `window.API_BASE_URL=""` for same-origin API calls.
+- Production uses `https://arxiv-daily-api.jwwangchn.workers.dev`; dev server injects `window.API_BASE_URL=""` for same-origin API calls.
 - On init: fetches `/api/dates` → calendar + date list.
 - On date selection: fetches `/api/papers?date=YYYY-MM-DD`.
 - Unanalyzed papers display as "未分析" category with abstract only.

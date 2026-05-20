@@ -24,7 +24,7 @@ on:
         type: boolean
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -133,14 +133,8 @@ jobs:
               python scripts/export_to_worker.py --url "$WORKER_URL" --token "$WORKER_TOKEN" --date "$d"
             done
           fi
-
-      - name: Update static date index
-        run: PYTHONPATH=scripts python scripts/update_date_index.py
-
-      - name: Commit and push index changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/data/dates.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "chore: update static date index"
-          git push
+          echo "=== Rebuilding D1 date index ==="
+          curl -fsS -X POST "$WORKER_URL/api/date-index/rebuild" \
+            -H "Authorization: Bearer $WORKER_TOKEN" \
+            -H "Content-Type: application/json" \
+            || echo "WARNING: date index rebuild endpoint unavailable; /api/dates will fall back to live D1 aggregation"

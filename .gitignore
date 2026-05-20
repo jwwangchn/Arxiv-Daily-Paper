@@ -23,6 +23,8 @@ node_modules/
 
 # Database (local dev only, D1 is production)
 data/archive/papers.db
+data/archive/papers.db-shm
+data/archive/papers.db-wal
 
 # Deprecated data directories
 data/raw/

@@ -27,7 +27,7 @@
 
 | 层 | 位置 | 用途 |
 |---|---|---|
-| Cloudflare D1 | 远程数据库 | 生产环境权威数据源，Worker API 查询 |
+| Cloudflare D1 | 远程数据库 | 生产环境权威数据源，Worker API 查询论文和日期索引 |
 | 本地 SQLite | `data/archive/papers.db` | 本地开发，D1 schema 镜像 |
 
 ## 目录结构
@@ -52,7 +52,8 @@
 │   ├── package.json
 │   └── tsconfig.json
 ├── migrations/
-│   └── 0001_create_papers_table.sql  # D1 数据库 schema
+│   ├── 0001_create_papers_table.sql  # D1 论文/分析 schema
+│   └── 0002_create_date_index.sql    # D1 日期索引 schema
 ├── wrangler.toml                  # Cloudflare 部署配置
 ├── tools/
 │   └── dev-server.js              # 本地开发服务器（SPA + Worker 代理）
@@ -151,6 +152,7 @@ Settings → Pages → Source: main 分支, Folder: /docs
 3. **同步远程 D1 已有分析结果** → 避免重复调用 DeepSeek API 浪费费用
 4. DeepSeek 分析 → 仅分析本地数据库中尚未分析的论文
 5. 同步新数据到 Worker API → 写入远程 D1
+6. 重建 D1 `date_index` 小表 → 日历直接从 Worker API 读取小表，不再提交 `docs/data/dates.json`
 
 ## config.yaml
 
@@ -178,6 +180,9 @@ arxiv:
 | `GET /api/stats` | 总体统计 |
 | `POST /api/papers` | 批量写入论文（需 token） |
 | `POST /api/analyses` | 批量写入分析（需 token） |
+| `POST /api/date-index/rebuild` | 重建 D1 日期索引（需 token） |
+
+`GET /api/dates` 的稳定路径只读取 D1 `date_index` 小表，用于替代原来的 `docs/data/dates.json` 并减少对 `papers` / `analyses` 大表的读取。大表聚合只在 `POST /api/date-index/rebuild` 维护路径中执行，或在迁移期 `date_index` 尚未可用时临时 fallback。
 
 ## 已知限制
 
