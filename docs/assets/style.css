@@ -619,7 +619,10 @@ a.calendar-day:hover {
 }
 
 .topic-badge,
-.priority-pill {
+.priority-pill,
+.source-badge,
+.paper-id,
+.copy-prompt-btn {
   display: inline-flex;
   align-items: center;
   border: 0;
@@ -634,6 +637,7 @@ a.calendar-day:hover {
   overflow-wrap: anywhere;
   white-space: normal;
   padding: 2px 10px;
+  text-decoration: none !important;
 }
 
 .topic-badge.active {
@@ -646,7 +650,8 @@ a.calendar-day:hover {
   color: #57606a;
 }
 
-.priority-pill {
+.priority-pill,
+.source-badge {
   cursor: default;
   background: #eaeef2;
   color: #57606a;
@@ -672,23 +677,30 @@ a.calendar-day:hover {
   color: #999;
 }
 
-.paper-id {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid var(--line-soft);
-  border-radius: 999px;
+.source-badge,
+.paper-id,
+.copy-prompt-btn {
   background: var(--nav);
   color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-  padding: 2px 10px;
-  text-decoration: none !important;
 }
 
-.paper-id:hover {
-  border-color: var(--blue);
+.paper-id:hover,
+.copy-prompt-btn:hover,
+.copy-prompt-btn.copied {
   color: var(--blue);
   background: var(--blue-soft);
+}
+
+.copy-prompt-btn.copy-error {
+  background: #ffebe9;
+  color: #cf222e;
+}
+
+.paper-tag-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .hash-tag {
@@ -717,20 +729,6 @@ a.calendar-day:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.paper-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  color: var(--muted);
-  font-size: 12px;
-  margin: 4px 0 12px;
-}
-
-.paper-links a,
-.paper-links span {
-  overflow-wrap: anywhere;
 }
 
 .paper-tldr {

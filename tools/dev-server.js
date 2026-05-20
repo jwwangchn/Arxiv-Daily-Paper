@@ -3,7 +3,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-const DOCS = path.join(__dirname, "docs");
+const DOCS = path.join(__dirname, "..", "docs");
 const WORKER_PORT = Number(process.env.WORKER_PORT || 8787);
 const WORKER = `http://127.0.0.1:${WORKER_PORT}`;
 const PORT = Number(process.env.PORT || 3000);
